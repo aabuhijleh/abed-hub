@@ -1,0 +1,33 @@
+{
+  "name": "@abed-hub/gh-attach",
+  "version": "0.1.0",
+  "description": "Upload local files to GitHub and print a markdown reference for each, ready to embed in a pull request or issue. Also screenshots a page to a PNG sized for GitHub.",
+  "license": "MIT",
+  "author": "aabuhijleh",
+  "type": "module",
+  "bin": {
+    "gh-attach": "./dist/gh-attach.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/gh-attach.ts --target=bun --outdir=./dist",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@abed-hub/config": "workspace:*",
+    "citty": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "packageManager": "bun@1.4.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@abed-hub/courier",
+  "version": "0.1.0",
+  "description": "Two CLIs, jira and slack: read an issue or thread, download the files on it, upload files back, and post or delete Slack messages.",
+  "license": "MIT",
+  "author": "aabuhijleh",
+  "type": "module",
+  "bin": {
+    "jira": "./dist/jira.js",
+    "slack": "./dist/slack.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/jira.ts ./src/slack.ts --target=bun --outdir=./dist",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@abed-hub/config": "workspace:*",
+    "@clack/prompts": "^1.7.0",
+    "citty": "^0.2.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "packageManager": "bun@1.4.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
