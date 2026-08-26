@@ -95,11 +95,20 @@ post lands. No flag gets past these:
 
 ## When a gap isn't covered yet
 
-The CLI is the user's own code, so a bug and a missing capability are both fixable rather
-than a dead end.
+`bun add -g` installs a built bundle, so the `dist/jira.js` on disk is not the source and
+the next install overwrites an edit to it. The source is `packages/courier` in
+[abed-hub](https://github.com/aabuhijleh/abed-hub), and a change there reaches this machine
+only once the package is published again. Both put a gap in the user's hands:
 
-1. `which jira slack` resolves the binary, following any symlink to the source it runs.
-2. Read the code along the path the failing command actually takes. The source lives in
-   `packages/courier` of the abed-hub repo.
-3. Report what you found and propose the change, either a fix or a new command for the gap
-   you just hit. It is the user's repo, so let them decide whether you edit it.
+1. Hand over the invocation you ran and its output verbatim, and name the capability that
+   is missing.
+2. Offer to file it, which is where a fix starts. An issue is public, so ask first and run
+   the command once the user says yes:
+
+   ```bash
+   gh issue create --repo aabuhijleh/abed-hub \
+     --title "jira: <the gap in one line>" \
+     --body "What I ran, what came back, what I expected instead."
+   ```
+
+3. Finish the rest of the task without it, and say which part you left undone.
