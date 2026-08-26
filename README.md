@@ -9,7 +9,7 @@ to reach for it.
 ## Install everything
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash
+curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash
 ```
 
 Installs the three tools, their skills, and the browser, all globally. Needs
@@ -20,10 +20,13 @@ Read it first if you like: [`setup.sh`](setup.sh).
 Re-running is fine. Every step looks for its own result first, so a second run installs
 nothing and just tells you what it found. Add `--force` to reinstall and upgrade anyway.
 
+The `?$(date +%s)` is there because raw.githubusercontent.com caches a file for about five
+minutes. The timestamp makes each URL new, so you always get the current script.
+
 Want one piece only? Name it. `writing-great-prs` pulls in `gh-attach` with it.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash -s -- courier
+curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash -s -- courier
 ```
 
 ## Or set them up by hand

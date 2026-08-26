@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Installs the abed-hub tools and skills.
 #
-#   curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash
+#   curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash
 #
 # Safe to re-run: every step checks for its own result first and skips if it is
 # already there, so a second run installs nothing and prints what it found. Pass
@@ -9,11 +9,16 @@
 #
 # Pass component names to install a subset:
 #
-#   curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash -s -- gh-attach courier
+#   curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash -s -- gh-attach courier
 #
 # Everything installs globally into your bun and skills directories. Nothing
 # needs root. Credentials are not touched; the script prints the commands that
 # set those up, since they are interactive.
+#
+# Two rules keep this working when piped to bash, where the script itself
+# arrives on stdin: the work lives in main(), so bash reads the whole file
+# before running any of it, and every child command gets </dev/null, so none of
+# them can read the rest of the script and cut the run short.
 
 set -euo pipefail
 
@@ -36,41 +41,7 @@ die() { printf '\n%serror:%s %s\n' "$red" "$reset" "$1" >&2; exit 1; }
 
 has() { command -v "$1" >/dev/null 2>&1; }
 
-skipped=0
-
-# --- what to install -------------------------------------------------------
-
-force=0
-want_gh_attach=0
-want_prs=0
-want_courier=0
-named=0
-
-for arg in "$@"; do
-  case "$arg" in
-    -f|--force) force=1 ;;
-    all) want_gh_attach=1; want_prs=1; want_courier=1; named=1 ;;
-    gh-attach) want_gh_attach=1; named=1 ;;
-    writing-great-prs|prs) want_prs=1; want_gh_attach=1; named=1 ;;
-    courier) want_courier=1; named=1 ;;
-    -h|--help)
-      printf 'usage: setup.sh [--force] [all | gh-attach | writing-great-prs | courier]...\n'
-      exit 0 ;;
-    *) die "unknown argument: $arg (try: --force, all, gh-attach, writing-great-prs, courier)" ;;
-  esac
-done
-
-if [ "$named" = 0 ]; then
-  want_gh_attach=1; want_prs=1; want_courier=1
-fi
-
-# --- prerequisites ---------------------------------------------------------
-
-has bun || die "bun is required. Install it from https://bun.sh, then run this again."
-
 # bun's global bin directory may not be on PATH in this shell, so look there too.
-bun_bin=$(bun pm bin -g 2>/dev/null || true)
-
 have_bin() {
   has "$1" && return 0
   [ -n "$bun_bin" ] && [ -x "$bun_bin/$1" ]
@@ -80,7 +51,7 @@ have_bin() {
 add_pkg() {
   local pkg=$1 bin=$2
   if [ "$force" = 0 ] && have_bin "$bin"; then skip "$bin"; return; fi
-  bun add -g "$pkg" >/dev/null
+  bun add -g "$pkg" >/dev/null </dev/null
   did "$bin"
 }
 
@@ -88,31 +59,37 @@ add_pkg() {
 add_skill() {
   local repo=$1 skill=$2
   if [ "$force" = 0 ] && [ -e "$SKILLS_STORE/$skill" ]; then skip "skill $skill"; return; fi
-  bunx skills add "$repo" -s "$skill" -g -y >/dev/null
+  bunx skills add "$repo" -s "$skill" -g -y >/dev/null </dev/null
   did "skill $skill"
 }
 
-next_steps=()
+# Where playwright keeps its browsers.
+browser_cache() {
+  if [ -n "${PLAYWRIGHT_BROWSERS_PATH:-}" ]; then printf '%s\n' "$PLAYWRIGHT_BROWSERS_PATH"; return; fi
+  case "$(uname -s)" in
+    Darwin) printf '%s\n' "$HOME/Library/Caches/ms-playwright" ;;
+    *) printf '%s\n' "${XDG_CACHE_HOME:-$HOME/.cache}/ms-playwright" ;;
+  esac
+}
 
-# --- gh-attach -------------------------------------------------------------
-
-if [ "$want_gh_attach" = 1 ]; then
+setup_gh_attach() {
   step "gh-attach"
   add_pkg @aabuhijleh/gh-attach gh-attach
 
   if has gh; then
-    if gh extension list 2>/dev/null | grep -q 'gh-image'; then
+    if gh extension list </dev/null 2>/dev/null | grep -q 'gh-image'; then
       if [ "$force" = 1 ]; then
-        gh extension upgrade drogers0/gh-image >/dev/null 2>&1 || true
+        gh extension upgrade drogers0/gh-image >/dev/null 2>&1 </dev/null || true
         did "gh extension gh-image (upgraded)"
       else
         skip "gh extension gh-image"
       fi
     else
-      gh extension install drogers0/gh-image >/dev/null
+      gh extension install drogers0/gh-image >/dev/null </dev/null
       did "gh extension gh-image"
     fi
-    gh auth status >/dev/null 2>&1 || next_steps+=("gh auth login    # sign in to the GitHub CLI")
+    gh auth status >/dev/null 2>&1 </dev/null \
+      || next_steps+=("gh auth login    # sign in to the GitHub CLI")
   else
     warn "the GitHub CLI is missing, so gh-image was skipped"
     next_steps+=("# install the GitHub CLI (https://cli.github.com), then:")
@@ -123,29 +100,21 @@ if [ "$want_gh_attach" = 1 ]; then
   add_skill "$REPO" gh-attach
   [ -f "$CONFIG_HOME/gh-attach/token" ] \
     || next_steps+=("gh-attach token  # grab a GitHub session cookie")
-fi
+}
 
-# --- writing-great-prs -----------------------------------------------------
-
-if [ "$want_prs" = 1 ]; then
+setup_prs() {
   step "writing-great-prs"
   add_pkg @playwright/cli playwright-cli
 
-  browsers="${PLAYWRIGHT_BROWSERS_PATH:-}"
-  if [ -z "$browsers" ]; then
-    case "$(uname -s)" in
-      Darwin) browsers="$HOME/Library/Caches/ms-playwright" ;;
-      *) browsers="${XDG_CACHE_HOME:-$HOME/.cache}/ms-playwright" ;;
-    esac
-  fi
-  have_chromium=1
-  for dir in "$browsers"/chromium-*; do
+  local cache dir have_chromium=1
+  cache=$(browser_cache)
+  for dir in "$cache"/chromium-*; do
     if [ -d "$dir" ]; then have_chromium=0; break; fi
   done
 
   if [ "$have_chromium" = 0 ] && [ "$force" = 0 ]; then
     skip "chromium"
-  elif playwright-cli install-browser chromium >/dev/null 2>&1; then
+  elif playwright-cli install-browser chromium >/dev/null 2>&1 </dev/null; then
     did "chromium"
   else
     warn "chromium install failed; run 'playwright-cli install-browser chromium' yourself"
@@ -154,32 +123,62 @@ if [ "$want_prs" = 1 ]; then
   add_skill "$REPO" writing-great-prs
   add_skill microsoft/playwright-cli playwright-cli
   add_skill cursor/plugins unslop
-fi
+}
 
-# --- courier ---------------------------------------------------------------
-
-if [ "$want_courier" = 1 ]; then
+setup_courier() {
   step "courier"
   add_pkg @aabuhijleh/courier jira
-
   add_skill "$REPO" courier
 
-  courier_config="$CONFIG_HOME/courier/config.json"
-  configured() { [ -f "$courier_config" ] && grep -q "\"$1\"" "$courier_config"; }
+  local config="$CONFIG_HOME/courier/config.json"
+  configured() { [ -f "$config" ] && grep -q "\"$1\"" "$config"; }
   configured jira || next_steps+=("jira setup       # an Atlassian API token")
   configured slack || next_steps+=("slack setup      # a Slack app and its bot token")
-fi
+}
 
-# --- what's left -----------------------------------------------------------
+main() {
+  local arg
+  force=0
+  skipped=0
+  next_steps=()
+  local want_gh_attach=0 want_prs=0 want_courier=0 named=0
 
-printf '\n%sDone.%s' "$green$bold" "$reset"
-if [ "$skipped" -gt 0 ] && [ "$force" = 0 ]; then
-  printf ' %d step(s) were already done and left alone; --force redoes them.' "$skipped"
-fi
-printf '\n'
+  for arg in "$@"; do
+    case "$arg" in
+      -f|--force) force=1 ;;
+      all) want_gh_attach=1; want_prs=1; want_courier=1; named=1 ;;
+      gh-attach) want_gh_attach=1; named=1 ;;
+      writing-great-prs|prs) want_prs=1; want_gh_attach=1; named=1 ;;
+      courier) want_courier=1; named=1 ;;
+      -h|--help)
+        printf 'usage: setup.sh [--force] [all | gh-attach | writing-great-prs | courier]...\n'
+        return 0 ;;
+      *) die "unknown argument: $arg (try: --force, all, gh-attach, writing-great-prs, courier)" ;;
+    esac
+  done
 
-if [ "${#next_steps[@]}" -gt 0 ]; then
-  printf '\nRun these yourself, they ask questions:\n\n'
-  for line in "${next_steps[@]}"; do printf '  %s\n' "$line"; done
+  if [ "$named" = 0 ]; then
+    want_gh_attach=1; want_prs=1; want_courier=1
+  fi
+
+  has bun || die "bun is required. Install it from https://bun.sh, then run this again."
+  bun_bin=$(bun pm bin -g 2>/dev/null </dev/null || true)
+
+  if [ "$want_gh_attach" = 1 ]; then setup_gh_attach; fi
+  if [ "$want_prs" = 1 ]; then setup_prs; fi
+  if [ "$want_courier" = 1 ]; then setup_courier; fi
+
+  printf '\n%sDone.%s' "$green$bold" "$reset"
+  if [ "$skipped" -gt 0 ] && [ "$force" = 0 ]; then
+    printf ' %d step(s) were already done and left alone; --force redoes them.' "$skipped"
+  fi
   printf '\n'
-fi
+
+  if [ "${#next_steps[@]}" -gt 0 ]; then
+    printf '\nRun these yourself, they ask questions:\n\n'
+    for arg in "${next_steps[@]}"; do printf '  %s\n' "$arg"; done
+    printf '\n'
+  fi
+}
+
+main "$@"
