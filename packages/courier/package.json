@@ -1,5 +1,5 @@
 {
-  "name": "@abed-hub/courier",
+  "name": "@aabuhijleh/courier",
   "version": "0.1.0",
   "description": "Two CLIs, jira and slack: read an issue or thread, download the files on it, upload files back, and post or delete Slack messages.",
   "keywords": [

@@ -19,43 +19,39 @@
       },
     },
     "packages/courier": {
-      "name": "@abed-hub/courier",
+      "name": "@aabuhijleh/courier",
       "version": "0.1.0",
       "bin": {
         "jira": "./dist/jira.js",
         "slack": "./dist/slack.js",
       },
-      "dependencies": {
+      "devDependencies": {
         "@abed-hub/config": "workspace:*",
         "@clack/prompts": "^1.7.0",
+        "@types/bun": "latest",
         "citty": "^0.2.2",
         "zod": "^4.4.3",
       },
-      "devDependencies": {
-        "@types/bun": "latest",
-      },
     },
     "packages/gh-attach": {
-      "name": "@abed-hub/gh-attach",
+      "name": "@aabuhijleh/gh-attach",
       "version": "0.1.0",
       "bin": {
         "gh-attach": "./dist/gh-attach.js",
       },
-      "dependencies": {
-        "@abed-hub/config": "workspace:*",
-        "citty": "^0.2.2",
-      },
       "devDependencies": {
+        "@abed-hub/config": "workspace:*",
         "@types/bun": "latest",
+        "citty": "^0.2.2",
       },
     },
   },
   "packages": {
+    "@aabuhijleh/courier": ["@aabuhijleh/courier@workspace:packages/courier"],
+
+    "@aabuhijleh/gh-attach": ["@aabuhijleh/gh-attach@workspace:packages/gh-attach"],
+
     "@abed-hub/config": ["@abed-hub/config@workspace:packages/config"],
-
-    "@abed-hub/courier": ["@abed-hub/courier@workspace:packages/courier"],
-
-    "@abed-hub/gh-attach": ["@abed-hub/gh-attach@workspace:packages/gh-attach"],
 
     "@biomejs/biome": ["@biomejs/biome@2.5.10", "", { "optionalDependencies": { "@biomejs/cli-darwin-arm64": "2.5.10", "@biomejs/cli-darwin-x64": "2.5.10", "@biomejs/cli-linux-arm64": "2.5.10", "@biomejs/cli-linux-arm64-musl": "2.5.10", "@biomejs/cli-linux-x64": "2.5.10", "@biomejs/cli-linux-x64-musl": "2.5.10", "@biomejs/cli-win32-arm64": "2.5.10", "@biomejs/cli-win32-x64": "2.5.10" }, "bin": { "biome": "bin/biome" } }, "sha512-WRKXARA3kTuiV5sxqTpobJ/I0MVd4vk3pOL6wnp5az4LntFIhWTj1RWZq3DI9PCEN3lXcqy7p5aqUHzvq8AXyQ=="],
 

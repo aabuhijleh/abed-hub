@@ -1,4 +1,4 @@
-# @abed-hub/gh-attach
+# @aabuhijleh/gh-attach
 
 Uploads a local file to GitHub and prints a reference you can paste into a pull request or
 issue. GitHub has no public upload API, so this reaches the endpoint the web UI uses,
@@ -23,7 +23,7 @@ Windows, use WSL.
 ## Install
 
 ```bash
-bun add -g @abed-hub/gh-attach
+bun add -g @aabuhijleh/gh-attach
 gh extension install drogers0/gh-image
 ```
 

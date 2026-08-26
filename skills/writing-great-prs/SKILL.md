@@ -87,7 +87,7 @@ This skill does not work on its own. It needs [Bun](https://bun.sh), two command
 other skills. All of them are required:
 
 ```bash
-bun add -g @abed-hub/gh-attach
+bun add -g @aabuhijleh/gh-attach
 gh extension install drogers0/gh-image
 bun add -g @playwright/cli
 playwright-cli install-browser chromium

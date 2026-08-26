@@ -37,7 +37,7 @@ every time and credentials are handled. It prints one embeddable reference per f
 else. Those lines are the output that matters. Everything else it prints is progress.
 
 Requires `gh-attach` on PATH. If the command is missing, stop and tell the user to install
-[Bun](https://bun.sh) if they do not have it, then run `bun add -g @abed-hub/gh-attach`,
+[Bun](https://bun.sh) if they do not have it, then run `bun add -g @aabuhijleh/gh-attach`,
 plus `gh extension install drogers0/gh-image` if they have never installed the extension.
 
 ## Reading the result

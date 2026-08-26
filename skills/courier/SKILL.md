@@ -29,7 +29,7 @@ next.
 Both bins come from one package, and both run on [Bun](https://bun.sh):
 
 ```bash
-bun add -g @abed-hub/courier
+bun add -g @aabuhijleh/courier
 ```
 
 If `jira` or `slack` is missing from PATH, stop and give the user that line rather than

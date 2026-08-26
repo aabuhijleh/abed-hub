@@ -1,4 +1,4 @@
-# @abed-hub/courier
+# @aabuhijleh/courier
 
 Carries files between Slack and Jira from the command line, and reads both. One package,
 two bins.
@@ -22,7 +22,7 @@ jira attach ABC-123 ./evidence/*
 ## Install
 
 ```bash
-bun add -g @abed-hub/courier
+bun add -g @aabuhijleh/courier
 ```
 
 ## Setup

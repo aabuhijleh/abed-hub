@@ -1,5 +1,5 @@
 {
-  "name": "@abed-hub/gh-attach",
+  "name": "@aabuhijleh/gh-attach",
   "version": "0.1.0",
   "description": "Upload local files to GitHub and print a markdown reference for each, ready to embed in a pull request or issue. Also screenshots a page to a PNG sized for GitHub.",
   "keywords": [

@@ -52,7 +52,7 @@ check is more credential than most uploads need.
 
 | Piece | Path |
 |---|---|
-| The command | `gh-attach`, from `@abed-hub/gh-attach` |
+| The command | `gh-attach`, from `@aabuhijleh/gh-attach` |
 | The cookie, mode 600, source of truth | `~/.config/abed-hub/gh-attach/token` |
 
 There is no scheduler and no background job. `gh-attach` checks the cookie on every run

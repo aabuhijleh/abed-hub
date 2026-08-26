@@ -31,7 +31,7 @@ gh-attach upload ./screenshot.png --repo owner/repo
 [GitHub CLI](https://cli.github.com) must be signed in.
 
 ```bash
-bun add -g @abed-hub/gh-attach
+bun add -g @aabuhijleh/gh-attach
 gh extension install drogers0/gh-image
 ```
 
@@ -84,7 +84,7 @@ jira attach ABC-123 ./evidence/*
 **1. Install the tools.** One package, both bins.
 
 ```bash
-bun add -g @abed-hub/courier
+bun add -g @aabuhijleh/courier
 ```
 
 **2. Set up credentials.** Each command prints the steps for creating the token in your
