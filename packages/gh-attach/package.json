@@ -2,6 +2,21 @@
   "name": "@abed-hub/gh-attach",
   "version": "0.1.0",
   "description": "Upload local files to GitHub and print a markdown reference for each, ready to embed in a pull request or issue. Also screenshots a page to a PNG sized for GitHub.",
+  "keywords": [
+    "github",
+    "cli",
+    "screenshot",
+    "pull-request",
+    "attachments",
+    "bun"
+  ],
+  "homepage": "https://github.com/aabuhijleh/abed-hub/tree/main/packages/gh-attach",
+  "bugs": "https://github.com/aabuhijleh/abed-hub/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aabuhijleh/abed-hub.git",
+    "directory": "packages/gh-attach"
+  },
   "license": "MIT",
   "author": "aabuhijleh",
   "type": "module",
@@ -14,14 +29,13 @@
   ],
   "scripts": {
     "build": "bun build ./src/gh-attach.ts --target=bun --outdir=./dist",
+    "prepublishOnly": "bun run build",
     "test": "bun test"
   },
-  "dependencies": {
-    "@abed-hub/config": "workspace:*",
-    "citty": "^0.2.2"
-  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@abed-hub/config": "workspace:*",
+    "@types/bun": "latest",
+    "citty": "^0.2.2"
   },
   "packageManager": "bun@1.4.0",
   "engines": {

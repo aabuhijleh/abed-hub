@@ -2,6 +2,20 @@
   "name": "@abed-hub/courier",
   "version": "0.1.0",
   "description": "Two CLIs, jira and slack: read an issue or thread, download the files on it, upload files back, and post or delete Slack messages.",
+  "keywords": [
+    "jira",
+    "slack",
+    "cli",
+    "attachments",
+    "bun"
+  ],
+  "homepage": "https://github.com/aabuhijleh/abed-hub/tree/main/packages/courier",
+  "bugs": "https://github.com/aabuhijleh/abed-hub/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aabuhijleh/abed-hub.git",
+    "directory": "packages/courier"
+  },
   "license": "MIT",
   "author": "aabuhijleh",
   "type": "module",
@@ -15,16 +29,15 @@
   ],
   "scripts": {
     "build": "bun build ./src/jira.ts ./src/slack.ts --target=bun --outdir=./dist",
+    "prepublishOnly": "bun run build",
     "test": "bun test"
   },
-  "dependencies": {
+  "devDependencies": {
     "@abed-hub/config": "workspace:*",
     "@clack/prompts": "^1.7.0",
+    "@types/bun": "latest",
     "citty": "^0.2.2",
     "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
   },
   "packageManager": "bun@1.4.0",
   "engines": {
