@@ -6,7 +6,27 @@ Each one closes a gap where agents keep failing: getting a screenshot into a PR,
 file out of a Slack thread. The tool does the work. The skill teaches an agent when and how
 to reach for it.
 
-## Which one do you want?
+## Install everything
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash
+```
+
+Installs the three tools, their skills, and the browser, all globally. Needs
+[bun](https://bun.sh) and the [GitHub CLI](https://cli.github.com). Nothing runs as root.
+It ends by printing the credential commands, which ask questions and so are yours to run.
+Read it first if you like: [`setup.sh`](setup.sh).
+
+Re-running is fine. Every step looks for its own result first, so a second run installs
+nothing and just tells you what it found. Add `--force` to reinstall and upgrade anyway.
+
+Want one piece only? Name it. `writing-great-prs` pulls in `gh-attach` with it.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash -s -- courier
+```
+
+## Or set them up by hand
 
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
