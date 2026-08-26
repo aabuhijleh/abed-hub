@@ -29,6 +29,22 @@ Want one piece only? Name it. `writing-great-prs` pulls in `gh-attach` with it.
 curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash -s -- courier
 ```
 
+## Uninstall
+
+```bash
+bun remove -g @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
+bunx skills remove gh-attach writing-great-prs courier playwright-cli unslop -g -y
+gh extension remove gh-image
+```
+
+Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
+found" and removes nothing.
+
+Two things stay behind on purpose. Chromium lives in the shared playwright cache at
+`~/Library/Caches/ms-playwright`, where every other playwright install on the machine reads
+it too. Your tokens are in `~/.config/abed-hub/`, so reinstalling does not send you back to
+the browser for new ones. Delete either by hand if you want them gone.
+
 ## Or set them up by hand
 
 | Skill | Use it for | Also needs |
