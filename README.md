@@ -1,6 +1,6 @@
 # 🧰 abed-hub
 
-Three agent skills, and the command line tools they drive.
+Agent skills, and the command line tools they drive.
 
 Each one closes a gap where agents keep failing: getting a screenshot into a PR, getting a
 file out of a Slack thread. The tool does the work. The skill teaches an agent when and how
@@ -20,7 +20,7 @@ time. It skips whatever is already there.
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
 | [gh-attach](#-gh-attach) | Put an image, video, PDF, or log into a PR or issue. | The GitHub CLI, signed in |
-| [writing-great-prs](#-writing-great-prs) | Write a PR description with a screenshot in it. | gh-attach, a browser, two more skills |
+| [writing-great-prs](#-writing-great-prs) | Write a PR description with a screenshot in it. | gh-attach, a browser, the skills below |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 
 Set up one. Come back for the others when you need them.
@@ -104,7 +104,7 @@ A real one: [#1](https://github.com/aabuhijleh/abed-hub/pull/1).
    playwright-cli install-browser chromium
    ```
 
-3. **Add the skills.** All three, they are not optional. `playwright-cli` drives a real app
+3. **Add the skills.** None of them are optional. `playwright-cli` drives a real app
    for UI screenshots, and `unslop` edits the title and body before they go out.
 
    ```bash
@@ -115,9 +115,9 @@ A real one: [#1](https://github.com/aabuhijleh/abed-hub/pull/1).
 
 ## 📬 courier
 
-Two tools, `jira` and `slack`, that reach the parts of Jira and Slack the Atlassian and
-Slack MCPs cannot: attachment bytes in both directions, deleting a Slack post, writing a
-Jira description with checkboxes or embedded images.
+`jira` and `slack` reach the parts of Jira and Slack the Atlassian and Slack MCPs cannot:
+attachment bytes in both directions, deleting a Slack post, writing a Jira description with
+checkboxes or embedded images.
 
 ```bash
 slack thread https://acme.slack.com/archives/C0123456789/p1700000000000000
@@ -178,8 +178,8 @@ each file is 0600.
 
 ```
 ~/.config/abed-hub/
-├── courier/config.json   a jira section and a slack section: base URL, email, API token, bot token
-└── gh-attach/token       the GitHub session cookie that gh-image uploads with
+├── courier/config.json   jira and slack sections: base URL, email, API token, bot token
+└── gh-attach/token       the GitHub session cookie gh-image uploads with
 ```
 
 Read it back with the tokens masked. `jira config --reveal` prints one in full.
