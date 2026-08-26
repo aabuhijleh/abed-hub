@@ -102,4 +102,13 @@ only once the package is published again. Both put a gap in the user's hands:
 
 1. Hand over the invocation you ran and its output verbatim, and name the capability that
    is missing.
-2. Finish the rest of the task without it, and say which part you left undone.
+2. Offer to file it, which is where a fix starts. An issue is public, so ask first and run
+   the command once the user says yes:
+
+   ```bash
+   gh issue create --repo aabuhijleh/abed-hub \
+     --title "jira: <the gap in one line>" \
+     --body "What I ran, what came back, what I expected instead."
+   ```
+
+3. Finish the rest of the task without it, and say which part you left undone.
