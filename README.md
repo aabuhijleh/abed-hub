@@ -1,4 +1,4 @@
-# abed-hub 🧰
+# 🧰 abed-hub
 
 Three agent skills, and the command line tools they drive.
 
@@ -169,6 +169,30 @@ jira attach ABC-123 ./evidence/*
 One thing to know: the Slack bot only sees channels it has been invited to, and cannot read
 human DMs. Run `/invite @<bot>` where you need it. Full command list and the rest of the
 bot's limits: [`packages/courier`](packages/courier).
+
+## 🔐 Configuration
+
+Every tool keeps its state in one place, `$XDG_CONFIG_HOME/abed-hub/` when that is set and
+`~/.config/abed-hub/` otherwise. These files hold API tokens, so the directory is 0700 and
+each file is 0600.
+
+```
+~/.config/abed-hub/
+├── courier/config.json   a jira section and a slack section: base URL, email, API token, bot token
+└── gh-attach/token       the GitHub session cookie that gh-image uploads with
+```
+
+Read it back with the tokens masked. `jira config --reveal` prints one in full.
+
+```bash
+jira config
+slack config
+gh-attach token
+```
+
+Let the setup commands write these. A token typed in by hand, or passed on a command line,
+lands in your shell history. `setup.sh` never touches this directory, so reinstalling keeps
+your credentials and deleting the directory is a clean reset.
 
 ## 🧹 Uninstall
 
