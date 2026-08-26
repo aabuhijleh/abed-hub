@@ -47,11 +47,32 @@ have_bin() {
   [ -n "$bun_bin" ] && [ -x "$bun_bin/$1" ]
 }
 
+# Run a command with its chatter hidden. A run that works says nothing, since the
+# caller already prints a line for it. A run that fails prints everything it said
+# and stops the script, so no real error is ever swallowed.
+#
+# This is what hides the "YAML parse error" warning from cursor/plugins: `skills
+# add` reads every SKILL.md in that repo, one of them has an unquoted colon in its
+# frontmatter, and it complains about a skill we are not installing. Nothing is
+# wrong on this end and the exit status is 0.
+quietly() {
+  local log status=0
+  log=$(mktemp)
+  "$@" >"$log" 2>&1 </dev/null || status=$?
+  if [ "$status" -ne 0 ]; then
+    printf '\n' >&2
+    cat "$log" >&2
+    rm -f "$log"
+    die "$1 failed (exit $status)"
+  fi
+  rm -f "$log"
+}
+
 # Install a global package unless one of its binaries is already present.
 add_pkg() {
   local pkg=$1 bin=$2
   if [ "$force" = 0 ] && have_bin "$bin"; then skip "$bin"; return; fi
-  bun add -g "$pkg" >/dev/null </dev/null
+  quietly bun add -g "$pkg"
   did "$bin"
 }
 
@@ -59,7 +80,7 @@ add_pkg() {
 add_skill() {
   local repo=$1 skill=$2
   if [ "$force" = 0 ] && [ -e "$SKILLS_STORE/$skill" ]; then skip "skill $skill"; return; fi
-  bunx skills add "$repo" -s "$skill" -g -y >/dev/null </dev/null
+  quietly bunx skills add "$repo" -s "$skill" -g -y
   did "skill $skill"
 }
 
@@ -85,7 +106,7 @@ setup_gh_attach() {
         skip "gh extension gh-image"
       fi
     else
-      gh extension install drogers0/gh-image >/dev/null </dev/null
+      quietly gh extension install drogers0/gh-image
       did "gh extension gh-image"
     fi
     gh auth status >/dev/null 2>&1 </dev/null \
@@ -114,10 +135,15 @@ setup_prs() {
 
   if [ "$have_chromium" = 0 ] && [ "$force" = 0 ]; then
     skip "chromium"
-  elif playwright-cli install-browser chromium >/dev/null 2>&1 </dev/null; then
-    did "chromium"
   else
-    warn "chromium install failed; run 'playwright-cli install-browser chromium' yourself"
+    # Over 350 MB, so let the download print its own progress rather than
+    # looking hung for a few minutes.
+    printf '  %sdownloading chromium, this takes a few minutes%s\n' "$dim" "$reset"
+    if playwright-cli install-browser chromium </dev/null; then
+      did "chromium"
+    else
+      warn "chromium install failed; run 'playwright-cli install-browser chromium' yourself"
+    fi
   fi
 
   add_skill "$REPO" writing-great-prs

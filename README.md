@@ -93,6 +93,10 @@ bunx skills add microsoft/playwright-cli -s playwright-cli -g
 bunx skills add cursor/plugins -s unslop -g
 ```
 
+The last line prints a YAML parse warning about `check-agent-compatibility`. That is a
+different skill in the same repo, and its frontmatter has an unquoted colon. `unslop`
+installs fine. `setup.sh` hides the warning for you.
+
 ## courier
 
 Two tools, `jira` and `slack`, that reach the parts of Jira and Slack the Atlassian and
