@@ -6,20 +6,7 @@ description: >-
   screenshot to the PR", "put this PDF in the issue", "show before/after in the
   description".
 license: MIT
-# gh pr/issue edit and comment are listed for hosts that check each pipeline stage.
-# Whole-string matchers resolve them via the leading printf.
-allowed-tools:
-  - Glob
-  - Bash(gh-attach:*)
-  - Bash(gh pr view:*)
-  - Bash(gh pr edit:*)
-  - Bash(gh pr comment:*)
-  - Bash(gh issue view:*)
-  - Bash(gh issue edit:*)
-  - Bash(gh issue comment:*)
-  - Bash(printf:*)
-  - Bash(grep:*)
-  - Bash(cat:*)
+allowed-tools: Glob, Bash(gh-attach:*), Bash(gh pr view:*), Bash(gh pr edit:*), Bash(gh pr comment:*), Bash(gh issue view:*), Bash(gh issue edit:*), Bash(gh issue comment:*), Bash(printf:*), Bash(grep:*), Bash(cat:*)
 ---
 
 # Upload images and files to GitHub
