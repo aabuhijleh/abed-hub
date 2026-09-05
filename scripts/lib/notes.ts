@@ -76,9 +76,5 @@ export function notesBody({
     "",
     `\u{1F4E6} [\`${pkg}@${version}\` on npm](https://www.npmjs.com/package/${pkg}/v/${version})`,
     "",
-    "> CI staged this over OIDC rather than publishing it. It reaches npm's",
-    "> `latest` tag once a maintainer approves it with 2FA, so if the version",
-    "> above 404s, approval is still pending.",
-    "",
   ].join("\n");
 }

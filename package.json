@@ -8,6 +8,7 @@
   "scripts": {
     "build": "bun run --filter '*' build",
     "bump": "bun run scripts/bump.ts",
+    "approve": "bun run scripts/approve.ts",
     "release:plan": "bun run scripts/release-plan.ts",
     "check": "biome check",
     "check:fix": "biome check --write",

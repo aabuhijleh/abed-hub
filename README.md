@@ -8,59 +8,15 @@ to reach for it.
 
 ## 🚀 [abed-hub](https://www.npmjs.com/package/@aabuhijleh/abed-hub)
 
-One CLI installs the rest of this and keeps it current.
+One CLI installs the rest of this and keeps it current. Needs [bun](https://bun.sh).
 
 ```bash
 bun add -g @aabuhijleh/abed-hub
-abed-hub setup
+
+abed-hub setup     # pick components, install what is missing
+abed-hub doctor    # what is behind, missing, or broken. Changes nothing
+abed-hub update    # upgrade whatever doctor found
 ```
-
-Needs [bun](https://bun.sh). `setup` asks which components you want, installs what is
-missing, and leaves anything that already works alone. Its own skill comes along, so an
-agent that hits a missing tool can diagnose it instead of guessing.
-
-An install here is a chain, and every link falls behind on its own schedule. `doctor`
-checks all three kinds and changes nothing.
-
-```bash
-abed-hub doctor
-```
-
-```
-┌  abed-hub doctor
-│
-◇  Packages
-│
-│  ✔ @aabuhijleh/abed-hub   0.1.0
-│  ▲ @aabuhijleh/gh-attach  0.1.0 → 0.2.0
-│  ✔ @aabuhijleh/courier    0.1.0
-│  ✔ @playwright/cli        0.1.19
-│
-◇  Skills
-│
-│  ✔ abed-hub           b41f0c2
-│  ▲ gh-attach          behind aabuhijleh/abed-hub
-│  ✔ writing-great-prs  07e5f7d
-│  ✔ unslop             3515323
-│  ! unslop invocation  disable-model-invocation is back
-│  ✔ courier            42413a9
-│
-◇  Tools
-│
-│  ✔ bun               1.4.2
-│  ✔ gh                2.100.0
-│  ✔ gh auth           signed in as aabuhijleh
-│  ✖ chromium          what gh-attach renders pages with
-│  ✔ jira credentials  configured
-│
-└  2 behind, 1 missing, 1 needing repair. abed-hub setup fixes what it can.
-```
-
-`abed-hub update` then upgrades the packages against npm, pulls the skills that moved, and
-strips `disable-model-invocation` back off `unslop`, which upstream reinstates on every
-skill update. Credentials it hands back to you, since those ask questions.
-
-Full command list: [`packages/abed-hub`](packages/abed-hub).
 
 ## 🧭 Or set them up by hand
 
@@ -91,9 +47,8 @@ Uploading is `gh`'s job since 2.99.0, so one command publishes the shot:
 gh pr comment 12 --attach "./out.png#Login error state"
 ```
 
-The skill is the half of this that matters. It carries what `gh` accepts, which file types
-fail before anything uploads, and the difference between appending to a description and
-replacing it.
+The skill carries what `gh` accepts, which file types fail before anything uploads, and how
+appending to a description differs from replacing it.
 
 ### Setup
 
@@ -110,9 +65,7 @@ replacing it.
    bunx skills add aabuhijleh/abed-hub -s gh-attach -g
    ```
 
-Nothing else to configure. There are no credentials of its own.
-
-Full command list: [`packages/gh-attach`](packages/gh-attach).
+No credentials of its own.
 
 ## 📝 writing-great-prs
 
@@ -176,10 +129,9 @@ gh stack init refactor/native-gh-attach feat/gh-stack-skill
 gh stack submit --auto --open
 ```
 
-`--help` covers the flags, so the skill carries what it leaves out: which commands open a
-full-screen TUI and hang an agent that has no keyboard behind it, that `submit --auto`
-opens drafts, what each of the ten exit codes means. It also argues against stacking, which
-is the right call most of the time.
+`--help` covers the flags. The skill carries what it leaves out: which commands open a
+full-screen TUI and hang an agent, that `submit --auto` opens drafts, and what each of the
+ten exit codes means. It also argues against stacking, which is usually the right call.
 
 ### Setup
 
@@ -252,8 +204,7 @@ jira attach ABC-123 ./evidence/*
    ```
 
 One thing to know: the Slack bot only sees channels it has been invited to, and cannot read
-human DMs. Run `/invite @<bot>` where you need it. Full command list and the rest of the
-bot's limits: [`packages/courier`](packages/courier).
+human DMs. Run `/invite @<bot>` where you need it.
 
 ## 🔐 Configuration
 
@@ -274,42 +225,9 @@ jira config
 slack config
 ```
 
-Let the setup commands write these. A token typed in by hand, or passed on a command line,
-lands in your shell history. `abed-hub setup` never writes a credential, so reinstalling
-keeps them and deleting the directory is a clean reset.
-
-## 🚢 Releasing
-
-Bumping a version is the whole release. Merge the bump to main and
-[Release](.github/workflows/release.yml) diffs every package against npm and stages the
-ones that moved.
-
-```bash
-bun run bump          # pick packages, pick patch, minor, or major
-bun run release:plan  # what the next push to main would stage
-```
-
-Nothing goes public on its own. CI authenticates with an OIDC token from GitHub, so no
-`NPM_TOKEN` lives in this repo, and it runs `npm stage publish`, which needs no 2FA. The
-tarball then sits in npm's staging queue until a maintainer approves it.
-
-```bash
-npm stage list @aabuhijleh/gh-attach
-npm stage approve <stage-id>
-```
-
-Both of those want 2FA, and the package's Staged tab on npmjs.com does the same job in a
-browser. Approving publishes the version with a provenance attestation, which trusted
-publishing attaches without being asked.
-
-The staging run also tags the commit `gh-attach@0.2.0` and opens a GitHub Release for it,
-whose notes list the commits under that package's directory since its own last tag. Tags
-carry the package name because the three versions move independently. The release goes up
-before npm does, so it says in its own body that approval may still be pending.
-
-Staged publishing cannot create a package, so the first version of a new one goes out by
-hand with `npm publish`. `bun run release:plan` says so when it finds a name npm has never
-seen.
+Let the setup commands write these, since a token passed on a command line lands in your
+shell history. `abed-hub setup` never touches them, so reinstalling keeps your credentials
+and deleting the directory is a clean reset.
 
 ## 🧹 Uninstall
 
@@ -322,6 +240,8 @@ gh extension remove github/gh-stack
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
 found" and removes nothing.
 
-Chromium and your tokens stay. Chromium is shared with every other playwright install on
-the machine, and the tokens in `~/.config/abed-hub/` save you a browser trip on the next
-install. Delete either by hand if you want them gone.
+Chromium and your tokens stay. Chromium is shared with every other playwright install on the
+machine, and the tokens save you a browser trip next time. Delete either by hand.
+
+Releasing, the checks, and the rest of the maintainer side live in
+[CONTRIBUTING.md](CONTRIBUTING.md).
