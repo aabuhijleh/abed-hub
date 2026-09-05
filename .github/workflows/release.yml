@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One release at a time. Two runs staging the same version would leave a
+# duplicate in the approval queue for someone to sort out by hand.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    uses: ./.github/workflows/code-quality.yml
+
+  plan:
+    needs: check
+    runs-on: ubuntu-latest
+    outputs:
+      any: ${{ steps.plan.outputs.any }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+
+      # No bun install. The plan reads package.json files and the registry,
+      # and nothing else.
+      - id: plan
+        run: bun run release:plan
+
+  stage:
+    needs: plan
+    if: needs.plan.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    permissions:
+      contents: read
+      # The OIDC token npm trades for a short-lived publish token. This is the
+      # whole reason there is no NPM_TOKEN secret in this repo.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun ci
+      - run: bun run --filter '${{ matrix.package.name }}' build
+
+      # bun publish cannot do trusted publishing, so npm takes it from here.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # npm stage arrived in 11.15.0, later than the runner image ships.
+      - run: npm install --global npm@latest
+
+      # Staging needs no 2FA and no token, which is what lets CI do it.
+      # Trusted publishing attaches a provenance attestation on its own, so
+      # there is no --provenance flag to pass.
+      - run: npm stage publish
+        working-directory: ${{ matrix.package.dir }}
+
+      - name: Say what to approve
+        run: |
+          {
+            echo "### ${{ matrix.package.name }}@${{ matrix.package.version }} is staged"
+            echo
+            echo "Nothing is public yet. Approve it with 2FA:"
+            echo
+            echo '```bash'
+            echo "npm stage list ${{ matrix.package.name }}"
+            echo "npm stage approve <stage-id>"
+            echo '```'
+            echo
+            echo "Or on the package's Staged tab at"
+            echo "<https://www.npmjs.com/package/${{ matrix.package.name }}>."
+          } >> "$GITHUB_STEP_SUMMARY"

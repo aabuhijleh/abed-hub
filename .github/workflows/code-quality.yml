@@ -1,0 +1,30 @@
+name: Code quality
+
+on:
+  pull_request:
+  # Release calls this before it stages anything, so a bad commit on main
+  # cannot reach the npm queue.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # No bun-version here. setup-bun reads packageManager from package.json,
+      # so the runner and the repo cannot drift apart.
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun ci
+      - run: bun run typecheck
+      - run: bun run check
+      - run: bun test
+      - run: bun run build

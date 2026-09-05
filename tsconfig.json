@@ -22,5 +22,5 @@
       "@abed-hub/config": ["./packages/config/src/index.ts"]
     }
   },
-  "include": ["packages/*/src/**/*.ts"]
+  "include": ["packages/*/src/**/*.ts", "scripts/**/*.ts"]
 }
