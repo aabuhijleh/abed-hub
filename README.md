@@ -8,22 +8,14 @@ to reach for it.
 
 ## 🚀 [abed-hub](https://www.npmjs.com/package/@aabuhijleh/abed-hub)
 
-One CLI installs the rest of this and keeps it current.
+One CLI installs the rest of this and keeps it current. Needs [bun](https://bun.sh).
 
 ```bash
 bun add -g @aabuhijleh/abed-hub
-abed-hub setup
-```
 
-Needs [bun](https://bun.sh). `setup` asks which components you want, installs what is
-missing, and leaves anything that already works alone. Its own skill comes along, so an
-agent that hits a missing tool can diagnose it instead of guessing.
-
-An install here is a chain, and every link falls behind on its own schedule. `doctor`
-checks all three kinds and changes nothing.
-
-```bash
-abed-hub doctor
+abed-hub setup     # pick components, install what is missing
+abed-hub doctor    # what is behind, missing, or broken. Changes nothing
+abed-hub update    # upgrade whatever doctor found
 ```
 
 ```
@@ -56,9 +48,8 @@ abed-hub doctor
 └  2 behind, 1 missing, 1 needing repair. abed-hub setup fixes what it can.
 ```
 
-`abed-hub update` then upgrades the packages against npm, pulls the skills that moved, and
-strips `disable-model-invocation` back off `unslop`, which upstream reinstates on every
-skill update. Credentials it hands back to you, since those ask questions.
+Packages check against npm, skills against this repo, tools against whatever they report.
+`update` fixes every line above except the credentials, which need you at the keyboard.
 
 Full command list: [`packages/abed-hub`](packages/abed-hub).
 
@@ -91,9 +82,8 @@ Uploading is `gh`'s job since 2.99.0, so one command publishes the shot:
 gh pr comment 12 --attach "./out.png#Login error state"
 ```
 
-The skill is the half of this that matters. It carries what `gh` accepts, which file types
-fail before anything uploads, and the difference between appending to a description and
-replacing it.
+The skill carries what `gh` accepts, which file types fail before anything uploads, and how
+appending to a description differs from replacing it.
 
 ### Setup
 
@@ -110,9 +100,7 @@ replacing it.
    bunx skills add aabuhijleh/abed-hub -s gh-attach -g
    ```
 
-Nothing else to configure. There are no credentials of its own.
-
-Full command list: [`packages/gh-attach`](packages/gh-attach).
+No credentials of its own. Full command list: [`packages/gh-attach`](packages/gh-attach).
 
 ## 📝 writing-great-prs
 
@@ -176,10 +164,9 @@ gh stack init refactor/native-gh-attach feat/gh-stack-skill
 gh stack submit --auto --open
 ```
 
-`--help` covers the flags, so the skill carries what it leaves out: which commands open a
-full-screen TUI and hang an agent that has no keyboard behind it, that `submit --auto`
-opens drafts, what each of the ten exit codes means. It also argues against stacking, which
-is the right call most of the time.
+`--help` covers the flags. The skill carries what it leaves out: which commands open a
+full-screen TUI and hang an agent, that `submit --auto` opens drafts, and what each of the
+ten exit codes means. It also argues against stacking, which is usually the right call.
 
 ### Setup
 
@@ -274,9 +261,9 @@ jira config
 slack config
 ```
 
-Let the setup commands write these. A token typed in by hand, or passed on a command line,
-lands in your shell history. `abed-hub setup` never writes a credential, so reinstalling
-keeps them and deleting the directory is a clean reset.
+Let the setup commands write these, since a token passed on a command line lands in your
+shell history. `abed-hub setup` never touches them, so reinstalling keeps your credentials
+and deleting the directory is a clean reset.
 
 ## 🧹 Uninstall
 
@@ -289,9 +276,8 @@ gh extension remove github/gh-stack
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
 found" and removes nothing.
 
-Chromium and your tokens stay. Chromium is shared with every other playwright install on
-the machine, and the tokens in `~/.config/abed-hub/` save you a browser trip on the next
-install. Delete either by hand if you want them gone.
+Chromium and your tokens stay. Chromium is shared with every other playwright install on the
+machine, and the tokens save you a browser trip next time. Delete either by hand.
 
 Releasing, the checks, and the rest of the maintainer side live in
 [CONTRIBUTING.md](CONTRIBUTING.md).
