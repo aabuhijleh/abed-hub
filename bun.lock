@@ -11,6 +11,20 @@
         "typescript": "^7.0.2",
       },
     },
+    "packages/abed-hub": {
+      "name": "@aabuhijleh/abed-hub",
+      "version": "0.1.0",
+      "bin": {
+        "abed-hub": "./dist/abed-hub.js",
+      },
+      "devDependencies": {
+        "@abed-hub/config": "workspace:*",
+        "@clack/prompts": "^1.7.0",
+        "@types/bun": "latest",
+        "citty": "^0.2.2",
+        "zod": "^4.4.3",
+      },
+    },
     "packages/config": {
       "name": "@abed-hub/config",
       "version": "0.1.0",
@@ -35,7 +49,7 @@
     },
     "packages/gh-attach": {
       "name": "@aabuhijleh/gh-attach",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "bin": {
         "gh-attach": "./dist/gh-attach.js",
       },
@@ -46,6 +60,8 @@
     },
   },
   "packages": {
+    "@aabuhijleh/abed-hub": ["@aabuhijleh/abed-hub@workspace:packages/abed-hub"],
+
     "@aabuhijleh/courier": ["@aabuhijleh/courier@workspace:packages/courier"],
 
     "@aabuhijleh/gh-attach": ["@aabuhijleh/gh-attach@workspace:packages/gh-attach"],
@@ -158,8 +174,16 @@
 
     "zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
 
+    "@aabuhijleh/abed-hub/@types/bun": ["@types/bun@1.4.1", "", { "dependencies": { "bun-types": "1.4.1" } }, "sha512-0AVGiTXGajf1rgKom3N+c5L7CBxuoyyv1i44M0nX4UDK0G/fnRAMiri93nHuVPIb429KKtAgj7HatVmmOjeQLA=="],
+
     "@aabuhijleh/gh-attach/@types/bun": ["@types/bun@1.4.1", "", { "dependencies": { "bun-types": "1.4.1" } }, "sha512-0AVGiTXGajf1rgKom3N+c5L7CBxuoyyv1i44M0nX4UDK0G/fnRAMiri93nHuVPIb429KKtAgj7HatVmmOjeQLA=="],
 
+    "@abed-hub/config/@types/bun": ["@types/bun@1.4.1", "", { "dependencies": { "bun-types": "1.4.1" } }, "sha512-0AVGiTXGajf1rgKom3N+c5L7CBxuoyyv1i44M0nX4UDK0G/fnRAMiri93nHuVPIb429KKtAgj7HatVmmOjeQLA=="],
+
+    "@aabuhijleh/abed-hub/@types/bun/bun-types": ["bun-types@1.4.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-loKuVrAFZKfEv+JvWkHRS9GW5IqLuLRjVXN9p+vZvBN86O5hf/pBZQ5hSoyipsrMmWObZBDvWnlmKvjKTM0PdA=="],
+
     "@aabuhijleh/gh-attach/@types/bun/bun-types": ["bun-types@1.4.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-loKuVrAFZKfEv+JvWkHRS9GW5IqLuLRjVXN9p+vZvBN86O5hf/pBZQ5hSoyipsrMmWObZBDvWnlmKvjKTM0PdA=="],
+
+    "@abed-hub/config/@types/bun/bun-types": ["bun-types@1.4.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-loKuVrAFZKfEv+JvWkHRS9GW5IqLuLRjVXN9p+vZvBN86O5hf/pBZQ5hSoyipsrMmWObZBDvWnlmKvjKTM0PdA=="],
   }
 }

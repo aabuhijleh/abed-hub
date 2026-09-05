@@ -6,14 +6,61 @@ Each one closes a gap where agents keep failing: getting a screenshot into a PR,
 file out of a Slack thread. The tool does the work. The skill teaches an agent when and how
 to reach for it.
 
-## 🚀 Install everything
+## 🚀 abed-hub
+
+One CLI installs the rest of this and keeps it current.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash
+bun add -g @aabuhijleh/abed-hub
+abed-hub setup
 ```
 
-Needs [bun](https://bun.sh) and the [GitHub CLI](https://cli.github.com) at 2.99 or later.
-Re-run it any time. It skips whatever is already there.
+Needs [bun](https://bun.sh). `setup` asks which components you want, installs what is
+missing, and leaves anything that already works alone. Its own skill comes along, so an
+agent that hits a missing tool can diagnose it instead of guessing.
+
+An install here is a chain, and every link falls behind on its own schedule. `doctor`
+checks all three kinds and changes nothing.
+
+```bash
+abed-hub doctor
+```
+
+```
+┌  abed-hub doctor
+│
+◇  Packages
+│
+│  ✔ @aabuhijleh/abed-hub   0.1.0
+│  ▲ @aabuhijleh/gh-attach  0.1.0 → 0.2.0
+│  ✔ @aabuhijleh/courier    0.1.0
+│  ✔ @playwright/cli        0.1.19
+│
+◇  Skills
+│
+│  ✔ abed-hub           b41f0c2
+│  ▲ gh-attach          behind aabuhijleh/abed-hub
+│  ✔ writing-great-prs  07e5f7d
+│  ✔ unslop             3515323
+│  ! unslop invocation  disable-model-invocation is back
+│  ✔ courier            42413a9
+│
+◇  Tools
+│
+│  ✔ bun               1.4.2
+│  ✔ gh                2.100.0
+│  ✔ gh auth           signed in as aabuhijleh
+│  ✖ chromium          what gh-attach renders pages with
+│  ✔ jira credentials  configured
+│
+└  2 behind, 1 missing, 1 needing repair. abed-hub setup fixes what it can.
+```
+
+`abed-hub update` then upgrades the packages against npm, pulls the skills that moved, and
+strips `disable-model-invocation` back off `unslop`, which upstream reinstates on every
+skill update. Credentials it hands back to you, since those ask questions.
+
+Full command list: [`packages/abed-hub`](packages/abed-hub).
 
 ## 🧭 Or set them up by hand
 
@@ -216,6 +263,7 @@ each file is 0600.
 
 ```
 ~/.config/abed-hub/
+├── abed-hub/config.json  which components setup installed
 └── courier/config.json   jira and slack sections: base URL, email, API token, bot token
 ```
 
@@ -227,14 +275,14 @@ slack config
 ```
 
 Let the setup commands write these. A token typed in by hand, or passed on a command line,
-lands in your shell history. `setup.sh` never touches this directory, so reinstalling keeps
-your credentials and deleting the directory is a clean reset.
+lands in your shell history. `abed-hub setup` never writes a credential, so reinstalling
+keeps them and deleting the directory is a clean reset.
 
 ## 🧹 Uninstall
 
 ```bash
-bun remove -g @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove gh-attach gh-stack writing-great-prs courier playwright-cli unslop -g -y
+bun remove -g @aabuhijleh/abed-hub @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
+bunx skills remove abed-hub gh-attach gh-stack writing-great-prs courier playwright-cli unslop -g -y
 gh extension remove github/gh-stack
 ```
 
