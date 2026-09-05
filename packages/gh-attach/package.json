@@ -1,13 +1,13 @@
 {
   "name": "@aabuhijleh/gh-attach",
-  "version": "0.1.0",
-  "description": "Upload local files to GitHub and print a markdown reference for each, ready to embed in a pull request or issue. Also screenshots a page to a PNG sized for GitHub.",
+  "version": "0.2.0",
+  "description": "Screenshot a page to a PNG sized for GitHub, ready to attach to a pull request or issue with gh --attach.",
   "keywords": [
     "github",
     "cli",
     "screenshot",
     "pull-request",
-    "attachments",
+    "playwright",
     "bun"
   ],
   "homepage": "https://github.com/aabuhijleh/abed-hub/tree/main/packages/gh-attach",
@@ -33,7 +33,6 @@
     "test": "bun test"
   },
   "devDependencies": {
-    "@abed-hub/config": "workspace:*",
     "@types/bun": "latest",
     "citty": "^0.2.2"
   },

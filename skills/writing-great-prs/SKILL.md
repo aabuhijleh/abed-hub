@@ -47,18 +47,18 @@ dev-server URL instead if you only need a static shot.
 Look at every image before you upload it. A screenshot is the one artifact where a silent
 failure still produces a file.
 
-## Upload and write
+## Attach and write
 
-Call the Skill tool with `gh-attach` to upload and embed. One command carries both the
-credential and the upload:
+Call the Skill tool with `gh-attach` to attach the image. `gh` uploads and embeds in one
+command, against the token it already holds:
 
 ```bash
-gh-attach upload <abs-path.png> --repo owner/repo
+gh pr comment <pr> --repo owner/repo --body-file - --attach <abs-path.png>
 ```
 
-The `![name](url)` lines on stdout are what you embed. A reply of `uploadToken not found`
-means the cookie went **stale**, so re-run the same command. That skill owns everything
-else about credentials, so spend no turns on them here.
+Write the body with the image's **local path** where you want it to land, and `gh` rewrites
+that reference to the uploaded asset. That skill owns the rest: what `gh` accepts, and how
+a description differs from a comment.
 
 Everything visual goes under one `## Demo` heading, or the template's demo-shaped or
 screenshot-shaped H2 when the repo has one.
@@ -83,23 +83,22 @@ If it is not installed, stop and give the user the install line from Requirement
 
 ## Requirements
 
-This skill does not work on its own. It needs [Bun](https://bun.sh), two commands, and two
-other skills. All of them are required:
+This skill does not work on its own. It needs [Bun](https://bun.sh), the
+[GitHub CLI](https://cli.github.com) at 2.99 or later, and two other skills. All of them
+are required:
 
 ```bash
 bun add -g @aabuhijleh/gh-attach
-gh extension install drogers0/gh-image
 bun add -g @playwright/cli
 playwright-cli install-browser chromium
 bunx skills add cursor/plugins -s unslop -g
 bunx skills add microsoft/playwright-cli -s playwright-cli -g
 ```
 
-`gh-attach` takes the screenshot and uploads it, and `gh-image` is the extension it uploads
-through. `@playwright/cli` is the browser behind `gh-attach shot`, and
-`playwright-cli install-browser chromium` is only needed when no chromium build is on the
-machine yet. The `playwright-cli` skill drives the running app for UI shots. The `unslop`
-skill edits every string a reviewer reads.
+`gh-attach` takes the screenshot and `gh --attach` publishes it. `@playwright/cli` is the
+browser behind `gh-attach shot`, and `playwright-cli install-browser chromium` is only
+needed when no chromium build is on the machine yet. The `playwright-cli` skill drives the
+running app for UI shots. The `unslop` skill edits every string a reviewer reads.
 
 If one of these is missing, stop and give the user the line that installs it. Do not
 substitute another screenshot tool, upload by hand, or skip `unslop`.
