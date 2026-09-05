@@ -18,39 +18,6 @@ abed-hub doctor    # what is behind, missing, or broken. Changes nothing
 abed-hub update    # upgrade whatever doctor found
 ```
 
-```
-┌  abed-hub doctor
-│
-◇  Packages
-│
-│  ✔ @aabuhijleh/abed-hub   0.1.0
-│  ▲ @aabuhijleh/gh-attach  0.1.0 → 0.2.0
-│  ✔ @aabuhijleh/courier    0.1.0
-│  ✔ @playwright/cli        0.1.19
-│
-◇  Skills
-│
-│  ✔ abed-hub           b41f0c2
-│  ▲ gh-attach          behind aabuhijleh/abed-hub
-│  ✔ writing-great-prs  07e5f7d
-│  ✔ unslop             3515323
-│  ! unslop invocation  disable-model-invocation is back
-│  ✔ courier            42413a9
-│
-◇  Tools
-│
-│  ✔ bun               1.4.2
-│  ✔ gh                2.100.0
-│  ✔ gh auth           signed in as aabuhijleh
-│  ✖ chromium          what gh-attach renders pages with
-│  ✔ jira credentials  configured
-│
-└  2 behind, 1 missing, 1 needing repair. abed-hub setup fixes what it can.
-```
-
-Packages check against npm, skills against this repo, tools against whatever they report.
-`update` fixes every line above except the credentials, which need you at the keyboard.
-
 Full command list: [`packages/abed-hub`](packages/abed-hub).
 
 ## 🧭 Or set them up by hand
