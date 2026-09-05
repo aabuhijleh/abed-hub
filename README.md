@@ -6,7 +6,7 @@ Each one closes a gap where agents keep failing: getting a screenshot into a PR,
 file out of a Slack thread. The tool does the work. The skill teaches an agent when and how
 to reach for it.
 
-## 🚀 abed-hub
+## 🚀 [abed-hub](https://www.npmjs.com/package/@aabuhijleh/abed-hub)
 
 One CLI installs the rest of this and keeps it current.
 
@@ -73,7 +73,7 @@ Full command list: [`packages/abed-hub`](packages/abed-hub).
 
 Set up one. Come back for the others when you need them.
 
-## 📎 gh-attach
+## 📎 [gh-attach](https://www.npmjs.com/package/@aabuhijleh/gh-attach)
 
 Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it.
 
@@ -198,7 +198,7 @@ is the right call most of the time.
 Stacked pull requests are in public preview, and a repo can have them switched off. When
 one does, every `gh stack` command exits 9.
 
-## 📬 courier
+## 📬 [courier](https://www.npmjs.com/package/@aabuhijleh/courier)
 
 `jira` and `slack` reach the parts of Jira and Slack the Atlassian and Slack MCPs cannot:
 attachment bytes in both directions, deleting a Slack post, writing a Jira description with
@@ -277,6 +277,39 @@ slack config
 Let the setup commands write these. A token typed in by hand, or passed on a command line,
 lands in your shell history. `abed-hub setup` never writes a credential, so reinstalling
 keeps them and deleting the directory is a clean reset.
+
+## 🚢 Releasing
+
+Bumping a version is the whole release. Merge the bump to main and
+[Release](.github/workflows/release.yml) diffs every package against npm and stages the
+ones that moved.
+
+```bash
+bun run bump          # pick packages, pick patch, minor, or major
+bun run release:plan  # what the next push to main would stage
+```
+
+Nothing goes public on its own. CI authenticates with an OIDC token from GitHub, so no
+`NPM_TOKEN` lives in this repo, and it runs `npm stage publish`, which needs no 2FA. The
+tarball then sits in npm's staging queue until a maintainer approves it.
+
+```bash
+npm stage list @aabuhijleh/gh-attach
+npm stage approve <stage-id>
+```
+
+Both of those want 2FA, and the package's Staged tab on npmjs.com does the same job in a
+browser. Approving publishes the version with a provenance attestation, which trusted
+publishing attaches without being asked.
+
+The staging run also tags the commit `gh-attach@0.2.0` and opens a GitHub Release for it,
+whose notes list the commits under that package's directory since its own last tag. Tags
+carry the package name because the three versions move independently. The release goes up
+before npm does, so it says in its own body that approval may still be pending.
+
+Staged publishing cannot create a package, so the first version of a new one goes out by
+hand with `npm publish`. `bun run release:plan` says so when it finds a name npm has never
+seen.
 
 ## 🧹 Uninstall
 

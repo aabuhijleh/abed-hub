@@ -6,6 +6,7 @@
       "name": "abed-hub",
       "devDependencies": {
         "@biomejs/biome": "2.5.10",
+        "@clack/prompts": "^1.7.0",
         "@types/bun": "latest",
         "lefthook": "^2.1.10",
         "typescript": "^7.0.2",

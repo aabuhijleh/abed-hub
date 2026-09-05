@@ -1,0 +1,110 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One release at a time. Two runs staging the same version would leave a
+# duplicate in the approval queue for someone to sort out by hand.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    uses: ./.github/workflows/code-quality.yml
+
+  plan:
+    needs: check
+    runs-on: ubuntu-latest
+    outputs:
+      any: ${{ steps.plan.outputs.any }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+
+      # No bun install. The plan reads package.json files and the registry,
+      # and nothing else.
+      - id: plan
+        run: bun run release:plan
+
+  stage:
+    needs: plan
+    if: needs.plan.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    permissions:
+      # Cuts the release tag and opens the GitHub Release.
+      contents: write
+      # The OIDC token npm trades for a short-lived publish token. This is the
+      # whole reason there is no NPM_TOKEN secret in this repo.
+      id-token: write
+    steps:
+      # Full history and tags: the notes cover the range since this package's
+      # own last release, which a shallow clone cannot see.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun ci
+      - run: bun run --filter '${{ matrix.package.name }}' build
+
+      # bun publish cannot do trusted publishing, so npm takes it from here.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # npm stage arrived in 11.15.0, later than the runner image ships.
+      - run: npm install --global npm@latest
+
+      # Staging needs no 2FA and no token, which is what lets CI do it.
+      # Trusted publishing attaches a provenance attestation on its own, so
+      # there is no --provenance flag to pass.
+      - run: npm stage publish
+        working-directory: ${{ matrix.package.dir }}
+
+      # gh cuts the tag itself, at the SHA that built the tarball, so there is
+      # no git identity to configure and no tag to push.
+      #
+      # Matrix values go through env rather than into the run: line. They come
+      # from package.json, and a name interpolated into a shell command is the
+      # shape an injection takes.
+      - name: Tag it and write the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PKG: ${{ matrix.package.name }}
+          DIR: ${{ matrix.package.dir }}
+          VERSION: ${{ matrix.package.version }}
+          SHA: ${{ github.sha }}
+        run: bun run scripts/release-notes.ts "$PKG" "$DIR" "$VERSION" "$SHA"
+
+      - name: Say what to approve
+        env:
+          PKG: ${{ matrix.package.name }}
+          VERSION: ${{ matrix.package.version }}
+        run: |
+          {
+            echo "### $PKG@$VERSION is staged"
+            echo
+            echo "The GitHub Release and its tag are up. Nothing is on npm yet."
+            echo "Approve it with 2FA:"
+            echo
+            echo '```bash'
+            echo "npm stage list $PKG"
+            echo "npm stage approve <stage-id>"
+            echo '```'
+            echo
+            echo "Or on the package's Staged tab at"
+            echo "<https://www.npmjs.com/package/$PKG>."
+          } >> "$GITHUB_STEP_SUMMARY"

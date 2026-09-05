@@ -7,19 +7,24 @@
   ],
   "scripts": {
     "build": "bun run --filter '*' build",
+    "bump": "bun run scripts/bump.ts",
+    "release:plan": "bun run scripts/release-plan.ts",
     "check": "biome check",
     "check:fix": "biome check --write",
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test",
+    "verify": "bun run --parallel check typecheck test",
+    "verify:fix": "bun run --parallel check:fix typecheck test",
     "prepare": "lefthook install"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",
+    "@clack/prompts": "^1.7.0",
     "@types/bun": "latest",
     "lefthook": "^2.1.10",
     "typescript": "^7.0.2"
   },
-  "packageManager": "bun@1.4.0",
+  "packageManager": "bun@1.4.2",
   "engines": {
     "node": ">=24"
   }
