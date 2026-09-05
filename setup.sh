@@ -9,7 +9,7 @@
 #
 # Pass component names to install a subset:
 #
-#   curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash -s -- gh-attach courier
+#   curl -fsSL "https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh?$(date +%s)" | bash -s -- gh-attach gh-stack
 #
 # Everything installs globally into your bun and skills directories. Nothing
 # needs root. Credentials are not touched; the script prints the commands that
@@ -40,6 +40,16 @@ warn() { printf '  %s! %s%s\n' "$yellow" "$1" "$reset"; }
 die() { printf '\n%serror:%s %s\n' "$red" "$reset" "$1" >&2; exit 1; }
 
 has() { command -v "$1" >/dev/null 2>&1; }
+
+# Queue a command for the user to run at the end. More than one component can
+# ask for the same one, "gh auth login" above all, so keep only the first.
+note_step() {
+  local queued
+  for queued in ${next_steps+"${next_steps[@]}"}; do
+    [ "$queued" = "$1" ] && return 0
+  done
+  next_steps+=("$1")
+}
 
 # bun's global bin directory may not be on PATH in this shell, so look there too.
 have_bin() {
@@ -112,19 +122,46 @@ setup_gh_attach() {
   if has gh; then
     if gh_new_enough; then
       gh auth status >/dev/null 2>&1 </dev/null \
-        || next_steps+=("gh auth login    # sign in to the GitHub CLI")
+        || note_step "gh auth login    # sign in to the GitHub CLI"
     else
       warn "the GitHub CLI is older than $GH_MIN, which is where --attach landed"
-      next_steps+=("# upgrade the GitHub CLI to $GH_MIN or later, then:")
-      next_steps+=("gh auth login")
+      note_step "# upgrade the GitHub CLI to $GH_MIN or later, then:"
+      note_step "gh auth login"
     fi
   else
     warn "the GitHub CLI is missing, so attaching will not work"
-    next_steps+=("# install the GitHub CLI $GH_MIN or later (https://cli.github.com), then:")
-    next_steps+=("gh auth login")
+    note_step "# install the GitHub CLI $GH_MIN or later (https://cli.github.com), then:"
+    note_step "gh auth login"
   fi
 
   add_skill "$REPO" gh-attach
+}
+
+setup_gh_stack() {
+  step "gh-stack"
+
+  if has gh; then
+    if gh extension list </dev/null 2>/dev/null | grep -q 'github/gh-stack'; then
+      if [ "$force" = 1 ]; then
+        gh extension upgrade github/gh-stack >/dev/null 2>&1 </dev/null || true
+        did "gh extension gh-stack (upgraded)"
+      else
+        skip "gh extension gh-stack"
+      fi
+    else
+      quietly gh extension install github/gh-stack
+      did "gh extension gh-stack"
+    fi
+    gh auth status >/dev/null 2>&1 </dev/null \
+      || note_step "gh auth login    # sign in to the GitHub CLI"
+  else
+    warn "the GitHub CLI is missing, so the gh stack extension was skipped"
+    note_step "# install the GitHub CLI (https://cli.github.com), then:"
+    note_step "gh auth login"
+    note_step "gh extension install github/gh-stack"
+  fi
+
+  add_skill "$REPO" gh-stack
 }
 
 setup_prs() {
@@ -162,8 +199,8 @@ setup_courier() {
 
   local config="$CONFIG_HOME/courier/config.json"
   configured() { [ -f "$config" ] && grep -q "\"$1\"" "$config"; }
-  configured jira || next_steps+=("jira setup       # an Atlassian API token")
-  configured slack || next_steps+=("slack setup      # a Slack app and its bot token")
+  configured jira || note_step "jira setup       # an Atlassian API token"
+  configured slack || note_step "slack setup      # a Slack app and its bot token"
 }
 
 main() {
@@ -171,30 +208,32 @@ main() {
   force=0
   skipped=0
   next_steps=()
-  local want_gh_attach=0 want_prs=0 want_courier=0 named=0
+  local want_gh_attach=0 want_gh_stack=0 want_prs=0 want_courier=0 named=0
 
   for arg in "$@"; do
     case "$arg" in
       -f|--force) force=1 ;;
-      all) want_gh_attach=1; want_prs=1; want_courier=1; named=1 ;;
+      all) want_gh_attach=1; want_gh_stack=1; want_prs=1; want_courier=1; named=1 ;;
       gh-attach) want_gh_attach=1; named=1 ;;
+      gh-stack) want_gh_stack=1; named=1 ;;
       writing-great-prs|prs) want_prs=1; want_gh_attach=1; named=1 ;;
       courier) want_courier=1; named=1 ;;
       -h|--help)
-        printf 'usage: setup.sh [--force] [all | gh-attach | writing-great-prs | courier]...\n'
+        printf 'usage: setup.sh [--force] [all | gh-attach | gh-stack | writing-great-prs | courier]...\n'
         return 0 ;;
-      *) die "unknown argument: $arg (try: --force, all, gh-attach, writing-great-prs, courier)" ;;
+      *) die "unknown argument: $arg (try: --force, all, gh-attach, gh-stack, writing-great-prs, courier)" ;;
     esac
   done
 
   if [ "$named" = 0 ]; then
-    want_gh_attach=1; want_prs=1; want_courier=1
+    want_gh_attach=1; want_gh_stack=1; want_prs=1; want_courier=1
   fi
 
   has bun || die "bun is required. Install it from https://bun.sh, then run this again."
   bun_bin=$(bun pm bin -g 2>/dev/null </dev/null || true)
 
   if [ "$want_gh_attach" = 1 ]; then setup_gh_attach; fi
+  if [ "$want_gh_stack" = 1 ]; then setup_gh_stack; fi
   if [ "$want_prs" = 1 ]; then setup_prs; fi
   if [ "$want_courier" = 1 ]; then setup_courier; fi
 
