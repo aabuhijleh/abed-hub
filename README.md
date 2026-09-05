@@ -21,6 +21,7 @@ Re-run it any time. It skips whatever is already there.
 | --- | --- | --- |
 | [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in |
 | [writing-great-prs](#-writing-great-prs) | Write a PR description with a screenshot in it. | gh-attach, a browser, the skills below |
+| [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 
 Set up one. Come back for the others when you need them.
@@ -112,6 +113,44 @@ A real one: [#1](https://github.com/aabuhijleh/abed-hub/pull/1).
    bunx skills add cursor/plugins -s unslop -g
    ```
 
+## 🥞 gh-stack
+
+Teaches an agent to drive [`gh stack`](https://gh.io/stacks), GitHub's extension for chains
+of pull requests where each one builds on the one below.
+
+Ask for it in plain words.
+
+```
+open this as a PR on top of my other one
+```
+
+```bash
+gh stack init refactor/native-gh-attach feat/gh-stack-skill
+gh stack submit --auto --open
+```
+
+`--help` covers the flags, so the skill carries what it leaves out: which commands open a
+full-screen TUI and hang an agent that has no keyboard behind it, that `submit --auto`
+opens drafts, what each of the ten exit codes means. It also argues against stacking, which
+is the right call most of the time.
+
+### Setup
+
+1. **Install the extension.** Needs the [GitHub CLI](https://cli.github.com), signed in.
+
+   ```bash
+   gh extension install github/gh-stack
+   ```
+
+2. **Add the skill.**
+
+   ```bash
+   bunx skills add aabuhijleh/abed-hub -s gh-stack -g
+   ```
+
+Stacked pull requests are in public preview, and a repo can have them switched off. When
+one does, every `gh stack` command exits 9.
+
 ## 📬 courier
 
 `jira` and `slack` reach the parts of Jira and Slack the Atlassian and Slack MCPs cannot:
@@ -195,7 +234,8 @@ your credentials and deleting the directory is a clean reset.
 
 ```bash
 bun remove -g @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove gh-attach writing-great-prs courier playwright-cli unslop -g -y
+bunx skills remove gh-attach gh-stack writing-great-prs courier playwright-cli unslop -g -y
+gh extension remove github/gh-stack
 ```
 
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
