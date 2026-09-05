@@ -278,42 +278,6 @@ Let the setup commands write these. A token typed in by hand, or passed on a com
 lands in your shell history. `abed-hub setup` never writes a credential, so reinstalling
 keeps them and deleting the directory is a clean reset.
 
-## 🚢 Releasing
-
-Bumping a version is the whole release. Merge the bump to main and
-[Release](.github/workflows/release.yml) diffs every package against npm and stages the
-ones that moved.
-
-```bash
-bun run bump          # pick packages, pick patch, minor, or major
-bun run release:plan  # what the next push to main would stage
-```
-
-Nothing goes public on its own. CI authenticates with an OIDC token from GitHub, so no
-`NPM_TOKEN` lives in this repo, and it runs `npm stage publish`, which needs no 2FA. The
-tarball then sits in npm's staging queue until you decide on it.
-
-```bash
-bun run approve
-```
-
-That lists everything waiting, shows each one's move (`0.1.0 → 0.2.0`), tag, shasum, and who
-staged it, then asks package by package. Skip is the default. Reject asks twice, since
-getting a discarded tarball back means another CI run. Approve hands the terminal to
-`npm stage approve`, which wants your second factor and publishes with a provenance
-attestation that trusted publishing attaches without being asked.
-
-An entry staged by anything other than CI is called out, because this repo only releases
-from GitHub Actions. The package's Staged tab on npmjs.com does the same job in a browser.
-
-The staging run also tags the commit `gh-attach@0.2.0` and opens a GitHub Release for it,
-whose notes list the commits under that package's directory since its own last tag. Tags
-carry the package name because the three versions move independently.
-
-Staged publishing cannot create a package, so the first version of a new one goes out by
-hand with `npm publish`. `bun run release:plan` says so when it finds a name npm has never
-seen.
-
 ## 🧹 Uninstall
 
 ```bash
@@ -328,3 +292,6 @@ found" and removes nothing.
 Chromium and your tokens stay. Chromium is shared with every other playwright install on
 the machine, and the tokens in `~/.config/abed-hub/` save you a browser trip on the next
 install. Delete either by hand if you want them gone.
+
+Releasing, the checks, and the rest of the maintainer side live in
+[CONTRIBUTING.md](CONTRIBUTING.md).
