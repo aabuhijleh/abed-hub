@@ -42,12 +42,18 @@ jobs:
       matrix:
         package: ${{ fromJSON(needs.plan.outputs.matrix) }}
     permissions:
-      contents: read
+      # Cuts the release tag and opens the GitHub Release.
+      contents: write
       # The OIDC token npm trades for a short-lived publish token. This is the
       # whole reason there is no NPM_TOKEN secret in this repo.
       id-token: write
     steps:
+      # Full history and tags: the notes cover the range since this package's
+      # own last release, which a shallow clone cannot see.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
       - uses: oven-sh/setup-bun@v2
 
       - run: bun ci
@@ -68,18 +74,37 @@ jobs:
       - run: npm stage publish
         working-directory: ${{ matrix.package.dir }}
 
+      # gh cuts the tag itself, at the SHA that built the tarball, so there is
+      # no git identity to configure and no tag to push.
+      #
+      # Matrix values go through env rather than into the run: line. They come
+      # from package.json, and a name interpolated into a shell command is the
+      # shape an injection takes.
+      - name: Tag it and write the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PKG: ${{ matrix.package.name }}
+          DIR: ${{ matrix.package.dir }}
+          VERSION: ${{ matrix.package.version }}
+          SHA: ${{ github.sha }}
+        run: bun run scripts/release-notes.ts "$PKG" "$DIR" "$VERSION" "$SHA"
+
       - name: Say what to approve
+        env:
+          PKG: ${{ matrix.package.name }}
+          VERSION: ${{ matrix.package.version }}
         run: |
           {
-            echo "### ${{ matrix.package.name }}@${{ matrix.package.version }} is staged"
+            echo "### $PKG@$VERSION is staged"
             echo
-            echo "Nothing is public yet. Approve it with 2FA:"
+            echo "The GitHub Release and its tag are up. Nothing is on npm yet."
+            echo "Approve it with 2FA:"
             echo
             echo '```bash'
-            echo "npm stage list ${{ matrix.package.name }}"
+            echo "npm stage list $PKG"
             echo "npm stage approve <stage-id>"
             echo '```'
             echo
             echo "Or on the package's Staged tab at"
-            echo "<https://www.npmjs.com/package/${{ matrix.package.name }}>."
+            echo "<https://www.npmjs.com/package/$PKG>."
           } >> "$GITHUB_STEP_SUMMARY"

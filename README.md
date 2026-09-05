@@ -302,6 +302,11 @@ Both of those want 2FA, and the package's Staged tab on npmjs.com does the same 
 browser. Approving publishes the version with a provenance attestation, which trusted
 publishing attaches without being asked.
 
+The staging run also tags the commit `gh-attach@0.2.0` and opens a GitHub Release for it,
+whose notes list the commits under that package's directory since its own last tag. Tags
+carry the package name because the three versions move independently. The release goes up
+before npm does, so it says in its own body that approval may still be pending.
+
 Staged publishing cannot create a package, so the first version of a new one goes out by
 hand with `npm publish`. `bun run release:plan` says so when it finds a name npm has never
 seen.

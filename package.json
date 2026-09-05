@@ -13,6 +13,8 @@
     "check:fix": "biome check --write",
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test",
+    "verify": "bun run --parallel check typecheck test",
+    "verify:fix": "bun run --parallel check:fix typecheck test",
     "prepare": "lefthook install"
   },
   "devDependencies": {
