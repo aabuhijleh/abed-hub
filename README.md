@@ -12,14 +12,14 @@ to reach for it.
 curl -fsSL https://raw.githubusercontent.com/aabuhijleh/abed-hub/main/setup.sh | bash
 ```
 
-Needs [bun](https://bun.sh) and the [GitHub CLI](https://cli.github.com). Re-run it any
-time. It skips whatever is already there.
+Needs [bun](https://bun.sh) and the [GitHub CLI](https://cli.github.com) at 2.99 or later.
+Re-run it any time. It skips whatever is already there.
 
 ## 🧭 Or set them up by hand
 
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
-| [gh-attach](#-gh-attach) | Put an image, video, PDF, or log into a PR or issue. | The GitHub CLI, signed in |
+| [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in |
 | [writing-great-prs](#-writing-great-prs) | Write a PR description with a screenshot in it. | gh-attach, a browser, the skills below |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 
@@ -27,17 +27,7 @@ Set up one. Come back for the others when you need them.
 
 ## 📎 gh-attach
 
-Uploads a local file to GitHub and prints a reference you can paste into a PR or issue.
-GitHub has no public upload API, so it reaches the endpoint the web UI uses. It also
-screenshots a page to a PNG.
-
-```bash
-gh-attach upload ./screenshot.png --repo owner/repo
-```
-
-```
-![screenshot.png](https://github.com/user-attachments/assets/047450da-c514-46b2-ae67-8b3eca8f88da)
-```
+Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it.
 
 ```bash
 gh-attach shot ./page.html ./out.png --width 948
@@ -47,14 +37,23 @@ gh-attach shot ./page.html ./out.png --width 948
 wrote ./out.png (1896x898 px, 2x of 948css)
 ```
 
+Uploading is `gh`'s job since 2.99.0, so one command publishes the shot:
+
+```bash
+gh pr comment 12 --attach "./out.png#Login error state"
+```
+
+The skill is the half of this that matters. It carries what `gh` accepts, which file types
+fail before anything uploads, and the difference between appending to a description and
+replacing it.
+
 ### Setup
 
-1. **Install the tool.** The `gh-image` extension is the uploader underneath, and the
-   [GitHub CLI](https://cli.github.com) must be signed in.
+1. **Install the tool.** The [GitHub CLI](https://cli.github.com) must be 2.99 or later and
+   signed in, since that is where `--attach` landed.
 
    ```bash
    bun add -g @aabuhijleh/gh-attach
-   gh extension install drogers0/gh-image
    ```
 
 2. **Add the skill.**
@@ -63,8 +62,7 @@ wrote ./out.png (1896x898 px, 2x of 948css)
    bunx skills add aabuhijleh/abed-hub -s gh-attach -g
    ```
 
-3. **Check it.** `gh-attach token` prints the state of the GitHub session cookie, and grabs
-   a fresh one from your browser if it is dead. Nothing else to configure.
+Nothing else to configure. There are no credentials of its own.
 
 Full command list: [`packages/gh-attach`](packages/gh-attach).
 
@@ -94,7 +92,8 @@ A real one: [#1](https://github.com/aabuhijleh/abed-hub/pull/1).
 
 ### Setup
 
-1. **Set up [gh-attach](#-gh-attach) first.** It takes the screenshot and uploads it.
+1. **Set up [gh-attach](#-gh-attach) first.** It takes the screenshot, and `gh --attach`
+   publishes it.
 
 2. **Add a browser.** This is what `gh-attach shot` renders pages with. The second line is
    only needed if no chromium build is on the machine yet.
@@ -178,8 +177,7 @@ each file is 0600.
 
 ```
 ~/.config/abed-hub/
-├── courier/config.json   jira and slack sections: base URL, email, API token, bot token
-└── gh-attach/token       the GitHub session cookie gh-image uploads with
+└── courier/config.json   jira and slack sections: base URL, email, API token, bot token
 ```
 
 Read it back with the tokens masked. `jira config --reveal` prints one in full.
@@ -187,7 +185,6 @@ Read it back with the tokens masked. `jira config --reveal` prints one in full.
 ```bash
 jira config
 slack config
-gh-attach token
 ```
 
 Let the setup commands write these. A token typed in by hand, or passed on a command line,
@@ -199,7 +196,6 @@ your credentials and deleting the directory is a clean reset.
 ```bash
 bun remove -g @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
 bunx skills remove gh-attach writing-great-prs courier playwright-cli unslop -g -y
-gh extension remove gh-image
 ```
 
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills

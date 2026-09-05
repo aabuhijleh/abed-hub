@@ -93,34 +93,38 @@ browser_cache() {
   esac
 }
 
+# gh's --attach flag, which the gh-attach skill drives, landed in 2.99.0.
+GH_MIN=2.99.0
+
+# True when gh is at least $GH_MIN. sort -V orders version strings correctly, so
+# the lower of the two sorting first means the installed one clears the bar.
+gh_new_enough() {
+  local found
+  found=$(gh --version </dev/null 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  [ -n "$found" ] || return 1
+  [ "$(printf '%s\n%s\n' "$GH_MIN" "$found" | sort -V | head -1)" = "$GH_MIN" ]
+}
+
 setup_gh_attach() {
   step "gh-attach"
   add_pkg @aabuhijleh/gh-attach gh-attach
 
   if has gh; then
-    if gh extension list </dev/null 2>/dev/null | grep -q 'gh-image'; then
-      if [ "$force" = 1 ]; then
-        gh extension upgrade drogers0/gh-image >/dev/null 2>&1 </dev/null || true
-        did "gh extension gh-image (upgraded)"
-      else
-        skip "gh extension gh-image"
-      fi
+    if gh_new_enough; then
+      gh auth status >/dev/null 2>&1 </dev/null \
+        || next_steps+=("gh auth login    # sign in to the GitHub CLI")
     else
-      quietly gh extension install drogers0/gh-image
-      did "gh extension gh-image"
+      warn "the GitHub CLI is older than $GH_MIN, which is where --attach landed"
+      next_steps+=("# upgrade the GitHub CLI to $GH_MIN or later, then:")
+      next_steps+=("gh auth login")
     fi
-    gh auth status >/dev/null 2>&1 </dev/null \
-      || next_steps+=("gh auth login    # sign in to the GitHub CLI")
   else
-    warn "the GitHub CLI is missing, so gh-image was skipped"
-    next_steps+=("# install the GitHub CLI (https://cli.github.com), then:")
+    warn "the GitHub CLI is missing, so attaching will not work"
+    next_steps+=("# install the GitHub CLI $GH_MIN or later (https://cli.github.com), then:")
     next_steps+=("gh auth login")
-    next_steps+=("gh extension install drogers0/gh-image")
   fi
 
   add_skill "$REPO" gh-attach
-  [ -f "$CONFIG_HOME/gh-attach/token" ] \
-    || next_steps+=("gh-attach token  # grab a GitHub session cookie")
 }
 
 setup_prs() {
