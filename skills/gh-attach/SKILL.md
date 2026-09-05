@@ -65,14 +65,21 @@ here. A body flag alongside it sets the body to exactly what that flag carries:
 gh pr edit <pr> --repo owner/repo --attach "/abs/path/shot.png#Login error"
 ```
 
-To place an image somewhere other than the end, write the body with a **local path** and
-attach the same file. `gh` rewrites the reference in place, and alt text already in the
-body wins:
+To place an image somewhere other than the end, write the body reference as the **same
+absolute path** you pass `--attach`. `gh` compares the two as absolute paths, resolving a
+relative one against your current working directory, so `![alt](./shot.png)` pairs with
+`--attach /tmp/shot.png` only from `/tmp`. Paired, the reference is rewritten where it sits
+and alt text already in the body wins:
 
 ```bash
-printf 'Fixes the crash.\n\n## Demo\n\n![Login error](./shot.png)\n' \
+printf 'Fixes the crash.\n\n## Demo\n\n![Login error](/abs/path/shot.png)\n' \
   | gh pr comment <pr> --repo owner/repo --body-file - --attach /abs/path/shot.png
 ```
+
+Unpaired, the reference stays local and renders broken, and the asset is appended to the
+end instead. The run still exits 0 and prints the URL, so **Verify** below is what catches
+it. Pairing works the same with a body flag, and with `gh pr create --attach`, which places
+the image as it opens the PR.
 
 Issues take the same flags through `gh issue comment` and `gh issue edit`.
 
@@ -102,6 +109,28 @@ gh pr view <pr> --repo owner/repo --json body,comments \
 attachments starts above zero, so compare against what you expect rather than against 1.
 A short count means an embed dropped: re-attach the missing file. On a private repo the
 URL renders only for authorized viewers, so an anonymous 404 or 403 is expected.
+
+**When you wrote a reference to place, also count the local paths left over.** The appended
+copy is a real embed, so the count above passes while the reference beside it still renders
+broken. An asset URL carries no filename, so per file attached this must print `0`, and
+`grep` exiting 1 on zero is the passing case:
+
+```bash
+gh pr view <pr> --repo owner/repo --json body,comments \
+  -q '[.body] + [.comments[].body] | join("\n")' | grep -cE '\]\([^)]*shot\.png\)'
+```
+
+Above zero, the file is published but misplaced. Rewrite the body by hand rather than
+attaching again, which uploads a second copy. Read the asset URL with `grep -o`, which keeps
+the rest of the body out of your context:
+
+```bash
+gh pr view <pr> --repo owner/repo --json body -q .body \
+  | grep -o 'https://github.com/user-attachments/assets/[a-z0-9-]*'
+```
+
+Then set the body with that URL where the local path was, the appended copy removed, and no
+`--attach`.
 
 ## Sizing
 

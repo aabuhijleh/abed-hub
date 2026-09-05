@@ -56,9 +56,10 @@ command, against the token it already holds:
 gh pr comment <pr> --repo owner/repo --body-file - --attach <abs-path.png>
 ```
 
-Write the body with the image's **local path** where you want it to land, and `gh` rewrites
-that reference to the uploaded asset. That skill owns the rest: what `gh` accepts, and how
-a description differs from a comment.
+Write the body reference as the image's **absolute path**, the same one you pass `--attach`,
+where you want it to land; `gh` rewrites it to the uploaded asset. That skill owns the rest:
+what `gh` accepts, how a description differs from a comment, and the check that the
+reference was rewritten rather than left broken and appended.
 
 Everything visual goes under one `## Demo` heading, or the template's demo-shaped or
 screenshot-shaped H2 when the repo has one.
