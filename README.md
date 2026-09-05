@@ -18,8 +18,6 @@ abed-hub doctor    # what is behind, missing, or broken. Changes nothing
 abed-hub update    # upgrade whatever doctor found
 ```
 
-Full command list: [`packages/abed-hub`](packages/abed-hub).
-
 ## 🧭 Or set them up by hand
 
 | Skill | Use it for | Also needs |
@@ -67,7 +65,7 @@ appending to a description differs from replacing it.
    bunx skills add aabuhijleh/abed-hub -s gh-attach -g
    ```
 
-No credentials of its own. Full command list: [`packages/gh-attach`](packages/gh-attach).
+No credentials of its own.
 
 ## 📝 writing-great-prs
 
@@ -206,8 +204,7 @@ jira attach ABC-123 ./evidence/*
    ```
 
 One thing to know: the Slack bot only sees channels it has been invited to, and cannot read
-human DMs. Run `/invite @<bot>` where you need it. Full command list and the rest of the
-bot's limits: [`packages/courier`](packages/courier).
+human DMs. Run `/invite @<bot>` where you need it.
 
 ## 🔐 Configuration
 
