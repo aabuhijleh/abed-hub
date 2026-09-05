@@ -1,0 +1,48 @@
+{
+  "name": "@aabuhijleh/abed-hub",
+  "version": "0.1.0",
+  "description": "Install the abed-hub tools and skills, find out what is missing or behind, and bring it all up to date.",
+  "keywords": [
+    "cli",
+    "setup",
+    "doctor",
+    "agent-skills",
+    "bun"
+  ],
+  "homepage": "https://github.com/aabuhijleh/abed-hub/tree/main/packages/abed-hub",
+  "bugs": "https://github.com/aabuhijleh/abed-hub/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aabuhijleh/abed-hub.git",
+    "directory": "packages/abed-hub"
+  },
+  "license": "MIT",
+  "author": "aabuhijleh",
+  "type": "module",
+  "bin": {
+    "abed-hub": "./dist/abed-hub.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/abed-hub.ts --target=bun --outdir=./dist",
+    "prepublishOnly": "bun run build",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@abed-hub/config": "workspace:*",
+    "@clack/prompts": "^1.7.0",
+    "@types/bun": "latest",
+    "citty": "^0.2.2",
+    "zod": "^4.4.3"
+  },
+  "packageManager": "bun@1.4.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
