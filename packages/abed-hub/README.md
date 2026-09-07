@@ -7,6 +7,7 @@ to date.
 abed-hub setup
 abed-hub doctor
 abed-hub update
+abed-hub config
 ```
 
 Everything installs globally into your bun and skills directories. Nothing needs root.
@@ -67,6 +68,7 @@ undone".
 | `abed-hub setup [components...] [--all] [--force]` | Install what is absent. Leaves anything that works alone unless `--force`. |
 | `abed-hub doctor [components...] [--all] [--json]` | Report and change nothing. Exits 1 when something is missing, behind, or broken. |
 | `abed-hub update [components...] [--all]` | Upgrade what is behind, install what is absent, repair the unslop patch. |
+| `abed-hub config [components...] [--all] [--reveal] [--json]` | Print where each config file is and what is in it. Tokens masked. |
 
 Neither `setup` nor `update` touches credentials. Both print the interactive commands that
 set those up, since a token has to be pasted in by a human.
@@ -80,6 +82,18 @@ which `doctor` will tell you about rather than assume.
 
 The saved component selection lives at `~/.config/abed-hub/abed-hub/config.json`, alongside
 every other tool's state. The directory is 0700 and the file is 0600.
+
+`abed-hub config` prints that file and every other one the installed components read, each
+with its path. A file that is missing, empty, or unparseable says so and names the command
+that writes it, which is usually the answer to why `jira` claims it has no credentials.
+
+```bash
+abed-hub config
+abed-hub config --json
+```
+
+Tokens come back as their last four characters. `--reveal` prints them in full, which is
+worth thinking about before you paste the output anywhere.
 
 ## Develop
 

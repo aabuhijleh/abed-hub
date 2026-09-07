@@ -36,11 +36,23 @@ export interface SkillDep {
   patchInvocation?: boolean;
 }
 
+export interface ConfigDep {
+  /** The directory the tool owns under the abed-hub config root. */
+  tool: string;
+  file: string;
+  /** What it holds, since the key names alone do not always say. */
+  summary: string;
+  /** The commands that write it, printed when it is not there yet. */
+  setup: string[];
+}
+
 export interface ComponentSpec {
   summary: string;
   packages: PackageDep[];
   skills: SkillDep[];
   tools: ToolId[];
+  /** Config files the component reads. Absent when it needs none. */
+  configs?: ConfigDep[];
   /** Components pulled in with this one. */
   needs?: Component[];
 }
@@ -51,6 +63,14 @@ const HUB = "aabuhijleh/abed-hub";
 export const SELF: PackageDep = {
   pkg: "@aabuhijleh/abed-hub",
   bin: "abed-hub",
+};
+
+/** Written by `setup`, read by everything else, so it shows with any selection. */
+export const SELF_CONFIG: ConfigDep = {
+  tool: "abed-hub",
+  file: "config.json",
+  summary: "the components setup last installed",
+  setup: ["abed-hub setup"],
 };
 
 /** The skill that teaches an agent to run `doctor` when a tool goes missing. */
@@ -98,6 +118,14 @@ export const SPECS: Record<Component, ComponentSpec> = {
     packages: [{ pkg: "@aabuhijleh/courier", bin: "jira" }],
     skills: [{ name: "courier", repo: HUB, dir: "skills" }],
     tools: ["jira-credentials", "slack-credentials"],
+    configs: [
+      {
+        tool: "courier",
+        file: "config.json",
+        summary: "an Atlassian token and a Slack bot token, a section each",
+        setup: ["jira setup", "slack setup"],
+      },
+    ],
   },
 };
 

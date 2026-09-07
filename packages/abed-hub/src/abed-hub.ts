@@ -6,13 +6,14 @@ const main = defineCommand({
   meta: {
     name: "abed-hub",
     description:
-      "Install the abed-hub tools and skills, find what is behind, and update it.",
+      "Install the abed-hub tools and skills, find what is behind, update it, and show its config.",
   },
   // Lazy loaded so only the command being run gets imported.
   subCommands: {
     setup: () => import("./commands/setup").then((m) => m.default),
     doctor: () => import("./commands/doctor").then((m) => m.default),
     update: () => import("./commands/update").then((m) => m.default),
+    config: () => import("./commands/config").then((m) => m.default),
   },
 });
 
