@@ -18,9 +18,14 @@ function configHome(): string {
   return xdg ? xdg : path.join(homedir(), ".config");
 }
 
+/** The directory every tool's directory sits in. Does not create it. */
+export function configRoot(): string {
+  return path.join(configHome(), NAMESPACE);
+}
+
 /** The directory a tool owns. Does not create it. */
 export function toolDir(tool: string): string {
-  return path.join(configHome(), NAMESPACE, tool);
+  return path.join(configRoot(), tool);
 }
 
 /** A path inside a tool's directory. Does not create anything. */

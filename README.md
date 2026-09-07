@@ -16,6 +16,7 @@ bun add -g @aabuhijleh/abed-hub
 abed-hub setup     # pick components, install what is missing
 abed-hub doctor    # what is behind, missing, or broken. Changes nothing
 abed-hub update    # upgrade whatever doctor found
+abed-hub config    # where every config file is, and what is in it
 ```
 
 ## 🧭 Or set them up by hand
@@ -218,9 +219,11 @@ each file is 0600.
 └── courier/config.json   jira and slack sections: base URL, email, API token, bot token
 ```
 
-Read it back with the tokens masked. `jira config --reveal` prints one in full.
+Read them back with the tokens masked. `abed-hub config` walks every file at once, and
+each tool prints its own. `--reveal` on any of them prints a token in full.
 
 ```bash
+abed-hub config
 jira config
 slack config
 ```
