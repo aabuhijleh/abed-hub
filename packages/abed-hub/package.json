@@ -1,6 +1,6 @@
 {
   "name": "@aabuhijleh/abed-hub",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Install the abed-hub tools and skills, find out what is missing or behind, and bring it all up to date.",
   "keywords": [
     "cli",
