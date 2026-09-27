@@ -64,13 +64,9 @@ reference was rewritten rather than left broken and appended.
 Everything visual goes under one `## Demo` heading, or the template's demo-shaped or
 screenshot-shaped H2 when the repo has one.
 
-Writing the body in one pass and the images in another leaves placeholder comments like
-`<!--DEMO-->` stranded in a published description. If you do stage it that way, fill every
-placeholder before you hand the PR over, and grep the body for leftovers:
-
-```bash
-gh pr view <pr> --repo owner/repo --json body -q .body | grep -o '<!--[A-Z-]*-->'
-```
+When the PR is already open, the heading is the spot: follow gh-attach's
+[Place an image in an existing description](../gh-attach/SKILL.md#place-an-image-in-an-existing-description),
+which puts the image under it in one edit.
 
 ## Prose
 
