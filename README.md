@@ -48,8 +48,9 @@ Uploading is `gh`'s job since 2.99.0, so one command publishes the shot:
 gh pr comment 12 --attach "./out.png#Login error state"
 ```
 
-The skill carries what `gh` accepts, which file types fail before anything uploads, and how
-appending to a description differs from replacing it.
+The skill carries what `gh` accepts, which file types fail before anything uploads, how
+appending to a description differs from replacing it, and how to put an image under a
+heading in a description that already exists.
 
 ### Setup
 
