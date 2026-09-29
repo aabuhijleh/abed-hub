@@ -69,8 +69,10 @@ gh pr edit <pr> --repo owner/repo --attach "/abs/path/shot.png#Login error"
 That lands the image after the last section. To land it under a heading instead, use
 **Place an image in an existing description** below.
 
-To place an image somewhere other than the end, write the body reference as the **same
-absolute path** you pass `--attach`. `gh` compares the two as absolute paths, resolving a
+To place an image somewhere other than the end, write the body reference as a markdown
+image, `![alt](/abs/path/shot.png)`, with the **same absolute path** you pass `--attach`.
+Only markdown pairs: an `<img src>` holding the path is never rewritten, so size the image
+after it lands, under **Sizing**. `gh` compares the two as absolute paths, resolving a
 relative one against your current working directory, so `![alt](./shot.png)` pairs with
 `--attach /tmp/shot.png` only from `/tmp`. Paired, the reference is rewritten where it sits
 and alt text already in the body wins:
@@ -145,12 +147,13 @@ URL renders only for authorized viewers, so an anonymous 404 or 403 is expected.
 
 **When you wrote a reference to place, also count the local paths left over.** The appended
 copy is a real embed, so the count above passes while the reference beside it still renders
-broken. An asset URL carries no filename, so per file attached this must print `0`, and
+broken. Search for the absolute path itself, which catches it in any syntax, markdown or
+`<img src>`. An asset URL carries no path, so per file attached this must print `0`, and
 `grep` exiting 1 on zero is the passing case:
 
 ```bash
 gh pr view <pr> --repo owner/repo --json body,comments \
-  -q '[.body] + [.comments[].body] | join("\n")' | grep -cE '\]\([^)]*shot\.png\)'
+  -q '[.body] + [.comments[].body] | join("\n")' | grep -cF '/abs/path/shot.png'
 ```
 
 Above zero, the file is published but misplaced. Rewrite the body by hand rather than
@@ -167,8 +170,9 @@ Then set the body with that URL where the local path was, the appended copy remo
 
 ## Sizing
 
-`gh` writes plain markdown, which renders at full width. To control the display size, edit
-that reference into an `<img>` afterwards, replacing the markdown rather than adding to it,
+`gh` writes plain markdown, which renders at full width. To control the display size, wait
+until both checks under **Verify** pass, then edit that reference into an `<img>` holding
+the asset URL, replacing the markdown rather than adding to it,
 since both together render the image twice:
 
 ```html

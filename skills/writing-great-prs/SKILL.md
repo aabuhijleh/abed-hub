@@ -36,7 +36,8 @@ or a URL and renders at 2x, cropped to the content:
 gh-attach shot <page.html> <out.png> [--width 948]
 ```
 
-948px wide lands at GitHub's 900px with no downscaling. Do **not** reach for
+948px wide lands at GitHub's 900px with no downscaling, so the width is set here and the
+body reference needs none. Do **not** reach for
 `playwright-cli` here. It blocks `file:` URLs, and it fails by screenshotting `about:blank`
 and exiting 0, so you get a blank image and no error.
 
@@ -56,10 +57,13 @@ command, against the token it already holds:
 gh pr comment <pr> --repo owner/repo --body-file - --attach <abs-path.png>
 ```
 
-Write the body reference as the image's **absolute path**, the same one you pass `--attach`,
-where you want it to land; `gh` rewrites it to the uploaded asset. That skill owns the rest:
-what `gh` accepts, how a description differs from a comment, and the check that the
-reference was rewritten rather than left broken and appended.
+Write the body reference as a markdown image of the **absolute path**,
+`![alt](<abs-path.png>)`, the same path you pass `--attach`, where you want it to land; `gh`
+rewrites it to the uploaded asset. An `<img src>` is never rewritten: it renders broken and
+the image is appended at the end instead, with `gh` still exiting 0. That skill owns the
+rest: what `gh` accepts, how a description differs from a comment, and the checks that the
+reference was rewritten rather than left broken and appended. The PR is done only when
+both of its Verify checks pass.
 
 Everything visual goes under one `## Demo` heading, or the template's demo-shaped or
 screenshot-shaped H2 when the repo has one.
