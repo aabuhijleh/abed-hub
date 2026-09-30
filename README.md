@@ -93,6 +93,10 @@ wrote down how. This adds the three commands that do it.
 
 A real one: [#1](https://github.com/aabuhijleh/abed-hub/pull/1).
 
+The headings come from the repo's PR template when it has one. Without a template, they come
+from Matt Pocock's [`pr`](https://github.com/mattpocock/skills/tree/main/skills/engineering/pr)
+skill if it's installed. The skill fills them with the screenshot and the prose either way.
+
 ### Setup
 
 1. **Set up [gh-attach](#-gh-attach) first.** It takes the screenshot, and `gh --attach`

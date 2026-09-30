@@ -12,6 +12,24 @@ Lean on the visual, not the prose. A picture is parsed at a glance where a parag
 be read, so anything you would explain in text, whether a flow, a shape, or a before and
 after, show instead.
 
+## Headings
+
+This skill supplies the evidence and the prose. The headings come from the first source
+that applies:
+
+1. **The repo's PR template.** Either `.github/pull_request_template.md`, or the file under
+   `.github/PULL_REQUEST_TEMPLATE/` that the repo's docs name for this kind of change. Keep
+   its headings, in order.
+2. **The `pr` skill**, when it is installed and the repo has no template. Call the Skill tool
+   with `pr` and use its Summary, Evidence, and Merge Danger sections.
+3. Neither: two or three sentences, then `## Demo`.
+
+The shot goes under the one heading that holds proof: `## Demo`, the template's demo- or
+evidence-shaped H2, or `pr`'s `## Evidence`.
+
+A text diagram in `pr`'s Summary, such as a call tree, file tree, or `diff` sketch, shows the
+change's shape. It proves nothing about whether the change works, so the shot still goes in.
+
 ## Point the camera
 
 | What changed | The shot |
@@ -65,10 +83,7 @@ rest: what `gh` accepts, how a description differs from a comment, and the check
 reference was rewritten rather than left broken and appended. The PR is done only when
 both of its Verify checks pass.
 
-Everything visual goes under one `## Demo` heading, or the template's demo-shaped or
-screenshot-shaped H2 when the repo has one.
-
-When the PR is already open, the heading is the spot: follow gh-attach's
+When the PR is already open, the proof heading from [Headings](#headings) is the spot: follow gh-attach's
 [Place an image in an existing description](../gh-attach/SKILL.md#place-an-image-in-an-existing-description),
 which puts the image under it in one edit.
 
