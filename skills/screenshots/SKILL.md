@@ -3,7 +3,8 @@ name: screenshots
 description: >-
   Make an evidence image: highlight the changed element, crop to it, and frame it with a
   caption and before/after labels. Use for a screenshot, an evidence image, a before/after,
-  or an image attachment for a PR, Slack message or Jira ticket.
+  or an image attachment for a PR, Slack message or Jira ticket, including an illustration of
+  how a change behind the UI reworks the logic or the data flow.
 license: MIT
 allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*)
 ---
@@ -16,18 +17,31 @@ skill writes only the image.
 
 ## When to shoot
 
-`/pr` makes the call: a screenshot when the change is visible in a running UI, test or
-command output otherwise. Follow it. An image the user handed you goes out as it is.
+- **Visible in the app:** a screenshot of the page, steps 1 to 3.
+- **Behind the UI:** an illustration, when the diff makes the change hard to follow: reworked
+  logic, a new path through the work, data that now flows somewhere else.
+  [Step 2b](#2b-illustrate-a-change-behind-the-ui), then step 3.
+
+An illustration simplifies. It shows what changed, from what to what, where, and why the after
+state fixes the problem, in less than the diff takes to read. Leave it out when a reader
+gets the change at a glance, as with a dependency bump or a rename. Command output and test
+runs stay as text in the PR.
+
+An image the user handed you goes out as it is.
 
 Every image you make:
 
-- **One idea.** One changed element, or one before/after pair of it.
-- **Highlighted.** A ring and a short label on the changed element, the rest dimmed.
-- **Cropped.** The changed element and a little context, never the full page.
-- **Captioned.** A title and one line on the image itself, saying what it shows.
+- **One idea.** One changed element or behaviour, or one before/after pair of it.
+- **Highlighted.** On a page, a ring and a short label on the changed element, the rest
+  dimmed. In an illustration, `<mark>` on the changed step, row or value.
+- **Cropped.** The changed element and a little context, never the full page. In an
+  illustration, what changed and its neighbours, never the whole system.
+- **Captioned.** A title and one line on the image itself: what changed, and for a fix,
+  why the after state fixes it.
 - **Labelled.** Before and after, side by side or stacked.
 - **The app's default theme.** Light unless the app ships dark by default. When the app
   follows the system, set it: `playwright-cli -s=shots set-color-scheme light`.
+  Illustrations are light.
 - **Sized for where it lands.** 948px wide for GitHub, 1200px for Slack.
 
 ## 1. Open the page at 2x
@@ -85,6 +99,50 @@ element that changed: the cell, not the table. The snippet adds a transparent
 context. Raise `pad` for more context. Run the snippet again after any navigation or
 re-render, since the marks go with the old DOM.
 
+## 2b. Illustrate a change behind the UI
+
+Skip steps 1 and 2. Build the before and the after as HTML, each in a `figure` of step 3's
+frame in place of the `img`. Use whatever shape makes the change clearest. The common ones:
+
+- **Flow:** boxes and arrows for the steps a request, task or record goes through.
+- **Table:** cases or records down the side and what each one gets. Suits a rule or a
+  calculation that treats cases differently.
+- **Timeline:** the order things happen in, when the change moves a step or changes what
+  runs at once.
+- **States:** the states a record moves through, and what moves it.
+- **Where data lives:** which table or field holds a value, and where it now comes from.
+
+Name things in the reader's words, the domain terms from the repo's glossary rather than
+function names. Keep what changed and one neighbour on each side. Build each side from the
+code on that side: the base branch for Before, your branch for After.
+
+A flow:
+
+```html
+<figure class="before"><figcaption>Before</figcaption>
+  <div class="flow"><span class="node">Account created</span>→<span class="node">Email verified</span>→<mark class="node">Welcome email skips invited accounts</mark></div>
+</figure>
+<figure class="after"><figcaption>After</figcaption>
+  <div class="flow"><span class="node">Account created</span>→<span class="node">Email verified</span>→<mark class="node">Welcome email goes to every verified account</mark></div>
+  <p class="why">Invited accounts get the welcome email they were missing.</p>
+</figure>
+```
+
+A table, one per side:
+
+```html
+<figure class="after"><figcaption>After</figcaption>
+  <table>
+    <tr><th>Account</th><th>Welcome email</th></tr>
+    <tr><td>Signed up</td><td>Sent on verify</td></tr>
+    <tr><td>Invited</td><td><mark>Sent on verify</mark></td></tr>
+  </table>
+</figure>
+```
+
+The `.why` line under the after side says why it fixes the problem. Stack one `.flow` per
+branch for a path that splits.
+
 ## 3. Frame
 
 Write the frame next to the PNGs, fill in the title and caption, and render it:
@@ -106,6 +164,14 @@ Write the frame next to the PNGs, fill in the title and caption, and render it:
   .before figcaption { color: #cf222e; }
   .after figcaption { color: #1a7f37; }
   img { display: block; width: 100%; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; }
+  .node { padding: 4px 10px; border: 1px solid #d1d9e0; border-radius: 6px; }
+  mark { border-radius: 3px; color: inherit; }
+  .before mark { background: #ffcecb; }
+  .after mark { background: #dafbe1; }
+  table { margin: 12px; border-collapse: collapse; }
+  th, td { padding: 4px 10px; border: 1px solid #d1d9e0; text-align: left; }
+  .why { margin: 0; padding: 0 12px 12px; opacity: 0.75; }
 </style>
 <h1>TITLE: what changed, in the reader's words</h1>
 <p class="caption">CAPTION: where it is, and what to look at.</p>
@@ -130,8 +196,9 @@ gh-attach shot /abs/path/frame.html /abs/path/evidence.png --width 948
 Read every PNG you made, the crops and the framed image, with the Read tool. Post it only
 when all of these hold:
 
-- It shows the page you meant, not a blank or `about:blank` frame.
-- The ring sits on the changed element.
+- It shows the page you meant, not a blank or `about:blank` frame. Each illustration
+  matches the code on its side.
+- The ring or `<mark>` sits on what changed.
 - The title, caption, label and Before/After text are readable at the posted width.
 - Before and after differ where the label says they do.
 
