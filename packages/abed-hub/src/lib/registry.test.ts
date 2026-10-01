@@ -63,6 +63,14 @@ describe("gh-attach", () => {
       expect.arrayContaining(["gh-attach", "screenshots", "playwright-cli"]),
     );
   });
+
+  test("installs the pr skill that screenshots and gh-stack defer to", () => {
+    expect(spec.skills).toContainEqual({
+      name: "pr",
+      repo: "mattpocock/skills",
+      dir: "skills/engineering",
+    });
+  });
 });
 
 describe("every component", () => {

@@ -78,11 +78,13 @@ under `## Evidence` in a description that already exists.
    ```
 
 3. **Add the skills.** `playwright-cli` drives the running app to the state worth showing.
+   `pr` writes the PR body the image goes into.
 
    ```bash
    bunx skills add aabuhijleh/abed-hub -s gh-attach -g
    bunx skills add aabuhijleh/abed-hub -s screenshots -g
    bunx skills add microsoft/playwright-cli -s playwright-cli -g
+   bunx skills add mattpocock/skills -s pr -g
    ```
 
 No credentials of its own.
@@ -209,15 +211,15 @@ and deleting the directory is a clean reset.
 
 ```bash
 bun remove -g @aabuhijleh/abed-hub @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove abed-hub gh-attach screenshots gh-stack courier playwright-cli unslop -g -y
+bunx skills remove abed-hub gh-attach screenshots gh-stack courier playwright-cli pr unslop -g -y
 gh extension remove github/gh-stack
 ```
 
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
 found" and removes nothing.
 
-Other toolsets can depend on `@playwright/cli`, the `playwright-cli` skill, and `unslop`.
-If one does, take those names out of the first two lines.
+Other toolsets can depend on `@playwright/cli` and the `playwright-cli`, `pr`, and `unslop`
+skills. If one does, take those names out of the first two lines.
 
 Chromium and your tokens stay. Chromium is shared with every other playwright install on the
 machine, and the tokens save you a browser trip next time. Delete either by hand.

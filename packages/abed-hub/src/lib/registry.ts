@@ -90,6 +90,7 @@ export const SPECS: Record<Component, ComponentSpec> = {
         repo: "microsoft/playwright-cli",
         dir: "skills",
       },
+      { name: "pr", repo: "mattpocock/skills", dir: "skills/engineering" },
     ],
     tools: ["gh", "gh-auth", "chromium"],
   },

@@ -36,7 +36,7 @@ told it is missing chromium.
 
 | Component | What you get |
 | --- | --- |
-| `gh-attach` | Take an annotated screenshot and put it into a PR or issue. Brings `@playwright/cli`, chromium, and the `screenshots` and `playwright-cli` skills. |
+| `gh-attach` | Take an annotated screenshot and put it into a PR or issue. Brings `@playwright/cli`, chromium, and the `screenshots`, `playwright-cli`, and `pr` skills. |
 | `gh-stack` | Break a change into PRs that build on each other. |
 | `unslop` | Cut AI tells from PR bodies, Slack and Jira posts, and docs. Brings Cursor's `unslop` skill, patched. |
 | `courier` | Move files in and out of Jira issues and Slack threads. |
