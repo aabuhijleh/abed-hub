@@ -14,7 +14,7 @@
     },
     "packages/abed-hub": {
       "name": "@aabuhijleh/abed-hub",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "bin": {
         "abed-hub": "./dist/abed-hub.js",
       },

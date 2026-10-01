@@ -1,6 +1,12 @@
 ---
 name: courier
-description: Reach Jira and Slack where the Atlassian and Slack MCPs stop, via the `jira` and `slack` CLIs. Use to download a ticket's or thread's attachments, upload a file to a Jira issue or Slack message, delete a Slack post, or write a Jira description with checkboxes or embedded images.
+description: >-
+  Reach Jira and Slack where the Atlassian and Slack MCPs stop, via the `jira` and
+  `slack` CLIs. Use to download a ticket's or thread's attachments, upload a file to a
+  Jira issue or Slack message, delete a Slack post, or write a Jira description with
+  checkboxes or embedded images.
+license: MIT
+allowed-tools: Bash(jira:*), Bash(slack:*)
 ---
 
 # courier
@@ -26,14 +32,9 @@ next.
 
 ## Requirements
 
-Both bins come from one package, and both run on [Bun](https://bun.sh):
-
-```bash
-bun add -g @aabuhijleh/courier
-```
-
-If `jira` or `slack` is missing from PATH, stop and give the user that line rather than
-working around it.
+Both bins come from the `@aabuhijleh/courier` package and run on [Bun](https://bun.sh).
+When `jira` or `slack` is missing, call the Skill tool with `abed-hub` and repair the
+`courier` component.
 
 ## Setup is a hand-off to the user
 

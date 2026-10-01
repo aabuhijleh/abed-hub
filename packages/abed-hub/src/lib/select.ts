@@ -5,6 +5,7 @@ import {
   COMPONENTS,
   type Component,
   expand,
+  removedMessage,
   resolveAlias,
   SPECS,
 } from "./registry";
@@ -14,6 +15,8 @@ function parseNames(raw: string[]): Component[] {
   for (const value of raw) {
     const names = resolveAlias(value);
     if (!names) {
+      const removed = removedMessage(value);
+      if (removed) throw new Error(removed);
       throw new Error(
         `unknown component: ${value} (try: all, ${COMPONENTS.join(", ")})`,
       );

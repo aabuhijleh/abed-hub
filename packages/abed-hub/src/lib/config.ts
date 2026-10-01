@@ -1,12 +1,12 @@
 import { readJson, toolFile, writeJson } from "@abed-hub/config";
 import { z } from "zod";
-import { COMPONENTS, type Component } from "./registry";
+import { type Component, isComponent, REMOVED } from "./registry";
 
 const TOOL = "abed-hub";
 const FILE = "config.json";
 
 const Config = z.object({
-  components: z.array(z.enum(COMPONENTS)),
+  components: z.array(z.string()),
 });
 
 export function configPath(): string {
@@ -22,7 +22,11 @@ export async function readSelection(): Promise<Component[] | null> {
   const raw = await readJson(TOOL, FILE);
   if (raw === null) return null;
   const parsed = Config.safeParse(raw);
-  return parsed.success ? parsed.data.components : null;
+  if (!parsed.success) return null;
+  // A name saved before a component was removed reads as its successors.
+  return parsed.data.components.flatMap((name) =>
+    isComponent(name) ? [name] : (REMOVED[name] ?? []),
+  );
 }
 
 export async function writeSelection(components: Component[]): Promise<string> {

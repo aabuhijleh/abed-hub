@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { hasDisableKey, stripDisableKey } from "./skills";
+import { applyPatch, isPatched } from "./skills";
 
 const UPSTREAM = `---
 name: unslop
@@ -12,32 +12,56 @@ disable-model-invocation: true
 Edit text to remove AI patterns and add human voice.
 `;
 
+const PATCH = "Cut AI tells from PR bodies: and docs.";
+
+const PATCHED = `---
+name: unslop
+description: "Cut AI tells from PR bodies: and docs."
+---
+
+# Unslop
+
+Edit text to remove AI patterns and add human voice.
+`;
+
 describe("the unslop patch", () => {
-  test("finds the key upstream ships", () => {
-    expect(hasDisableKey(UPSTREAM)).toBe(true);
+  test("sees upstream's frontmatter as unpatched", () => {
+    expect(isPatched(UPSTREAM, PATCH)).toBe(false);
   });
 
-  test("strips it and leaves the rest of the file alone", () => {
-    const patched = stripDisableKey(UPSTREAM);
-    expect(hasDisableKey(patched)).toBe(false);
-    expect(patched).toBe(
-      UPSTREAM.replace("disable-model-invocation: true\n", ""),
+  test("switches invocation on, swaps the description, keeps the body", () => {
+    expect(applyPatch(UPSTREAM, PATCH)).toBe(PATCHED);
+    expect(isPatched(PATCHED, PATCH)).toBe(true);
+  });
+
+  test("is a no-op on a patched file", () => {
+    expect(applyPatch(PATCHED, PATCH)).toBe(PATCHED);
+  });
+
+  test("catches a description upstream changed without the invocation key", () => {
+    const reworded = PATCHED.replace(
+      `"Cut AI tells from PR bodies: and docs."`,
+      "Cut AI tells from any writing.",
     );
+    expect(isPatched(reworded, PATCH)).toBe(false);
+    expect(applyPatch(reworded, PATCH)).toBe(PATCHED);
   });
 
-  test("is a no-op on a file that never had it", () => {
-    const clean = stripDisableKey(UPSTREAM);
-    expect(stripDisableKey(clean)).toBe(clean);
+  test("replaces a folded description and all its lines", () => {
+    const folded = UPSTREAM.replace(
+      "description: Cut AI tells from any writing. Must always apply.",
+      "description: >-\n  Cut AI tells from any writing.\n  Must always apply.",
+    );
+    expect(applyPatch(folded, PATCH)).toBe(PATCHED);
   });
 
   test("ignores the key outside the frontmatter", () => {
-    const body = `---\nname: unslop\n---\n\ndisable-model-invocation: true\n`;
-    expect(hasDisableKey(body)).toBe(false);
-    expect(stripDisableKey(body)).toBe(body);
+    const body = `${PATCHED}\ndisable-model-invocation: true\n`;
+    expect(isPatched(body, PATCH)).toBe(true);
+    expect(applyPatch(body, PATCH)).toBe(body);
   });
 
   test("leaves a file with no frontmatter untouched", () => {
-    expect(hasDisableKey("# Unslop\n")).toBe(false);
-    expect(stripDisableKey("# Unslop\n")).toBe("# Unslop\n");
+    expect(applyPatch("# Unslop\n", PATCH)).toBe("# Unslop\n");
   });
 });

@@ -19,12 +19,17 @@ abed-hub update    # upgrade whatever doctor found
 abed-hub config    # where every config file is, and what is in it
 ```
 
+The CLI also installs Cursor's [`unslop`](https://github.com/cursor/plugins) skill and patches
+it. Upstream ships it user-invoked and firing on any writing. After the patch an agent can
+call it, and only for PR titles and bodies, Slack and Jira posts, its own answers, and docs
+people read. A hand install with `bunx skills add` gets upstream's copy without the patch.
+
 ## 🧭 Or set them up by hand
 
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
-| [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in |
-| [writing-great-prs](#-writing-great-prs) | Write a PR description with a screenshot in it. | gh-attach, a browser, the skills below |
+| [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in, and a browser |
+| [screenshots](#-gh-attach) | Take an annotated before/after image of the change. | gh-attach, and the `playwright-cli` skill |
 | [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 
@@ -32,7 +37,10 @@ Set up one. Come back for the others when you need them.
 
 ## 📎 [gh-attach](https://www.npmjs.com/package/@aabuhijleh/gh-attach)
 
-Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it.
+Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it. Two skills
+split the work. `screenshots` rings the changed element, crops to it, and frames the crop
+with a caption and before/after labels. `gh-attach` puts the result in the PR description
+under `## Evidence`.
 
 ```bash
 gh-attach shot ./page.html ./out.png --width 948
@@ -45,12 +53,12 @@ wrote ./out.png (1896x898 px, 2x of 948css)
 Uploading is `gh`'s job since 2.99.0, so one command publishes the shot:
 
 ```bash
-gh pr comment 12 --attach "./out.png#Login error state"
+gh pr edit 12 --attach "./out.png#Login error state"
 ```
 
-The skill carries what `gh` accepts, which file types fail before anything uploads, how
-appending to a description differs from replacing it, and how to put an image under a
-heading in a description that already exists.
+The `gh-attach` skill carries what `gh` accepts, which file types fail before anything
+uploads, how appending to a description differs from replacing it, and how to put an image
+under `## Evidence` in a description that already exists.
 
 ### Setup
 
@@ -61,47 +69,6 @@ heading in a description that already exists.
    bun add -g @aabuhijleh/gh-attach
    ```
 
-2. **Add the skill.**
-
-   ```bash
-   bunx skills add aabuhijleh/abed-hub -s gh-attach -g
-   ```
-
-No credentials of its own.
-
-## 📝 writing-great-prs
-
-Teaches an agent to write a PR description that carries its own evidence: short prose plus
-an embedded visual. It drives other tools rather than shipping one of its own.
-
-Ask for it in plain words.
-
-```
-write the PR description for this branch
-```
-
-What comes back, posted as the body:
-
-```markdown
-Testing `setup.sh` from scratch means tearing the install down first, and nothing
-wrote down how. This adds the three commands that do it.
-
-## Demo
-
-![uninstall.png](https://github.com/user-attachments/assets/047450da-…)
-```
-
-A real one: [#1](https://github.com/aabuhijleh/abed-hub/pull/1).
-
-The headings come from the repo's PR template when it has one. Without a template, they come
-from Matt Pocock's [`pr`](https://github.com/mattpocock/skills/tree/main/skills/engineering/pr)
-skill if it's installed. The skill fills them with the screenshot and the prose either way.
-
-### Setup
-
-1. **Set up [gh-attach](#-gh-attach) first.** It takes the screenshot, and `gh --attach`
-   publishes it.
-
 2. **Add a browser.** This is what `gh-attach shot` renders pages with. The second line is
    only needed if no chromium build is on the machine yet.
 
@@ -110,14 +77,15 @@ skill if it's installed. The skill fills them with the screenshot and the prose 
    playwright-cli install-browser chromium
    ```
 
-3. **Add the skills.** None of them are optional. `playwright-cli` drives a real app
-   for UI screenshots, and `unslop` edits the title and body before they go out.
+3. **Add the skills.** `playwright-cli` drives the running app to the state worth showing.
 
    ```bash
-   bunx skills add aabuhijleh/abed-hub -s writing-great-prs -g
+   bunx skills add aabuhijleh/abed-hub -s gh-attach -g
+   bunx skills add aabuhijleh/abed-hub -s screenshots -g
    bunx skills add microsoft/playwright-cli -s playwright-cli -g
-   bunx skills add cursor/plugins -s unslop -g
    ```
+
+No credentials of its own.
 
 ## 🥞 gh-stack
 
@@ -241,12 +209,15 @@ and deleting the directory is a clean reset.
 
 ```bash
 bun remove -g @aabuhijleh/abed-hub @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove abed-hub gh-attach gh-stack writing-great-prs courier playwright-cli unslop -g -y
+bunx skills remove abed-hub gh-attach screenshots gh-stack courier playwright-cli unslop -g -y
 gh extension remove github/gh-stack
 ```
 
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
 found" and removes nothing.
+
+Other toolsets can depend on `@playwright/cli`, the `playwright-cli` skill, and `unslop`.
+If one does, take those names out of the first two lines.
 
 Chromium and your tokens stay. Chromium is shared with every other playwright install on the
 machine, and the tokens save you a browser trip next time. Delete either by hand.

@@ -3,11 +3,12 @@ import { installedPackages, latestVersion } from "./packages";
 import type { Component, PackageDep, SkillDep, ToolId } from "./registry";
 import { SELF, SELF_SKILL, SPECS } from "./registry";
 import {
-  enableModelInvocation,
   isInstalled,
-  isModelInvocationDisabled,
+  needsPatch,
+  patchSkill,
   readLock,
   remoteHashes,
+  STORE,
 } from "./skills";
 import { checkTool } from "./tools";
 import { compareVersions } from "./utils";
@@ -159,16 +160,17 @@ async function inspectSkill(
     });
   }
 
-  if (dep.patchInvocation && (await isModelInvocationDisabled(dep.name))) {
+  const { patchedDescription } = dep;
+  if (patchedDescription && (await needsPatch(dep.name, patchedDescription))) {
     findings.push({
       kind: "skill",
-      name: `${dep.name} invocation`,
+      name: `${dep.name} patch`,
       status: "broken",
-      detail: "disable-model-invocation is back",
+      detail: "upstream's frontmatter is back",
       fix: {
         run: "local",
-        apply: () => enableModelInvocation(dep.name),
-        label: `let agents invoke ${dep.name}`,
+        apply: () => patchSkill(dep.name, patchedDescription),
+        label: patchLabel(dep.name),
       },
     });
   }
@@ -176,25 +178,20 @@ async function inspectSkill(
   return findings;
 }
 
-/** Skills whose invocation this CLI patches after every install and update. */
-export function patchedSkills(components: Component[]): SkillDep[] {
-  return components
-    .flatMap((name) => SPECS[name].skills)
-    .filter((skill) => skill.patchInvocation);
+export function patchLabel(name: string): string {
+  return `patch ${name}'s frontmatter`;
 }
 
-/**
- * Re-apply every invocation patch for the selected components. `skills update`
- * overwrites SKILL.md with upstream's copy, which puts the key back, so this
- * runs after the fixes rather than as one of them.
- */
+/** Runs after the fixes, because `skills update` overwrites the patched SKILL.md. */
 export async function repairPatches(
   components: Component[],
+  store = STORE,
 ): Promise<string[]> {
   const repaired: string[] = [];
-  for (const skill of patchedSkills(components)) {
-    if (await isModelInvocationDisabled(skill.name)) {
-      await enableModelInvocation(skill.name);
+  for (const skill of components.flatMap((c) => SPECS[c].skills)) {
+    const description = skill.patchedDescription;
+    if (description && (await needsPatch(skill.name, description, store))) {
+      await patchSkill(skill.name, description, store);
       repaired.push(skill.name);
     }
   }

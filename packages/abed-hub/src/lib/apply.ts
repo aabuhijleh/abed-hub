@@ -3,7 +3,7 @@ import { spinner } from "./cli";
 import { dim } from "./color";
 import { capture, captureLoud } from "./exec";
 import { type Finding, needsWork } from "./finding";
-import { repairPatches } from "./inspect";
+import { patchLabel, repairPatches } from "./inspect";
 import type { Component } from "./registry";
 
 export interface ApplyResult {
@@ -34,11 +34,12 @@ export async function applyFixes(
   const seen = new Set<string>();
 
   for (const finding of findings) {
-    if (!needsWork(finding, upgrade)) {
+    const { fix } = finding;
+    const listOnly = finding.status === "warning" && fix?.run === "manual";
+    if (!listOnly && !needsWork(finding, upgrade)) {
       result.untouched++;
       continue;
     }
-    const { fix } = finding;
     if (!fix) continue;
 
     // Several components ask for `gh auth login`. Keep the first.
@@ -85,7 +86,7 @@ export async function applyFixes(
   }
 
   for (const name of await repairPatches(components)) {
-    const label = `let agents invoke ${name}`;
+    const label = patchLabel(name);
     if (!result.done.includes(label)) {
       p.log.success(label);
       result.done.push(label);

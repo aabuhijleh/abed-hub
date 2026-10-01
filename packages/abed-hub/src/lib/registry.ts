@@ -1,7 +1,7 @@
 export const COMPONENTS = [
   "gh-attach",
   "gh-stack",
-  "writing-great-prs",
+  "unslop",
   "courier",
 ] as const;
 
@@ -29,11 +29,8 @@ export interface SkillDep {
   repo: string;
   /** The directory holding skill folders, which is not always `skills`. */
   dir: string;
-  /**
-   * Upstream ships this one user-invoked, which stops the abed-hub skills from
-   * reaching it. Setup strips the key and doctor checks it stayed stripped.
-   */
-  patchInvocation?: boolean;
+  /** Swapped in for upstream's description when abed-hub patches the frontmatter. */
+  patchedDescription?: string;
 }
 
 export interface ConfigDep {
@@ -53,8 +50,6 @@ export interface ComponentSpec {
   tools: ToolId[];
   /** Config files the component reads. Absent when it needs none. */
   configs?: ConfigDep[];
-  /** Components pulled in with this one. */
-  needs?: Component[];
 }
 
 const HUB = "aabuhijleh/abed-hub";
@@ -82,10 +77,21 @@ export const SELF_SKILL: SkillDep = {
 
 export const SPECS: Record<Component, ComponentSpec> = {
   "gh-attach": {
-    summary: "Put a screenshot into a PR or issue",
-    packages: [{ pkg: "@aabuhijleh/gh-attach", bin: "gh-attach" }],
-    skills: [{ name: "gh-attach", repo: HUB, dir: "skills" }],
-    tools: ["gh", "gh-auth"],
+    summary: "Take an annotated screenshot and put it into a PR or issue",
+    packages: [
+      { pkg: "@aabuhijleh/gh-attach", bin: "gh-attach" },
+      { pkg: "@playwright/cli", bin: "playwright-cli" },
+    ],
+    skills: [
+      { name: "gh-attach", repo: HUB, dir: "skills" },
+      { name: "screenshots", repo: HUB, dir: "skills" },
+      {
+        name: "playwright-cli",
+        repo: "microsoft/playwright-cli",
+        dir: "skills",
+      },
+    ],
+    tools: ["gh", "gh-auth", "chromium"],
   },
   "gh-stack": {
     summary: "Break a change into PRs that build on each other",
@@ -93,25 +99,19 @@ export const SPECS: Record<Component, ComponentSpec> = {
     skills: [{ name: "gh-stack", repo: HUB, dir: "skills" }],
     tools: ["gh", "gh-auth", "gh-stack-ext"],
   },
-  "writing-great-prs": {
-    summary: "Write a PR description with a screenshot in it",
-    packages: [{ pkg: "@playwright/cli", bin: "playwright-cli" }],
+  unslop: {
+    summary: "Cut AI tells from PR bodies, Slack and Jira posts, and docs",
+    packages: [],
     skills: [
-      { name: "writing-great-prs", repo: HUB, dir: "skills" },
-      {
-        name: "playwright-cli",
-        repo: "microsoft/playwright-cli",
-        dir: "skills",
-      },
       {
         name: "unslop",
         repo: "cursor/plugins",
         dir: "pstack/skills",
-        patchInvocation: true,
+        patchedDescription:
+          "Cut AI tells from prose people read: PR titles and bodies, Slack and Jira posts, agent answers, READMEs and other human docs. Leave the fixed headings and bold labels of the `pr` skill and of PR templates as they are.",
       },
     ],
-    tools: ["chromium"],
-    needs: ["gh-attach"],
+    tools: [],
   },
   courier: {
     summary: "Move files in and out of Jira issues and Slack threads",
@@ -133,21 +133,42 @@ export function isComponent(value: string): value is Component {
   return (COMPONENTS as readonly string[]).includes(value);
 }
 
-/** `prs` is shorter to type and `all` is what most people mean. */
+/** Names that used to be components, and the ones that took over their parts. */
+export const REMOVED: Record<string, Component[]> = {
+  "writing-great-prs": ["gh-attach", "unslop"],
+  prs: ["gh-attach", "unslop"],
+};
+
+export function removedMessage(name: string): string | null {
+  const successors = REMOVED[name];
+  if (!successors) return null;
+  return `${name} was removed. Its parts are in ${successors.join(" and ")}.`;
+}
+
+/** The positional argument's help, shared by every command that takes one. */
+export function componentsHelp(fallback: string): string {
+  const bySuccessors = new Map<string, string[]>();
+  for (const [name, successors] of Object.entries(REMOVED)) {
+    const key = successors.join(" and ");
+    bySuccessors.set(key, [...(bySuccessors.get(key) ?? []), name]);
+  }
+  const removed = [...bySuccessors].map(
+    ([successors, names]) =>
+      `${names.join(" and ")} ${names.length > 1 ? "are" : "is"} gone: use ${successors}.`,
+  );
+  return [`all, or any of: ${COMPONENTS.join(", ")}.`, fallback, ...removed]
+    .filter(Boolean)
+    .join(" ");
+}
+
+/** `all` is what most people mean. */
 export function resolveAlias(value: string): Component[] | null {
   if (value === "all") return [...COMPONENTS];
-  if (value === "prs") return ["writing-great-prs"];
   return isComponent(value) ? [value] : null;
 }
 
-/** Close a selection over `needs`, in registry order, without duplicates. */
+/** A selection in registry order, without duplicates. */
 export function expand(selected: Iterable<Component>): Component[] {
-  const wanted = new Set<Component>();
-  const visit = (name: Component) => {
-    if (wanted.has(name)) return;
-    wanted.add(name);
-    for (const dep of SPECS[name].needs ?? []) visit(dep);
-  };
-  for (const name of selected) visit(name);
+  const wanted = new Set(selected);
   return COMPONENTS.filter((name) => wanted.has(name));
 }

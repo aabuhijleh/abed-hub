@@ -30,14 +30,24 @@ What follows is only what `--help` leaves out.
 ## Start with doctor
 
 `abed-hub doctor` changes nothing and exits 1 when anything is missing, behind, or broken,
-so run it on a hunch. `--json` is the machine read: every finding carries a `status`, the
-`fix` that would repair it, and whether the CLI can run that fix itself.
+so run it on a hunch. A `warning`, such as unset Jira or Slack credentials, still exits 0:
+it matters only to someone who uses that tool. `--json` is the machine read: every finding
+carries a `status`, the `fix` that would repair it, and whether the CLI can run that fix
+itself (`automatic`).
 
-Repair from the report rather than from a guess. `gh-attach: command not found` is as
-likely to be a signed-out `gh` or a missing skill as a missing package.
+Every missing tool or skill goes the same way, including when another abed-hub skill sends
+you here:
+
+1. Run `abed-hub doctor`, with the component names when you know them.
+2. Apply the fixes it marks automatic with `abed-hub update`, naming the same components.
+3. Hand the rest to the user, as below.
+
+Repair from the report rather than from a guess. `gh-attach shot` failing with `playwright
+not found` is a missing `@playwright/cli`, not a broken `gh-attach`, and doctor names it.
 
 `setup` installs what is absent and leaves a working version alone even when it is behind.
-`update` is what moves it forward.
+`update` is what moves it forward. `setup` with component names also saves them as the
+whole selection, so reach for `update` when repairing.
 
 ## config answers where and what
 
@@ -59,17 +69,19 @@ version number.
 | --- | --- |
 | Packages | The global bun install is below npm's `latest`. |
 | Skills | The lock file's `skillFolderHash` no longer matches the folder on the source repo. |
-| Tools | `gh` below 2.99, signed out, no `gh-stack` extension, or no chromium build. |
+| Tools | `gh` below 2.99, signed out, no `gh-stack` extension, no chromium build, or unset Jira or Slack credentials. |
 
-## unslop goes user-invoked after every skills update
+## skills update undoes the unslop patch
 
-Upstream ships `unslop` with `disable-model-invocation: true`, which stops every other skill
-from reaching it. `setup` and `update` strip that line, and `skills update` puts it back.
-When `unslop` cannot be invoked, that is what happened, and `abed-hub update` is the repair.
+Upstream ships `unslop` user-invoked, with a description that fires on any writing. The
+patch switches model invocation on and narrows the description to PR titles and bodies,
+Slack and Jira posts, agent answers, and human docs. `setup` and `update` apply it, and
+`skills update` puts upstream's frontmatter back. When `unslop` cannot be invoked, that is
+what happened, and `abed-hub update unslop` is the repair.
 
-`doctor` reports it as `unslop invocation`, separately from `unslop` itself, because the
-folder hash still matches upstream. The staleness check stays green while the skill sits
-there unusable.
+`doctor` reports it as `unslop patch`, separately from `unslop` itself, because the folder
+hash still matches upstream. The staleness check stays green while the skill sits there
+unusable.
 
 ## What it hands back to you
 

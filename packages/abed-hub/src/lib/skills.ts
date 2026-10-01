@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import path from "node:path";
 import { capture } from "./exec";
+import { parseFrontmatter, splitFrontmatter } from "./frontmatter";
 
 /**
  * Every agent reads skills out of one store, with `~/.claude/skills/<name>`
@@ -39,8 +40,8 @@ export async function readLock(): Promise<Map<string, LockEntry>> {
   return entries;
 }
 
-export function skillFile(name: string): string {
-  return path.join(STORE, name, "SKILL.md");
+export function skillFile(name: string, store = STORE): string {
+  return path.join(store, name, "SKILL.md");
 }
 
 export async function isInstalled(name: string): Promise<boolean> {
@@ -83,48 +84,64 @@ export async function remoteHashes(
   return hashes;
 }
 
-const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---/;
 const DISABLE_KEY = /^disable-model-invocation\s*:/;
+const DESCRIPTION_KEY = /^description\s*:/;
 
-/** Whether a SKILL.md's frontmatter carries `disable-model-invocation`. */
-export function hasDisableKey(text: string): boolean {
-  const front = FRONTMATTER.exec(text);
-  if (!front?.[1]) return false;
-  return front[1].split("\n").some((line) => DISABLE_KEY.test(line.trim()));
+function frontmatter(text: string): Record<string, unknown> | null {
+  const split = splitFrontmatter(text);
+  return split ? parseFrontmatter(split.front) : null;
 }
 
-/** The same file with that one line gone. Everything else is left alone. */
-export function stripDisableKey(text: string): string {
-  const front = FRONTMATTER.exec(text);
-  if (!front?.[1]) return text;
-
-  const kept = front[1]
-    .split("\n")
-    .filter((line) => !DISABLE_KEY.test(line.trim()))
-    .join("\n");
-  return text.replace(front[1], () => kept);
+/** Whether a SKILL.md is model-invocable and carries the patched description. */
+export function isPatched(text: string, description: string): boolean {
+  const front = frontmatter(text);
+  if (!front) return false;
+  return (
+    !("disable-model-invocation" in front) && front.description === description
+  );
 }
 
-/**
- * Whether an installed skill is user-invoked. Null when it is not installed.
- *
- * This reads the file rather than the lock file on purpose. `skillFolderHash`
- * records what upstream looked like at install time, so a local edit leaves it
- * matching and the staleness check sees nothing. The hash answers "is this
- * behind upstream". This answers "has the patch been undone".
- */
-export async function isModelInvocationDisabled(
+/** Drops `disable-model-invocation` and swaps the description; the body stays. */
+export function applyPatch(text: string, patchedDescription: string): string {
+  const front = splitFrontmatter(text)?.front;
+  if (front === undefined || isPatched(text, patchedDescription)) return text;
+
+  const description = `description: ${JSON.stringify(patchedDescription)}`;
+  const kept: string[] = [];
+  let skipping = false;
+  for (const line of front.split("\n")) {
+    if (skipping && /^\s/.test(line)) continue;
+    skipping = false;
+    if (DISABLE_KEY.test(line)) continue;
+    if (DESCRIPTION_KEY.test(line)) {
+      kept.push(description);
+      skipping = true;
+      continue;
+    }
+    kept.push(line);
+  }
+  if (!kept.includes(description)) kept.push(description);
+  return text.replace(front, () => kept.join("\n"));
+}
+
+/** Null when not installed. Reads the file, since an undone patch keeps the lock hash. */
+export async function needsPatch(
   name: string,
+  description: string,
+  store = STORE,
 ): Promise<boolean | null> {
-  const file = Bun.file(skillFile(name));
+  const file = Bun.file(skillFile(name, store));
   if (!(await file.exists())) return null;
-  return hasDisableKey(await file.text());
+  return !isPatched(await file.text(), description);
 }
 
-/** Drop the key from an installed skill. */
-export async function enableModelInvocation(name: string): Promise<void> {
-  const target = skillFile(name);
+export async function patchSkill(
+  name: string,
+  description: string,
+  store = STORE,
+): Promise<void> {
+  const target = skillFile(name, store);
   const text = await Bun.file(target).text();
-  const stripped = stripDisableKey(text);
-  if (stripped !== text) await Bun.write(target, stripped);
+  const patched = applyPatch(text, description);
+  if (patched !== text) await Bun.write(target, patched);
 }

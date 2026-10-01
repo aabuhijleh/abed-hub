@@ -55,8 +55,8 @@ local state.
 
 **`--auto` creates every PR as a draft unless `--open` is passed**, and fills the title
 from the commit subject and the body from the commits. That is a placeholder, not a
-description. Write the real ones with `writing-great-prs` and set them afterwards with
-`gh pr edit <pr> --title <title> --body-file <file>`.
+description. Write the real ones with the repo's PR template, or the `pr` skill where there
+is none, and set them afterwards with `gh pr edit <pr> --title <title> --body-file <file>`.
 
 ## When trunk moves
 

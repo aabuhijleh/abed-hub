@@ -185,7 +185,7 @@ async function checkChromium(): Promise<Finding> {
   };
 }
 
-/** Courier writes both sections into one file, and only after `setup` runs. */
+/** Warns rather than fails, since many machines use only one of jira and slack. */
 async function checkCredentials(which: "jira" | "slack"): Promise<Finding> {
   const config = await readJson<Record<string, unknown>>(
     "courier",
@@ -195,8 +195,8 @@ async function checkCredentials(which: "jira" | "slack"): Promise<Finding> {
   return {
     kind: "tool",
     name: `${which} credentials`,
-    status: configured ? "ok" : "missing",
-    detail: configured ? "configured" : "not configured",
+    status: configured ? "ok" : "warning",
+    detail: configured ? "configured" : `not configured, needed for ${which}`,
     ...(configured
       ? {}
       : {
