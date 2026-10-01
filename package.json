@@ -14,8 +14,9 @@
     "check:fix": "biome check --write",
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test",
-    "verify": "bun run --parallel check typecheck test",
-    "verify:fix": "bun run --parallel check:fix typecheck test",
+    "skills:lint": "bun run scripts/lint-skills.ts",
+    "verify": "bun run --parallel check typecheck test skills:lint",
+    "verify:fix": "bun run --parallel check:fix typecheck test skills:lint",
     "prepare": "lefthook install"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@ import { fail, spinner } from "../lib/cli";
 import { bold, dim } from "../lib/color";
 import { writeSelection } from "../lib/config";
 import { allFindings, inspect } from "../lib/inspect";
-import { COMPONENTS } from "../lib/registry";
+import { componentsHelp } from "../lib/registry";
 import { count, printInspection, printManual } from "../lib/report";
 import { choose } from "../lib/select";
 import { plural } from "../lib/utils";
@@ -19,7 +19,7 @@ export default defineCommand({
     components: {
       type: "positional",
       required: false,
-      description: `all, or any of: ${COMPONENTS.join(", ")}. Asks if omitted.`,
+      description: componentsHelp("Asks if omitted."),
     },
     all: {
       type: "boolean",
@@ -51,7 +51,7 @@ export default defineCommand({
     printInspection(inspection);
 
     const findings = allFindings(inspection);
-    const result = await applyFixes(findings, components, {
+    const result = await applyFixes(findings, {
       upgrade: args.force,
     });
 

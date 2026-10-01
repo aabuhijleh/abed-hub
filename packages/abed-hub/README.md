@@ -21,7 +21,7 @@ all three and groups the report the same way.
 | --- | --- | --- |
 | Packages | `bun add -g` | The global version is below npm's `latest`. |
 | Skills | `bunx skills add` | `~/.agents/.skill-lock.json` holds a `skillFolderHash` the source repo no longer has. |
-| Tools | Someone else | `gh` is below 2.99, signed out, missing the `gh-stack` extension, or has no chromium build. |
+| Tools | Someone else | `gh` is below 2.99, signed out, or missing the `gh-stack` extension. No chromium build is installed. The Jira or Slack credentials are unset, which is a warning. |
 
 The skill check is the one worth explaining. The `skills` installer records the git tree SHA
 of the skill's folder as it stood on the source repo's default branch, so comparing it
@@ -36,12 +36,16 @@ told it is missing chromium.
 
 | Component | What you get |
 | --- | --- |
-| `gh-attach` | Put a screenshot into a PR or issue. |
+| `gh-attach` | Take an annotated screenshot and put it into a PR or issue. Brings `@playwright/cli`, chromium, and the `screenshots`, `playwright-cli`, and `pr` skills. |
 | `gh-stack` | Break a change into PRs that build on each other. |
-| `writing-great-prs` | Write a PR description with a screenshot in it. Pulls in `gh-attach`. |
+| `deslop` | Cut AI tells from PR bodies, Slack and Jira posts, and docs. abed-hub's own copy of Cursor's `unslop` skill. |
 | `courier` | Move files in and out of Jira issues and Slack threads. |
 
-Name them to skip the prompt. `all` is all four, `prs` is `writing-great-prs`.
+Name them to skip the prompt. `all` is all four.
+
+Some names are gone. `writing-great-prs` and its alias `prs` moved to `gh-attach` and
+`deslop`, and `unslop` is now `deslop`. Naming an old one prints where it went, and a saved
+selection that holds one reads as its replacements.
 
 ```bash
 abed-hub setup gh-attach courier
@@ -49,25 +53,13 @@ abed-hub setup gh-attach courier
 
 The `abed-hub` skill installs with every selection, whichever components you pick.
 
-## The unslop patch
-
-`writing-great-prs` cannot do its job without `unslop`, and upstream ships `unslop` with
-`disable-model-invocation: true`, which stops one skill from reaching another. `setup`
-strips that line after installing, `update` strips it again after every update, and
-`doctor` reports it when it comes back.
-
-This check reads the installed `SKILL.md`, not the lock file. `skillFolderHash` records
-what upstream looked like at install time, so a local edit leaves it matching. The hash
-answers "is this behind upstream". Reading the frontmatter answers "has the patch been
-undone".
-
 ## Commands
 
 | Command | What it does |
 | --- | --- |
 | `abed-hub setup [components...] [--all] [--force]` | Install what is absent. Leaves anything that works alone unless `--force`. |
-| `abed-hub doctor [components...] [--all] [--json]` | Report and change nothing. Exits 1 when something is missing, behind, or broken. |
-| `abed-hub update [components...] [--all]` | Upgrade what is behind, install what is absent, repair the unslop patch. |
+| `abed-hub doctor [components...] [--all] [--json]` | Report and change nothing. Exits 1 when something is missing, behind, or broken. Warnings, such as unset Jira or Slack credentials, exit 0. |
+| `abed-hub update [components...] [--all]` | Upgrade what is behind and install what is absent. |
 | `abed-hub config [components...] [--all] [--reveal] [--json]` | Print where each config file is and what is in it. Tokens masked. |
 
 Neither `setup` nor `update` touches credentials. Both print the interactive commands that

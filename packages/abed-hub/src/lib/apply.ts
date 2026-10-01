@@ -3,8 +3,6 @@ import { spinner } from "./cli";
 import { dim } from "./color";
 import { capture, captureLoud } from "./exec";
 import { type Finding, needsWork } from "./finding";
-import { repairPatches } from "./inspect";
-import type { Component } from "./registry";
 
 export interface ApplyResult {
   done: string[];
@@ -22,7 +20,6 @@ export interface ApplyResult {
  */
 export async function applyFixes(
   findings: Finding[],
-  components: Component[],
   { upgrade }: { upgrade: boolean },
 ): Promise<ApplyResult> {
   const result: ApplyResult = {
@@ -34,11 +31,12 @@ export async function applyFixes(
   const seen = new Set<string>();
 
   for (const finding of findings) {
-    if (!needsWork(finding, upgrade)) {
+    const { fix } = finding;
+    const listOnly = finding.status === "warning" && fix?.run === "manual";
+    if (!listOnly && !needsWork(finding, upgrade)) {
       result.untouched++;
       continue;
     }
-    const { fix } = finding;
     if (!fix) continue;
 
     // Several components ask for `gh auth login`. Keep the first.
@@ -49,13 +47,6 @@ export async function applyFixes(
       result.manual.push(
         fix.hint ? `${fix.label}${dim(`    # ${fix.hint}`)}` : fix.label,
       );
-      continue;
-    }
-
-    if (fix.run === "local") {
-      await fix.apply();
-      p.log.success(fix.label);
-      result.done.push(fix.label);
       continue;
     }
 
@@ -81,14 +72,6 @@ export async function applyFixes(
       const output = `${stdout}${stderr}`.trim();
       if (output) p.log.message(dim(output));
       result.failed.push({ label: fix.label, message: `exit ${code}` });
-    }
-  }
-
-  for (const name of await repairPatches(components)) {
-    const label = `let agents invoke ${name}`;
-    if (!result.done.includes(label)) {
-      p.log.success(label);
-      result.done.push(label);
     }
   }
 

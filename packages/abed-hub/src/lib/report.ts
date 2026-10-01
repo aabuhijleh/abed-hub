@@ -2,13 +2,14 @@ import * as p from "@clack/prompts";
 import { bold, dim, green, red, yellow } from "./color";
 import type { Finding, Status } from "./finding";
 import type { Inspection } from "./inspect";
-import { pad } from "./utils";
+import { pad, plural } from "./utils";
 
 const MARK: Record<Status, string> = {
   ok: green("✔"),
   stale: yellow("▲"),
   missing: red("✖"),
   broken: red("!"),
+  warning: yellow("!"),
 };
 
 function block(findings: Finding[]): string {
@@ -46,6 +47,27 @@ export function summarize(findings: Finding[]): string {
     .filter(([n]) => n > 0)
     .map(([n, label]) => `${n} ${label}`)
     .join(", ");
+}
+
+/** Doctor's last line, and whether it exits 1. Warnings alone never fail it. */
+export function doctorOutcome(findings: Finding[]): {
+  failed: boolean;
+  message: string;
+} {
+  const trouble = summarize(findings);
+  if (!trouble) {
+    const warnings = count(findings, "warning");
+    return {
+      failed: false,
+      message:
+        warnings > 0
+          ? `Everything is here and up to date. ${plural(warnings, "warning")} for tools you may not use.`
+          : "Everything is here and up to date.",
+    };
+  }
+  const next =
+    count(findings, "missing") > 0 ? "abed-hub setup" : "abed-hub update";
+  return { failed: true, message: `${trouble}. ${next} fixes what it can.` };
 }
 
 /**

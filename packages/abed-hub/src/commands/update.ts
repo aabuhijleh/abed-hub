@@ -4,7 +4,7 @@ import { applyFixes } from "../lib/apply";
 import { fail, spinner } from "../lib/cli";
 import { bold } from "../lib/color";
 import { allFindings, inspect } from "../lib/inspect";
-import { COMPONENTS } from "../lib/registry";
+import { componentsHelp } from "../lib/registry";
 import { printInspection, printManual } from "../lib/report";
 import { selected } from "../lib/select";
 import { plural } from "../lib/utils";
@@ -18,7 +18,7 @@ export default defineCommand({
     components: {
       type: "positional",
       required: false,
-      description: `all, or any of: ${COMPONENTS.join(", ")}. Defaults to what setup installed.`,
+      description: componentsHelp("Defaults to what setup installed."),
     },
     all: {
       type: "boolean",
@@ -41,7 +41,7 @@ export default defineCommand({
 
     printInspection(inspection);
 
-    const result = await applyFixes(allFindings(inspection), components, {
+    const result = await applyFixes(allFindings(inspection), {
       upgrade: true,
     });
 

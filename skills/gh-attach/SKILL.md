@@ -1,22 +1,24 @@
 ---
 name: gh-attach
 description: >-
-  Attach an image or video to a GitHub pull request or issue with `gh --attach`, as
-  a comment or in the description. Use for "add a screenshot to the PR", "put this
-  image in the issue", "show before/after in the description", "put the screenshot
-  under Demo in the open PR".
+  Attach an image or video that already exists to a GitHub pull request or issue with
+  `gh --attach`, in the description or as a comment. Use for "attach this image to the
+  PR", "put this file in the issue", "put the image under Evidence in the open PR". To
+  take or annotate the image first, use `screenshots`.
 license: MIT
 allowed-tools: Glob, Bash(gh pr view:*), Bash(gh pr edit:*), Bash(gh pr comment:*), Bash(gh pr create:*), Bash(gh issue view:*), Bash(gh issue edit:*), Bash(gh issue comment:*), Bash(gh issue create:*), Bash(grep:*), Bash(awk:*)
 ---
 
 # Attach an image to a PR or issue
 
-`gh` uploads and embeds in one command. It authenticates with the `gh` token you already
-have, so there is no separate credential to manage:
+This skill starts from an image on disk. The `screenshots` skill makes one: it highlights
+the change, frames it with a caption and before/after labels, and renders the frame with
+`gh-attach shot <page.html|url> <out.png> [--width 948]`, which this package ships.
 
-```bash
-gh pr comment <pr> --repo owner/repo --attach "/abs/path/shot.png#The login error state"
-```
+`gh` uploads and embeds in one command, with the `gh` token you already have, so there is
+no separate credential to manage. PR evidence goes under `## Evidence`: on an open PR, use
+**Place an image in an existing description**; opening one, pair a reference in the body as
+**Attaching** shows.
 
 Needs `gh` 2.99 or later, signed in. `gh --version` reports it.
 
@@ -45,29 +47,27 @@ continue. `--repo` is optional inside a repo working directory.
 Repeat `--attach` per file, in **one command**, however many files:
 
 ```bash
-gh pr comment <pr> --attach /abs/path/before.png --attach /abs/path/after.png
+gh pr edit <pr> --attach /abs/path/before.png --attach /abs/path/after.png
 ```
 
 Absolute paths, quoted. Alt text follows the path after `#`, and the quotes are what keep
 the shell from reading that `#` as a comment. Without alt text the filename is used. Video
 renders as a player and takes none.
 
-**Comment, prefer this.** It touches nothing that is already published:
+**Description, for PR evidence.** Evidence goes in the description under `## Evidence`,
+where a reviewer reads it first. Opening a PR, pair a reference in the body, below, and the
+image lands under the heading. On an open PR, follow
+**Place an image in an existing description**. Plain `gh pr edit --attach` appends the
+image after the last section, which is Merge Danger in a templated body, so keep it for a
+body with no Evidence heading. A body flag alongside `--attach` sets the body to exactly
+what that flag carries.
+
+**Comment, for anything else**: a follow-up, a reply to review, an image on an issue
+thread. It touches nothing that is already published:
 
 ```bash
-gh pr comment <pr> --repo owner/repo --body "## Screenshots" --attach "/abs/path/shot.png#Login error"
+gh pr comment <pr> --repo owner/repo --body "The empty state after the fix." --attach "/abs/path/shot.png#Empty state"
 ```
-
-**Description, when the user asked for the description.** Pass `--attach` alone and the
-existing body is kept and the image appended, which is why no read of the body is needed
-here. A body flag alongside it sets the body to exactly what that flag carries:
-
-```bash
-gh pr edit <pr> --repo owner/repo --attach "/abs/path/shot.png#Login error"
-```
-
-That lands the image after the last section. To land it under a heading instead, use
-**Place an image in an existing description** below.
 
 To place an image somewhere other than the end, write the body reference as a markdown
 image, `![alt](/abs/path/shot.png)`, with the **same absolute path** you pass `--attach`.
@@ -78,14 +78,13 @@ relative one against your current working directory, so `![alt](./shot.png)` pai
 and alt text already in the body wins:
 
 ```bash
-printf 'Fixes the crash.\n\n## Demo\n\n![Login error](/abs/path/shot.png)\n' \
-  | gh pr comment <pr> --repo owner/repo --body-file - --attach /abs/path/shot.png
+printf '## Summary\n\nFixes the crash.\n\n## Evidence\n\n![Login error](/abs/path/shot.png)\n' \
+  | gh pr create --repo owner/repo --title "fix: stop the login crash" --body-file - --attach /abs/path/shot.png
 ```
 
 Unpaired, the reference stays local and renders broken, and the asset is appended to the
 end instead. The run still exits 0 and prints the URL, so **Verify** below is what catches
-it. Pairing works the same with a body flag, and with `gh pr create --attach`, which places
-the image as it opens the PR.
+it. Pairing works the same with a body flag, and with `gh pr edit` and `gh pr comment`.
 
 Issues take the same flags through `gh issue comment` and `gh issue edit`.
 
@@ -96,12 +95,12 @@ never read one back or pass it file to file without printing it.
 ## Place an image in an existing description
 
 A PR that is already open keeps its body, so name the spot as a line already in it, such as
-`## Demo`, and send the body back with the reference under that line. One command reads,
+`## Evidence`, and send the body back with the reference under that line. One command reads,
 places, uploads, and edits:
 
 ```bash
 gh pr view <pr> --repo owner/repo --json body -q .body > /tmp/pr-body.md &&
-awk -v spot='## Demo' -v img='![Login error](/abs/path/shot.png)' '
+awk -v spot='## Evidence' -v img='![Login error](/abs/path/shot.png)' '
   { sub(/\r$/, "") }
   !done && $0 == spot { print; print ""; print img; done = 1; next }
   { print }
@@ -111,7 +110,7 @@ gh pr edit <pr> --repo owner/repo --body-file /tmp/pr-body-new.md --attach /abs/
 ```
 
 - `spot` matches a whole line, the first one that equals it. The `sub` drops the `\r` that
-  ends each line of a body edited in the browser, where `## Demo\r` would never match.
+  ends each line of a body edited in the browser, where `## Evidence\r` would never match.
 - No match makes awk exit 1, and the `&&` stops before anything uploads. Choose a line
   that is there.
 - Keep the temp files. Piped straight into `gh pr edit`, a failed `gh pr view` becomes an

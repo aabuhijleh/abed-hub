@@ -13,3 +13,7 @@ pre-commit:
     test:
       glob: "*.{ts,tsx}"
       run: bun test
+
+    skills-lint:
+      glob: "skills/**"
+      run: bun run skills:lint

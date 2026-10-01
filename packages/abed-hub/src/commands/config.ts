@@ -4,7 +4,7 @@ import { defineCommand } from "citty";
 import { fail } from "../lib/cli";
 import { bold, dim } from "../lib/color";
 import { type ConfigReport, readConfigs } from "../lib/configs";
-import { COMPONENTS } from "../lib/registry";
+import { componentsHelp } from "../lib/registry";
 import { selected } from "../lib/select";
 
 /** What goes in the box under the path. */
@@ -39,7 +39,7 @@ export default defineCommand({
     components: {
       type: "positional",
       required: false,
-      description: `all, or any of: ${COMPONENTS.join(", ")}. Defaults to what setup installed.`,
+      description: componentsHelp("Defaults to what setup installed."),
     },
     all: {
       type: "boolean",

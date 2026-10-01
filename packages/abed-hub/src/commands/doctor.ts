@@ -3,20 +3,21 @@ import { defineCommand } from "citty";
 import { fail, spinner } from "../lib/cli";
 import { bold, dim } from "../lib/color";
 import { allFindings, inspect } from "../lib/inspect";
-import { COMPONENTS } from "../lib/registry";
-import { count, printInspection, printManual, summarize } from "../lib/report";
+import { componentsHelp } from "../lib/registry";
+import { doctorOutcome, printInspection, printManual } from "../lib/report";
 import { selected } from "../lib/select";
 
 export default defineCommand({
   meta: {
     name: "doctor",
-    description: "Report what is missing, behind, or broken. Changes nothing",
+    description:
+      "Report what is missing, behind, or broken. Changes nothing. Exits 1 unless only warnings are left",
   },
   args: {
     components: {
       type: "positional",
       required: false,
-      description: `all, or any of: ${COMPONENTS.join(", ")}. Defaults to what setup installed.`,
+      description: componentsHelp("Defaults to what setup installed."),
     },
     all: {
       type: "boolean",
@@ -70,11 +71,6 @@ export default defineCommand({
     printInspection(inspection);
 
     const findings = allFindings(inspection);
-    const trouble = summarize(findings);
-    if (!trouble) {
-      p.outro("Everything is here and up to date.");
-      return;
-    }
 
     printManual(
       findings
@@ -86,9 +82,8 @@ export default defineCommand({
         ),
     );
 
-    const missing = count(findings, "missing");
-    const next = missing > 0 ? "abed-hub setup" : "abed-hub update";
-    p.outro(`${trouble}. ${bold(next)} fixes what it can.`);
-    process.exit(1);
+    const outcome = doctorOutcome(findings);
+    p.outro(outcome.message);
+    if (outcome.failed) process.exit(1);
   },
 });

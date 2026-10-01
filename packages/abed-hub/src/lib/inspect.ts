@@ -2,13 +2,7 @@ import type { Finding } from "./finding";
 import { installedPackages, latestVersion } from "./packages";
 import type { Component, PackageDep, SkillDep, ToolId } from "./registry";
 import { SELF, SELF_SKILL, SPECS } from "./registry";
-import {
-  enableModelInvocation,
-  isInstalled,
-  isModelInvocationDisabled,
-  readLock,
-  remoteHashes,
-} from "./skills";
+import { isInstalled, readLock, remoteHashes } from "./skills";
 import { checkTool } from "./tools";
 import { compareVersions } from "./utils";
 
@@ -103,11 +97,9 @@ async function inspectSkill(
   dep: SkillDep,
   lock: Map<string, { skillFolderHash: string }>,
   remote: Map<string, Map<string, string>>,
-): Promise<Finding[]> {
-  const findings: Finding[] = [];
-
+): Promise<Finding> {
   if (!(await isInstalled(dep.name))) {
-    findings.push({
+    return {
       kind: "skill",
       name: dep.name,
       status: "missing",
@@ -117,29 +109,30 @@ async function inspectSkill(
         argv: addSkill(dep),
         label: `skills add ${dep.repo} -s ${dep.name}`,
       },
-    });
-    return findings;
+    };
   }
 
   const here = lock.get(dep.name)?.skillFolderHash;
   const there = remote.get(`${dep.repo}/${dep.dir}`)?.get(dep.name);
 
   if (!here) {
-    findings.push({
+    return {
       kind: "skill",
       name: dep.name,
       status: "ok",
       detail: "installed, not in the lock file",
-    });
-  } else if (!there) {
-    findings.push({
+    };
+  }
+  if (!there) {
+    return {
       kind: "skill",
       name: dep.name,
       status: "ok",
       detail: `installed, ${dep.repo} did not answer`,
-    });
-  } else if (here !== there) {
-    findings.push({
+    };
+  }
+  if (here !== there) {
+    return {
       kind: "skill",
       name: dep.name,
       status: "stale",
@@ -149,56 +142,14 @@ async function inspectSkill(
         argv: updateSkill(dep),
         label: `skills update ${dep.name}`,
       },
-    });
-  } else {
-    findings.push({
-      kind: "skill",
-      name: dep.name,
-      status: "ok",
-      detail: here.slice(0, 7),
-    });
+    };
   }
-
-  if (dep.patchInvocation && (await isModelInvocationDisabled(dep.name))) {
-    findings.push({
-      kind: "skill",
-      name: `${dep.name} invocation`,
-      status: "broken",
-      detail: "disable-model-invocation is back",
-      fix: {
-        run: "local",
-        apply: () => enableModelInvocation(dep.name),
-        label: `let agents invoke ${dep.name}`,
-      },
-    });
-  }
-
-  return findings;
-}
-
-/** Skills whose invocation this CLI patches after every install and update. */
-export function patchedSkills(components: Component[]): SkillDep[] {
-  return components
-    .flatMap((name) => SPECS[name].skills)
-    .filter((skill) => skill.patchInvocation);
-}
-
-/**
- * Re-apply every invocation patch for the selected components. `skills update`
- * overwrites SKILL.md with upstream's copy, which puts the key back, so this
- * runs after the fixes rather than as one of them.
- */
-export async function repairPatches(
-  components: Component[],
-): Promise<string[]> {
-  const repaired: string[] = [];
-  for (const skill of patchedSkills(components)) {
-    if (await isModelInvocationDisabled(skill.name)) {
-      await enableModelInvocation(skill.name);
-      repaired.push(skill.name);
-    }
-  }
-  return repaired;
+  return {
+    kind: "skill",
+    name: dep.name,
+    status: "ok",
+    detail: here.slice(0, 7),
+  };
 }
 
 export async function inspect(components: Component[]): Promise<Inspection> {
@@ -232,7 +183,7 @@ export async function inspect(components: Component[]): Promise<Inspection> {
     Promise.all(toolIds.map((id) => checkTool(id))),
   ]);
 
-  return { packages, skills: skills.flat(), tools };
+  return { packages, skills, tools };
 }
 
 export function allFindings(inspection: Inspection): Finding[] {

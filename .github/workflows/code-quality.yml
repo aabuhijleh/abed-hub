@@ -27,4 +27,5 @@ jobs:
       - run: bun run typecheck
       - run: bun run check
       - run: bun test
+      - run: bun run skills:lint
       - run: bun run build

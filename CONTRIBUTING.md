@@ -5,12 +5,12 @@ scripts that run releases under `scripts/`.
 
 ```bash
 bun install
-bun run verify   # biome, tsc, and the tests, in parallel
+bun run verify   # biome, tsc, the tests, and the skill lint, in parallel
 bun run build
 ```
 
-Lefthook runs biome, the typecheck, and the tests on commit, so a broken commit is hard to
-make by accident. `bun run verify:fix` is the same set with biome writing its fixes.
+Lefthook runs biome, the typecheck, and the tests on commit, plus `bun run skills:lint` when
+a skill changes. `bun run verify:fix` runs the same set and lets biome write its fixes.
 
 ## Releasing
 
