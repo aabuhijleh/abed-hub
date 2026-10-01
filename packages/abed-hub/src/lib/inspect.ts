@@ -2,14 +2,7 @@ import type { Finding } from "./finding";
 import { installedPackages, latestVersion } from "./packages";
 import type { Component, PackageDep, SkillDep, ToolId } from "./registry";
 import { SELF, SELF_SKILL, SPECS } from "./registry";
-import {
-  isInstalled,
-  needsPatch,
-  patchSkill,
-  readLock,
-  remoteHashes,
-  STORE,
-} from "./skills";
+import { isInstalled, readLock, remoteHashes } from "./skills";
 import { checkTool } from "./tools";
 import { compareVersions } from "./utils";
 
@@ -104,11 +97,9 @@ async function inspectSkill(
   dep: SkillDep,
   lock: Map<string, { skillFolderHash: string }>,
   remote: Map<string, Map<string, string>>,
-): Promise<Finding[]> {
-  const findings: Finding[] = [];
-
+): Promise<Finding> {
   if (!(await isInstalled(dep.name))) {
-    findings.push({
+    return {
       kind: "skill",
       name: dep.name,
       status: "missing",
@@ -118,29 +109,30 @@ async function inspectSkill(
         argv: addSkill(dep),
         label: `skills add ${dep.repo} -s ${dep.name}`,
       },
-    });
-    return findings;
+    };
   }
 
   const here = lock.get(dep.name)?.skillFolderHash;
   const there = remote.get(`${dep.repo}/${dep.dir}`)?.get(dep.name);
 
   if (!here) {
-    findings.push({
+    return {
       kind: "skill",
       name: dep.name,
       status: "ok",
       detail: "installed, not in the lock file",
-    });
-  } else if (!there) {
-    findings.push({
+    };
+  }
+  if (!there) {
+    return {
       kind: "skill",
       name: dep.name,
       status: "ok",
       detail: `installed, ${dep.repo} did not answer`,
-    });
-  } else if (here !== there) {
-    findings.push({
+    };
+  }
+  if (here !== there) {
+    return {
       kind: "skill",
       name: dep.name,
       status: "stale",
@@ -150,52 +142,14 @@ async function inspectSkill(
         argv: updateSkill(dep),
         label: `skills update ${dep.name}`,
       },
-    });
-  } else {
-    findings.push({
-      kind: "skill",
-      name: dep.name,
-      status: "ok",
-      detail: here.slice(0, 7),
-    });
+    };
   }
-
-  const { patchedDescription } = dep;
-  if (patchedDescription && (await needsPatch(dep.name, patchedDescription))) {
-    findings.push({
-      kind: "skill",
-      name: `${dep.name} patch`,
-      status: "broken",
-      detail: "upstream's frontmatter is back",
-      fix: {
-        run: "local",
-        apply: () => patchSkill(dep.name, patchedDescription),
-        label: patchLabel(dep.name),
-      },
-    });
-  }
-
-  return findings;
-}
-
-export function patchLabel(name: string): string {
-  return `patch ${name}'s frontmatter`;
-}
-
-/** Runs after the fixes, because `skills update` overwrites the patched SKILL.md. */
-export async function repairPatches(
-  components: Component[],
-  store = STORE,
-): Promise<string[]> {
-  const repaired: string[] = [];
-  for (const skill of components.flatMap((c) => SPECS[c].skills)) {
-    const description = skill.patchedDescription;
-    if (description && (await needsPatch(skill.name, description, store))) {
-      await patchSkill(skill.name, description, store);
-      repaired.push(skill.name);
-    }
-  }
-  return repaired;
+  return {
+    kind: "skill",
+    name: dep.name,
+    status: "ok",
+    detail: here.slice(0, 7),
+  };
 }
 
 export async function inspect(components: Component[]): Promise<Inspection> {
@@ -229,7 +183,7 @@ export async function inspect(components: Component[]): Promise<Inspection> {
     Promise.all(toolIds.map((id) => checkTool(id))),
   ]);
 
-  return { packages, skills: skills.flat(), tools };
+  return { packages, skills, tools };
 }
 
 export function allFindings(inspection: Inspection): Finding[] {

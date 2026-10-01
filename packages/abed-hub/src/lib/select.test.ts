@@ -22,9 +22,15 @@ describe("selected", () => {
   test("names what replaced a removed component", async () => {
     for (const name of ["prs", "writing-great-prs"]) {
       await expect(selected([name], false)).rejects.toThrow(
-        `${name} was removed. Its parts are in gh-attach and unslop.`,
+        `${name} was removed. Its parts are in gh-attach and deslop.`,
       );
     }
+  });
+
+  test("names deslop as what replaced unslop", async () => {
+    await expect(selected(["unslop"], false)).rejects.toThrow(
+      "unslop was removed. Its parts are in deslop.",
+    );
   });
 
   test("still rejects a name that never existed", async () => {
@@ -39,7 +45,7 @@ describe("selected", () => {
     });
     expect(await selected([], false)).toEqual([
       "gh-attach",
-      "unslop",
+      "deslop",
       "courier",
     ]);
   });

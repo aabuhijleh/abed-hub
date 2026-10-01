@@ -19,11 +19,6 @@ abed-hub update    # upgrade whatever doctor found
 abed-hub config    # where every config file is, and what is in it
 ```
 
-The CLI also installs Cursor's [`unslop`](https://github.com/cursor/plugins) skill and patches
-it. Upstream ships it user-invoked and firing on any writing. After the patch an agent can
-call it, and only for PR titles and bodies, Slack and Jira posts, its own answers, and docs
-people read. A hand install with `bunx skills add` gets upstream's copy without the patch.
-
 ## 🧭 Or set them up by hand
 
 | Skill | Use it for | Also needs |
@@ -32,6 +27,7 @@ people read. A hand install with `bunx skills add` gets upstream's copy without 
 | [screenshots](#-gh-attach) | Take an annotated before/after image of the change. | gh-attach, and the `playwright-cli` skill |
 | [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
+| [deslop](#-deslop) | Cut AI tells from PR bodies, Slack and Jira posts, and docs. | Nothing |
 
 Set up one. Come back for the others when you need them.
 
@@ -182,6 +178,21 @@ jira attach ABC-123 ./evidence/*
 One thing to know: the Slack bot only sees channels it has been invited to, and cannot read
 human DMs. Run `/invite @<bot>` where you need it.
 
+## ✂️ deslop
+
+A list of AI tells and their rewrites, for prose people read: PR titles and bodies, Slack
+and Jira posts, an agent's answers, READMEs. It is a copy of
+[`unslop`](https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md) by
+Lauren Tan, from Cursor's pstack plugin. Upstream fires on any writing and only a person can
+invoke it. `deslop` names what it applies to, and an agent or another skill can call it.
+[CREDITS.md](skills/deslop/CREDITS.md) lists what changed and carries unslop's MIT notice.
+
+### Setup
+
+```bash
+bunx skills add aabuhijleh/abed-hub -s deslop -g
+```
+
 ## 🔐 Configuration
 
 Every tool keeps its state in one place, `$XDG_CONFIG_HOME/abed-hub/` when that is set and
@@ -211,15 +222,19 @@ and deleting the directory is a clean reset.
 
 ```bash
 bun remove -g @aabuhijleh/abed-hub @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove abed-hub gh-attach screenshots gh-stack courier playwright-cli pr unslop -g -y
+bunx skills remove abed-hub gh-attach screenshots gh-stack courier deslop playwright-cli pr -g -y
 gh extension remove github/gh-stack
 ```
 
 Skill names are positional. The `-s gh-attach,courier` form prints "No matching skills
 found" and removes nothing.
 
-Other toolsets can depend on `@playwright/cli` and the `playwright-cli`, `pr`, and `unslop`
-skills. If one does, take those names out of the first two lines.
+Other toolsets can depend on `@playwright/cli` and the `playwright-cli` and `pr` skills. If
+one does, take those names out of the first two lines.
+
+Before `deslop`, abed-hub installed Cursor's `unslop` and edited its frontmatter. A machine
+set up then still has that copy in `~/.agents/skills`, and abed-hub leaves it there. Remove
+it with `bunx skills remove unslop -g`.
 
 Chromium and your tokens stay. Chromium is shared with every other playwright install on the
 machine, and the tokens save you a browser trip next time. Delete either by hand.

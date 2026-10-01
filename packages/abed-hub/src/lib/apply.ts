@@ -3,8 +3,6 @@ import { spinner } from "./cli";
 import { dim } from "./color";
 import { capture, captureLoud } from "./exec";
 import { type Finding, needsWork } from "./finding";
-import { patchLabel, repairPatches } from "./inspect";
-import type { Component } from "./registry";
 
 export interface ApplyResult {
   done: string[];
@@ -22,7 +20,6 @@ export interface ApplyResult {
  */
 export async function applyFixes(
   findings: Finding[],
-  components: Component[],
   { upgrade }: { upgrade: boolean },
 ): Promise<ApplyResult> {
   const result: ApplyResult = {
@@ -53,13 +50,6 @@ export async function applyFixes(
       continue;
     }
 
-    if (fix.run === "local") {
-      await fix.apply();
-      p.log.success(fix.label);
-      result.done.push(fix.label);
-      continue;
-    }
-
     if (fix.loud) {
       // The child prints its own progress, so a spinner would fight it.
       p.log.step(`${fix.label}${dim("    # this takes a few minutes")}`);
@@ -82,14 +72,6 @@ export async function applyFixes(
       const output = `${stdout}${stderr}`.trim();
       if (output) p.log.message(dim(output));
       result.failed.push({ label: fix.label, message: `exit ${code}` });
-    }
-  }
-
-  for (const name of await repairPatches(components)) {
-    const label = patchLabel(name);
-    if (!result.done.includes(label)) {
-      p.log.success(label);
-      result.done.push(label);
     }
   }
 

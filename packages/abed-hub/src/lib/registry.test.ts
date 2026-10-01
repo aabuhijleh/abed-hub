@@ -16,6 +16,7 @@ describe("resolveAlias", () => {
   test("a removed name is nothing", () => {
     expect(resolveAlias("prs")).toBeNull();
     expect(resolveAlias("writing-great-prs")).toBeNull();
+    expect(resolveAlias("unslop")).toBeNull();
   });
 
   test("a real name is itself", () => {
@@ -37,16 +38,22 @@ describe("expand", () => {
   });
 });
 
-describe("unslop", () => {
+describe("deslop", () => {
   test("is a component of its own", () => {
-    expect(COMPONENTS).toContain("unslop");
-    expect(COMPONENTS).not.toContain("writing-great-prs");
+    expect(COMPONENTS).toContain("deslop");
+    expect(COMPONENTS).not.toContain("unslop");
   });
 
-  test("patches upstream's frontmatter", () => {
-    const [skill] = SPECS.unslop.skills;
-    expect(skill?.name).toBe("unslop");
-    expect(skill?.patchedDescription).toContain("PR titles and bodies");
+  test("installs abed-hub's own skill", () => {
+    expect(SPECS.deslop.skills).toEqual([
+      { name: "deslop", repo: "aabuhijleh/abed-hub", dir: "skills" },
+    ]);
+  });
+
+  test("takes over unslop and the parts of writing-great-prs", () => {
+    expect(REMOVED.unslop).toEqual(["deslop"]);
+    expect(REMOVED["writing-great-prs"]).toEqual(["gh-attach", "deslop"]);
+    expect(REMOVED.prs).toEqual(["gh-attach", "deslop"]);
   });
 });
 

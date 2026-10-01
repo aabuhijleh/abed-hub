@@ -92,4 +92,10 @@ describe("lintSkill", () => {
         .errors,
     ).toEqual(["references/old.md ships, but nothing links it"]);
   });
+
+  test("passes a CREDITS.md the body never links, since it is for people", () => {
+    expect(
+      lintSkill({ ...skill(), files: ["SKILL.md", "CREDITS.md"] }).errors,
+    ).toEqual([]);
+  });
 });

@@ -7,8 +7,6 @@ export type Kind = "package" | "skill" | "tool";
 export type Fix =
   /** A command this CLI can run. */
   | { run: "command"; argv: string[]; label: string; loud?: boolean }
-  /** An edit this CLI makes itself, with no child process. */
-  | { run: "local"; apply: () => Promise<void>; label: string }
   /** Something only the user can do: install a package manager, paste a token. */
   | { run: "manual"; label: string; hint?: string };
 

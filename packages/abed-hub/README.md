@@ -38,14 +38,14 @@ told it is missing chromium.
 | --- | --- |
 | `gh-attach` | Take an annotated screenshot and put it into a PR or issue. Brings `@playwright/cli`, chromium, and the `screenshots`, `playwright-cli`, and `pr` skills. |
 | `gh-stack` | Break a change into PRs that build on each other. |
-| `unslop` | Cut AI tells from PR bodies, Slack and Jira posts, and docs. Brings Cursor's `unslop` skill, patched. |
+| `deslop` | Cut AI tells from PR bodies, Slack and Jira posts, and docs. abed-hub's own copy of Cursor's `unslop` skill. |
 | `courier` | Move files in and out of Jira issues and Slack threads. |
 
 Name them to skip the prompt. `all` is all four.
 
-`writing-great-prs` and its alias `prs` are gone. Its parts moved to `gh-attach` and
-`unslop`. Naming either one prints that, and a saved selection that holds it reads as those
-two.
+Some names are gone. `writing-great-prs` and its alias `prs` moved to `gh-attach` and
+`deslop`, and `unslop` is now `deslop`. Naming an old one prints where it went, and a saved
+selection that holds one reads as its replacements.
 
 ```bash
 abed-hub setup gh-attach courier
@@ -53,28 +53,13 @@ abed-hub setup gh-attach courier
 
 The `abed-hub` skill installs with every selection, whichever components you pick.
 
-## The unslop patch
-
-Upstream ships `unslop` with `disable-model-invocation: true`, which stops one skill from
-reaching another, and with a description that fires on any writing. The patch removes that
-line and narrows the description to PR titles and bodies, Slack and Jira posts, agent
-answers, and docs people read. It also leaves the fixed headings and bold labels of the
-`pr` skill and of PR templates alone. `setup` applies it after installing, `update` applies
-it again after every update, and `doctor` reports `unslop patch` when upstream's
-frontmatter comes back.
-
-This check reads the installed `SKILL.md`, not the lock file. `skillFolderHash` records
-what upstream looked like at install time, so a local edit leaves it matching. The hash
-answers "is this behind upstream". Reading the frontmatter answers "has the patch been
-undone".
-
 ## Commands
 
 | Command | What it does |
 | --- | --- |
 | `abed-hub setup [components...] [--all] [--force]` | Install what is absent. Leaves anything that works alone unless `--force`. |
 | `abed-hub doctor [components...] [--all] [--json]` | Report and change nothing. Exits 1 when something is missing, behind, or broken. Warnings, such as unset Jira or Slack credentials, exit 0. |
-| `abed-hub update [components...] [--all]` | Upgrade what is behind, install what is absent, reapply the unslop patch. |
+| `abed-hub update [components...] [--all]` | Upgrade what is behind and install what is absent. |
 | `abed-hub config [components...] [--all] [--reveal] [--json]` | Print where each config file is and what is in it. Tokens masked. |
 
 Neither `setup` nor `update` touches credentials. Both print the interactive commands that

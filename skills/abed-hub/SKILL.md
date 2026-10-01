@@ -3,8 +3,8 @@ name: abed-hub
 description: >-
   Install and repair the abed-hub tools and skills with the `abed-hub` CLI. Use when
   a hub command is missing (`gh-attach`, `jira`, `slack`), when a skill is behind the
-  repo it came from, when `unslop` will not invoke, when you need where a config file
-  lives or what is in it, or for "set up abed-hub".
+  repo it came from, when you need where a config file lives or what is in it, or for
+  "set up abed-hub".
 license: MIT
 allowed-tools: Bash(abed-hub:*)
 ---
@@ -70,18 +70,6 @@ version number.
 | Packages | The global bun install is below npm's `latest`. |
 | Skills | The lock file's `skillFolderHash` no longer matches the folder on the source repo. |
 | Tools | `gh` below 2.99, signed out, no `gh-stack` extension, no chromium build, or unset Jira or Slack credentials. |
-
-## skills update undoes the unslop patch
-
-Upstream ships `unslop` user-invoked, with a description that fires on any writing. The
-patch switches model invocation on and narrows the description to PR titles and bodies,
-Slack and Jira posts, agent answers, and human docs. `setup` and `update` apply it, and
-`skills update` puts upstream's frontmatter back. When `unslop` cannot be invoked, that is
-what happened, and `abed-hub update unslop` is the repair.
-
-`doctor` reports it as `unslop patch`, separately from `unslop` itself, because the folder
-hash still matches upstream. The staleness check stays green while the skill sits there
-unusable.
 
 ## What it hands back to you
 

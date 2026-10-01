@@ -9,6 +9,8 @@ const DESCRIPTION_WARN = 1200;
 const BODY_LIMIT = 500;
 const BODY_WARN = 250;
 const REQUIRED = ["license", "allowed-tools"];
+/** Read by people, not the agent, so the body need not link them. */
+const UNLINKED = new Set(["SKILL.md", "CREDITS.md"]);
 
 export interface SkillFiles {
   /** The skill's directory name, which `name` must equal. */
@@ -106,7 +108,7 @@ export function lintSkill({ dir, text, files }: SkillFiles): Lint {
       errors.push(`links ${link}, which this skill does not ship`);
   }
   for (const file of files) {
-    if (file.endsWith(".md") && file !== "SKILL.md" && !linked.has(file)) {
+    if (file.endsWith(".md") && !UNLINKED.has(file) && !linked.has(file)) {
       errors.push(`${file} ships, but nothing links it`);
     }
   }

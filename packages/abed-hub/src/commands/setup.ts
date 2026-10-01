@@ -51,7 +51,7 @@ export default defineCommand({
     printInspection(inspection);
 
     const findings = allFindings(inspection);
-    const result = await applyFixes(findings, components, {
+    const result = await applyFixes(findings, {
       upgrade: args.force,
     });
 

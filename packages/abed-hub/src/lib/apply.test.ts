@@ -21,7 +21,6 @@ describe("a warning", () => {
         warning({ run: "manual", label: "slack setup" }),
         warning({ run: "command", argv: ["false"], label: "run false" }),
       ],
-      [],
       { upgrade: true },
     );
     expect(result.manual).toEqual(["slack setup"]);

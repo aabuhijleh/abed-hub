@@ -1,7 +1,7 @@
 export const COMPONENTS = [
   "gh-attach",
   "gh-stack",
-  "unslop",
+  "deslop",
   "courier",
 ] as const;
 
@@ -29,8 +29,6 @@ export interface SkillDep {
   repo: string;
   /** The directory holding skill folders, which is not always `skills`. */
   dir: string;
-  /** Swapped in for upstream's description when abed-hub patches the frontmatter. */
-  patchedDescription?: string;
 }
 
 export interface ConfigDep {
@@ -100,18 +98,10 @@ export const SPECS: Record<Component, ComponentSpec> = {
     skills: [{ name: "gh-stack", repo: HUB, dir: "skills" }],
     tools: ["gh", "gh-auth", "gh-stack-ext"],
   },
-  unslop: {
+  deslop: {
     summary: "Cut AI tells from PR bodies, Slack and Jira posts, and docs",
     packages: [],
-    skills: [
-      {
-        name: "unslop",
-        repo: "cursor/plugins",
-        dir: "pstack/skills",
-        patchedDescription:
-          "Cut AI tells from prose people read: PR titles and bodies, Slack and Jira posts, agent answers, READMEs and other human docs. Leave the fixed headings and bold labels of the `pr` skill and of PR templates as they are.",
-      },
-    ],
+    skills: [{ name: "deslop", repo: HUB, dir: "skills" }],
     tools: [],
   },
   courier: {
@@ -136,8 +126,9 @@ export function isComponent(value: string): value is Component {
 
 /** Names that used to be components, and the ones that took over their parts. */
 export const REMOVED: Record<string, Component[]> = {
-  "writing-great-prs": ["gh-attach", "unslop"],
-  prs: ["gh-attach", "unslop"],
+  "writing-great-prs": ["gh-attach", "deslop"],
+  prs: ["gh-attach", "deslop"],
+  unslop: ["deslop"],
 };
 
 export function removedMessage(name: string): string | null {
