@@ -9,7 +9,7 @@
 <!-- Before and after. A screenshot in the app's default light theme if the change is visible, otherwise the test or output that failed before and passes now. Then the steps or route a reviewer can follow to try it. -->
 
 - **Before:**
-  **After:**
+- **After:**
 
 ## Merge Danger
 
