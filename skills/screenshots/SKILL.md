@@ -32,9 +32,6 @@ goes out as it is.
   or the test the PR adds: the actual names, the 60 s timeout, "19 results, now 24".
 - **Before shows the failure** the way the user met it: the error they saw, the wrong value,
   the row that went missing. After shows the same case working.
-- **Draw what stopped.** When the fix is that something no longer happens, such as a record
-  no longer created, a message no longer sent or a step skipped, After keeps its place as an
-  empty slot and marks the slot.
 - **One change, one shape.** Draw each change once. A flow and a table of the same change
   say it twice.
 - **One image per question.** A PR or thread can carry several images, and each answers one
@@ -85,9 +82,9 @@ playwright-cli -s=shots eval "$(cat /tmp/highlight.js)" "<selector>"
 playwright-cli -s=shots screenshot "#shot-region" --hires --filename=/abs/path/after.png
 ```
 
-For an empty slot, set `EMPTY` to a few words for it ("Not created") and point `<selector>`
-at the element now in its place. The script draws the slot before that element and rings
-it.
+When the fix is that something no longer appears on the page, the after shot rings an
+empty slot where it was. Set `EMPTY` to a few words for it ("Not created") and point
+`<selector>` at the element now in its place.
 
 `<selector>` is a snapshot ref (`e12`) or a selector that matches one element
 (`table tr:nth-child(3) td.status`). The region is the element plus 16px. Raise `pad` in
@@ -100,14 +97,14 @@ Skip steps 1 and 2. Build the before and the after as HTML inside step 3's panel
 classes in [`frame.css`](frame.css). Pick the shape that shows the problem:
 
 - **Flow or states:** one `.lane` per side, steps as `.node`, edges as `.to` with an
-  optional label. Unchanged steps line up across the lanes.
+  optional label. Unchanged steps line up across the lanes, and a step the fix removes is
+  left out of the after lane.
 - **Table:** one table, cases down the side, a `before` and an `after` column, and a `tfoot`
   total when a count proves the fix. Suits a rule that treats cases differently.
 - **Timeline:** `.time` rails on a shared clock, for a change in what runs when or at once.
   A `.cut` marks a deadline such as a timeout.
-- **Order:** a `.cols` strip, for where a column, record or step lands.
-
-A `.gap` is an empty slot in any shape: a node, a cell, a bar or a column.
+- **Order:** a `.cols` strip, for where a column, record or step lands. A `.gap` marks one
+  that is missing.
 
 `<mark>` goes on what changed. A flow, with the state change on its edge label:
 
