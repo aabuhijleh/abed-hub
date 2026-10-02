@@ -1,0 +1,280 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&display=block");
+:root {
+  --ink: #111;
+  --paper: #fffdf7;
+  --ground: #ffd84d;
+  --was: #ff8a6b;
+  --was-ink: #9a3a22;
+  --was-tint: #ffe1d8;
+  --now: #5b5bf7;
+  --now-tint: #e3e3ff;
+  --quiet: #6b6b6b;
+}
+html {
+  background: var(--ground);
+  color: var(--ink);
+}
+body {
+  margin: 28px;
+  font:
+    600 15px / 1.4 Archivo,
+    system-ui,
+    sans-serif;
+}
+h1 {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.panel {
+  display: grid;
+  gap: 22px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  padding: 24px;
+}
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 2.5px solid var(--ink);
+  font-weight: 900;
+}
+.before .tag,
+th.before {
+  background: var(--was);
+}
+.after .tag,
+th.after {
+  background: var(--now);
+  color: #fff;
+}
+.side {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  justify-items: start;
+}
+.side > :not(.tag) {
+  justify-self: stretch;
+}
+.note {
+  font-weight: 700;
+}
+.before .note {
+  color: var(--was-ink);
+}
+.after .note {
+  color: var(--now);
+}
+
+/* screenshots */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.shot {
+  display: block;
+  width: 100%;
+  outline: 1px solid rgb(17 17 17 / 0.2);
+  background: #fff;
+}
+
+/* lanes: flow, states, where data lives */
+.lane {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+.node {
+  padding: 8px 14px;
+  border: 2.5px solid var(--ink);
+  background: #fff;
+  white-space: nowrap;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.to {
+  flex: none;
+  min-width: 44px;
+  padding: 0 6px 16px;
+  margin-bottom: -16px;
+  text-align: center;
+  font-size: 12px;
+  background:
+    linear-gradient(var(--ink), var(--ink)) left calc(100% - 15px) / 100% 3px
+    no-repeat;
+}
+.before mark.node {
+  background: var(--was-tint);
+  color: var(--was-ink);
+  box-shadow: none;
+}
+.after mark.node {
+  background: var(--now);
+  color: #fff;
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+/* table: one table, a column per side */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: #fff;
+}
+th,
+td {
+  padding: 9px 12px;
+  text-align: left;
+  border: 2.5px solid var(--ink);
+}
+th {
+  font-weight: 900;
+  background: var(--ink);
+  color: #fff;
+}
+th.before {
+  color: var(--ink);
+}
+td small {
+  color: var(--quiet);
+  font-weight: 500;
+}
+td.before mark {
+  background: var(--was-tint);
+  color: var(--was-ink);
+  padding: 2px 8px;
+}
+td.after mark {
+  background: var(--now);
+  color: #fff;
+  font-weight: 900;
+  padding: 2px 8px;
+}
+tfoot td {
+  font-weight: 900;
+  background: var(--paper);
+}
+
+/* order: a strip of columns, records or steps */
+.cols {
+  display: flex;
+}
+.cols > * {
+  flex: 1;
+  padding: 10px 6px;
+  text-align: center;
+  border: 2.5px solid var(--ink);
+  margin-left: -2.5px;
+  background: #fff;
+}
+.cols small {
+  display: block;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--quiet);
+}
+.before .cols > mark {
+  background: var(--was-tint);
+  color: var(--was-ink);
+}
+.after .cols > mark {
+  background: var(--now);
+  color: #fff;
+  font-weight: 900;
+}
+.after .cols > mark small {
+  color: var(--now-tint);
+}
+.cols > .gap {
+  background: repeating-linear-gradient(45deg, #fff 0 6px, #eee 6px 12px);
+  color: var(--quiet);
+}
+
+/* timeline: --span is the clock length; each bar sits at --at and runs to --to, in the same unit */
+.time {
+  position: relative;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  row-gap: 10px;
+  align-items: center;
+  padding-top: 26px;
+}
+.time > i {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--quiet);
+}
+.rail {
+  position: relative;
+  z-index: 1;
+  height: 34px;
+}
+.rail > * {
+  position: absolute;
+  left: calc(var(--at) / var(--span) * 100%);
+  top: 0;
+  height: 30px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 14px;
+  border: 2.5px solid var(--ink);
+  background: #fff;
+}
+.rail > [style*="--to"] {
+  width: calc((var(--to) - var(--at)) / var(--span) * 100%);
+}
+.rail > .wait {
+  border-style: dashed;
+  background: var(--now-tint);
+}
+.rail > .fail {
+  background: var(--was);
+}
+.rail > .win {
+  background: var(--now);
+  color: #fff;
+  font-weight: 900;
+}
+.rail > .end {
+  transform: translateX(-100%);
+}
+.cut {
+  position: absolute;
+  left: calc(90px + (100% - 90px) * var(--at) / var(--span));
+  top: 26px;
+  bottom: -6px;
+  border-left: 3px dashed var(--was-ink);
+}
+.cut > b {
+  position: absolute;
+  left: 6px;
+  top: -24px;
+  color: var(--was-ink);
+  white-space: nowrap;
+  font-size: 13px;
+}
+.axis {
+  grid-column: 2;
+  position: relative;
+  height: 18px;
+  border-top: 2px solid var(--ink);
+  padding-top: 4px;
+  color: var(--quiet);
+  font-size: 12px;
+}
+.axis > span {
+  position: absolute;
+  left: calc(var(--at) / var(--span) * 100%);
+  transform: translateX(-50%);
+}
+.axis > span:first-child {
+  transform: none;
+}
