@@ -72,19 +72,15 @@ playwright-cli -s=shots screenshot "<selector>" --hires --filename=/abs/path/aft
 
 When the change sits in a larger view the reader needs, such as a busy screen where it is
 one row among many, spotlight it with [`highlight.js`](highlight.js) from this skill's
-folder. It rings the element, darkens the rest, and labels the change ("Stays active at
-13/13"). Set `BEFORE` to `true` for the before shot:
+folder. It rings the element, darkens the rest, and hangs a label naming the change ("Stays
+active at 13/13") under the ring's bottom-right corner. Set `BEFORE` to `true` for the
+before shot:
 
 ```bash
-sed -e 's/LABEL/Stays active at 13\/13/' -e 's/BEFORE/false/' -e 's/SPOT/auto/' <skill-dir>/highlight.js > /tmp/highlight.js
-playwright-cli -s=shots --raw eval "$(cat /tmp/highlight.js)" "<selector>"
+sed -e 's/LABEL/Stays active at 13\/13/' -e 's/BEFORE/false/' <skill-dir>/highlight.js > /tmp/highlight.js
+playwright-cli -s=shots eval "$(cat /tmp/highlight.js)" "<selector>"
 playwright-cli -s=shots screenshot "#shot-region" --hires --filename=/abs/path/after.png
 ```
-
-The label sits in the same corner on both sides, so the reader looks in one place. The
-`eval` prints `free`, the spots where the label covers nothing, best first. Run it with
-`SPOT` as `auto` on both sides, take the first spot in both `free` lists, then run both
-again with `SPOT` set to it (`inside bottom-right`) before shooting.
 
 `<selector>` is a snapshot ref (`e12`) or a selector that matches one element
 (`table tr:nth-child(3) td.uploader`). The region is the element plus 16px. Raise `pad` in
@@ -181,8 +177,7 @@ when all of these hold:
 - A reader who knows only the bug report can tell from the image alone what went wrong and
   what is fixed.
 - `<mark>` or the ring sits on what changed, and nothing else draws the eye.
-- The ring's label sits in the same spot on both sides and covers no text or control. When
-  no spot is free on both, shorten the label.
+- The ring's label hides no neighbour the reader needs. When it does, shorten the label.
 - Every word is readable at the posted width, and the sides line up where they match.
 
 Anything else, fix the selector, state, content or frame and shoot again.
