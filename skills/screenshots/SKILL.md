@@ -11,9 +11,7 @@ allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), B
 
 # Screenshots
 
-This skill makes the image that fills a PR's Evidence section, or goes with a Slack message
-or Jira ticket. The PR's headings and prose come from `/pr` or the repo's template. This
-skill writes only the image.
+This skill makes the image only. The PR's prose comes from `/pr` or the repo's template.
 
 ## When to shoot
 
@@ -30,28 +28,21 @@ goes out as it is.
 
 ## What the image says
 
-The image shows the problem and its fix, and the diagram does the talking.
-
-- **The real case.** Use the record, ticket, input and numbers from the bug report or the
-  PR's own reproduction: the actual row labels, the 60 s timeout, "19 candidates, now 24".
-  A reader who knows the bug recognises it at once.
+- **The real case.** Use the record, input and numbers from the PR description, the ticket,
+  or the test the PR adds: the actual row labels, the 60 s timeout, "19 candidates, now 24".
 - **Before shows the failure** the way the user met it: the error they saw, the wrong value,
   the row that went missing. After shows the same case working.
 - **One change, one shape.** Draw each change once. A flow and a table of the same change
   say it twice.
 - **One image per question.** A PR or thread can carry several images, and each answers one
   question: one per UI change, one for the backend and one for the frontend, one for the
-  fix and one for the checks that nothing else broke. A check tile is an `after` side tagged
-  with its case ("Text, 110%").
+  fix and one for the checks that nothing else broke.
 - **Anchors, not context.** Keep what changed and one unchanged neighbour on each side, so
   the reader sees where it sits. Cut the rest.
 - **Few words.** A title only when the diagram needs one, naming the case ("Onboarding a
   3,441-row model"). No caption paragraph. A side gets at most one short `.note` line, and
   only when the picture can't say it.
 - **The reader's words.** Domain terms from the repo's glossary, not function names.
-
-Read the PR description, the ticket and the diff before choosing the shape. The case is in
-the description's Why, the reproduction steps, or the test the PR adds.
 
 ## 1. Open the page at 2x
 
@@ -81,9 +72,8 @@ playwright-cli -s=shots screenshot "<selector>" --hires --filename=/abs/path/aft
 
 When the change sits in a larger view the reader needs, such as a busy screen where it is
 one row among many, spotlight it with [`highlight.js`](highlight.js) from this skill's
-folder. It rings the element in the side's colour, darkens the rest, and puts a label
-naming the change ("Stays active at 13/13") in the ring's bottom-right corner, so the rows
-around it stay readable. Set `BEFORE` to `true` for the before shot, which rings in coral:
+folder. It rings the element, darkens the rest, and labels the change ("Stays active at
+13/13"). Set `BEFORE` to `true` for the before shot:
 
 ```bash
 sed -e 's/LABEL/Stays active at 13\/13/' -e 's/BEFORE/false/' <skill-dir>/highlight.js > /tmp/highlight.js
@@ -182,8 +172,7 @@ gh-attach shot /abs/path/frame.html /abs/path/evidence.png --width 948
 Read every PNG you made, the crops and the framed image, with the Read tool. Post it only
 when all of these hold:
 
-- It shows the page you meant, not a blank or `about:blank` frame. Each illustration
-  matches the code on its side.
+- It shows the page you meant, not a blank or `about:blank` frame.
 - A reader who knows only the bug report can tell from the image alone what went wrong and
   what is fixed.
 - `<mark>` or the ring sits on what changed, and nothing else draws the eye.
@@ -197,8 +186,6 @@ Anything else, fix the selector, state, content or frame and shoot again.
   files and URLs.
 - A screenshot of a page that never loaded saves `about:blank` and exits 0. The URL check
   in step 1 catches it.
-- A page with smooth scrolling moves after the script measures, and the ring lands off the
-  element. The script scrolls with `behavior: "instant"` for this reason; keep it.
 - The marks are `position: fixed`, so the region has to fit in the viewport. For a taller
   element, `playwright-cli -s=shots resize 1280 1600` and run the script again.
 - `playwright-cli -s=shots close` when done. A session left open keeps the browser running.
