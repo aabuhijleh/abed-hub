@@ -11,8 +11,11 @@
   target.scrollIntoView({ block: "center", behavior: "instant" });
   const r = target.getBoundingClientRect();
   function emptySlot(next, text) {
+    const box = next.getBoundingClientRect();
+    const css = getComputedStyle(next);
     const row = next.tagName === "TR";
-    const slot = document.createElement(row ? "tr" : "div");
+    const kept = row || ["TD", "TH", "LI"].includes(next.tagName);
+    const slot = document.createElement(kept ? next.tagName : "div");
     slot.className = "shot-empty";
     const cell = row
       ? slot.appendChild(
@@ -23,18 +26,26 @@
       : slot;
     cell.textContent = text;
     Object.assign(cell.style, {
-      height: `${next.getBoundingClientRect().height}px`,
+      height: `${box.height}px`,
       boxSizing: "border-box",
-      padding: "0 16px",
+      padding: box.height < 28 ? "0 6px" : "0 16px",
+      overflow: "hidden",
+      whiteSpace: "nowrap",
       textAlign: "center",
       verticalAlign: "middle",
       color: "#555",
-      font: "italic 600 14px system-ui, sans-serif",
+      font: `italic 600 ${Math.min(14, box.height - 6)}px/${box.height}px system-ui, sans-serif`,
       background: "repeating-linear-gradient(45deg, #fff 0 8px, #eee 8px 16px)",
       outline: "2px dashed #999",
-      outlineOffset: "-6px",
+      outlineOffset: box.height < 28 ? "-2px" : "-6px",
     });
-    if (!row) Object.assign(cell.style, { display: "grid", placeItems: "center" });
+    if (!row) {
+      Object.assign(slot.style, { minWidth: `${box.width}px`, margin: css.margin });
+    }
+    if (!kept) {
+      const inline = css.display.startsWith("inline");
+      slot.style.display = inline ? "inline-block" : "block";
+    }
     next.before(slot);
     return slot;
   }
