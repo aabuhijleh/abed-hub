@@ -139,7 +139,7 @@ slack thread https://acme.slack.com/archives/C0123456789/p1700000000000000
 
    Ada Lovelace · 2026-08-26T09:34:14.000Z
    the nightly export failed again
-     • F0BSC0Y4FGF · error.log (text/plain, 4.2 KB)
+     • F0123456789 · error.log (text/plain, 4.2 KB)
 ```
 
 Files come down, then go up somewhere else.

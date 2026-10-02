@@ -11,7 +11,7 @@ export default defineCommand({
   args: {
     channel: {
       type: "positional",
-      description: "Channel id (e.g. C0BES8Q6YTT)",
+      description: "Channel id (e.g. C0123456789)",
       required: false,
     },
     ts: {

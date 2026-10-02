@@ -9,15 +9,15 @@ describe("parseMessageRef", () => {
   test("parses a permalink", () => {
     expect(
       parseMessageRef(
-        "https://acme.slack.com/archives/C0BES8Q6YTT/p1784898961624539",
+        "https://acme.slack.com/archives/C0123456789/p1784898961624539",
       ),
-    ).toEqual({ channel: "C0BES8Q6YTT", ts: "1784898961.624539" });
+    ).toEqual({ channel: "C0123456789", ts: "1784898961.624539" });
   });
 
   test("inserts the dot exactly 6 digits from the end", () => {
     // p + 10-digit epoch + 6-digit sequence. Off by one here and Slack 404s.
     const { ts } = parseMessageRef(
-      "https://acme.slack.com/archives/C0BES8Q6YTT/p1752160000123456",
+      "https://acme.slack.com/archives/C0123456789/p1752160000123456",
     );
     expect(ts).toBe("1752160000.123456");
     expect(ts.split(".")[1]).toHaveLength(6);
@@ -27,10 +27,10 @@ describe("parseMessageRef", () => {
   test("prefers the thread parent and keeps the linked reply as focusTs", () => {
     expect(
       parseMessageRef(
-        "https://acme.slack.com/archives/C0BES8Q6YTT/p1784898961624539?thread_ts=1784898000.000100&cid=C0BES8Q6YTT",
+        "https://acme.slack.com/archives/C0123456789/p1784898961624539?thread_ts=1784898000.000100&cid=C0123456789",
       ),
     ).toEqual({
-      channel: "C0BES8Q6YTT",
+      channel: "C0123456789",
       ts: "1784898000.000100",
       focusTs: "1784898961.624539",
     });
@@ -39,23 +39,23 @@ describe("parseMessageRef", () => {
   test("ignores thread_ts when it is the linked message itself", () => {
     expect(
       parseMessageRef(
-        "https://acme.slack.com/archives/C0BES8Q6YTT/p1784898961624539?thread_ts=1784898961.624539",
+        "https://acme.slack.com/archives/C0123456789/p1784898961624539?thread_ts=1784898961.624539",
       ),
-    ).toEqual({ channel: "C0BES8Q6YTT", ts: "1784898961.624539" });
+    ).toEqual({ channel: "C0123456789", ts: "1784898961.624539" });
   });
 
   test("prefers the cid param over the path segment", () => {
     expect(
       parseMessageRef(
-        "https://acme.slack.com/archives/C0OTHER123/p1784898961624539?cid=C0BES8Q6YTT",
+        "https://acme.slack.com/archives/C0OTHER123/p1784898961624539?cid=C0123456789",
       ).channel,
-    ).toBe("C0BES8Q6YTT");
+    ).toBe("C0123456789");
   });
 
   test("parses a bare channel and timestamp, as one arg or two", () => {
-    const expected = { channel: "C0BES8Q6YTT", ts: "1784898961.624539" };
-    expect(parseMessageRef("C0BES8Q6YTT 1784898961.624539")).toEqual(expected);
-    expect(parseMessageRef("C0BES8Q6YTT", "1784898961.624539")).toEqual(
+    const expected = { channel: "C0123456789", ts: "1784898961.624539" };
+    expect(parseMessageRef("C0123456789 1784898961.624539")).toEqual(expected);
+    expect(parseMessageRef("C0123456789", "1784898961.624539")).toEqual(
       expected,
     );
   });
@@ -74,48 +74,48 @@ describe("parseMessageRef", () => {
   test("rejects junk", () => {
     expect(() => parseMessageRef("")).toThrow(/required/);
     expect(() => parseMessageRef("not a link")).toThrow(/Could not parse/);
-    expect(() => parseMessageRef("C0BES8Q6YTT 1784898961")).toThrow(
+    expect(() => parseMessageRef("C0123456789 1784898961")).toThrow(
       /Not a Slack timestamp/,
     );
     expect(() => parseMessageRef("https://acme.slack.com/team/U123")).toThrow(
       /Not a Slack message permalink/,
     );
     expect(() =>
-      parseMessageRef("https://acme.slack.com/archives/C0BES8Q6YTT"),
+      parseMessageRef("https://acme.slack.com/archives/C0123456789"),
     ).toThrow(/no message timestamp/);
   });
 });
 
 describe("parsePostTarget", () => {
   test("a bare channel id posts top-level", () => {
-    expect(parsePostTarget("C0BES8Q6YTT")).toEqual({ channel: "C0BES8Q6YTT" });
-    expect(parsePostTarget("c0bes8q6ytt")).toEqual({ channel: "C0BES8Q6YTT" });
+    expect(parsePostTarget("C0123456789")).toEqual({ channel: "C0123456789" });
+    expect(parsePostTarget("c0abc123def")).toEqual({ channel: "C0ABC123DEF" });
   });
 
   test("a permalink replies under the message it points at", () => {
     expect(
       parsePostTarget(
-        "https://acme.slack.com/archives/C0BES8Q6YTT/p1784898961624539",
+        "https://acme.slack.com/archives/C0123456789/p1784898961624539",
       ),
-    ).toEqual({ channel: "C0BES8Q6YTT", threadTs: "1784898961.624539" });
+    ).toEqual({ channel: "C0123456789", threadTs: "1784898961.624539" });
   });
 
   test("a link to a reply threads under the parent, the only ts Slack accepts", () => {
     expect(
       parsePostTarget(
-        "https://acme.slack.com/archives/C0BES8Q6YTT/p1784898961624539?thread_ts=1784898000.000100",
+        "https://acme.slack.com/archives/C0123456789/p1784898961624539?thread_ts=1784898000.000100",
       ),
-    ).toEqual({ channel: "C0BES8Q6YTT", threadTs: "1784898000.000100" });
+    ).toEqual({ channel: "C0123456789", threadTs: "1784898000.000100" });
   });
 
   test("--thread wins over a channel id and over a permalink's ts", () => {
-    expect(parsePostTarget("C0BES8Q6YTT", "1784898000.000100")).toEqual({
-      channel: "C0BES8Q6YTT",
+    expect(parsePostTarget("C0123456789", "1784898000.000100")).toEqual({
+      channel: "C0123456789",
       threadTs: "1784898000.000100",
     });
     expect(
       parsePostTarget(
-        "https://acme.slack.com/archives/C0BES8Q6YTT/p1784898961624539",
+        "https://acme.slack.com/archives/C0123456789/p1784898961624539",
         "1784898000.000100",
       ).threadTs,
     ).toBe("1784898000.000100");
@@ -126,8 +126,8 @@ describe("parsePostTarget", () => {
     expect(() => parsePostTarget("#general")).toThrow(
       /Channel names cannot be/,
     );
-    expect(() => parsePostTarget("U07NXFDA41X")).toThrow(/is a user id/);
-    expect(() => parsePostTarget("C0BES8Q6YTT", "1784898961")).toThrow(
+    expect(() => parsePostTarget("U0123456789")).toThrow(/is a user id/);
+    expect(() => parsePostTarget("C0123456789", "1784898961")).toThrow(
       /Not a Slack timestamp/,
     );
   });
@@ -141,7 +141,7 @@ describe("assertReadableChannel", () => {
   });
 
   test("allows public and private channels", () => {
-    expect(() => assertReadableChannel("C0BES8Q6YTT")).not.toThrow();
+    expect(() => assertReadableChannel("C0123456789")).not.toThrow();
     expect(() => assertReadableChannel("G012345")).not.toThrow();
   });
 });
