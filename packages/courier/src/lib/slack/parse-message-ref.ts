@@ -4,7 +4,7 @@ const CHANNEL_ID_RE = /^[CGD][A-Z0-9]+$/i;
 const TS_RE = /^\d{10}\.\d{1,6}$/;
 
 export type MessageRef = {
-  /** Channel/group/DM id, e.g. C0BES8Q6YTT. */
+  /** Channel/group/DM id, e.g. C0123456789. */
   channel: string;
   /** Thread parent timestamp — what conversations.replies wants. */
   ts: string;
@@ -37,7 +37,7 @@ export function parseMessageRef(input: string, second?: string): MessageRef {
     );
   }
 
-  // Two bare args: `C0BES8Q6YTT 1752160000.123456`
+  // Two bare args: `C0123456789 1752160000.123456`
   const parts = second ? [trimmed, second.trim()] : trimmed.split(/\s+/);
   const [bareChannel, bareTs] = parts;
   if (

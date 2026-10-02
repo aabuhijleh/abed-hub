@@ -1,19 +1,17 @@
 ---
 name: screenshots
 description: >-
-  Make an evidence image: highlight the changed element, crop to it, and frame it with a
-  caption and before/after labels. Use for a screenshot, an evidence image, a before/after,
-  or an image attachment for a PR, Slack message or Jira ticket, including an illustration of
-  how a change behind the UI reworks the logic or the data flow.
+  Make evidence images: highlight each changed element, crop to it, and frame it with
+  before/after labels. Use for screenshots, evidence images, before/afters, or image
+  attachments for a PR, Slack message or Jira ticket, including illustrations of how a
+  change behind the UI reworks the logic or the data flow.
 license: MIT
-allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*)
+allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*)
 ---
 
 # Screenshots
 
-This skill makes the image that fills a PR's Evidence section, or goes with a Slack message
-or Jira ticket. The PR's headings and prose come from `/pr` or the repo's template. This
-skill writes only the image.
+This skill makes the image only. The PR's prose comes from `/pr` or the repo's template.
 
 ## When to shoot
 
@@ -21,33 +19,36 @@ skill writes only the image.
 - **Behind the UI:** an illustration, when the diff makes the change hard to follow: reworked
   logic, a new path through the work, data that now flows somewhere else.
   [Step 2b](#2b-illustrate-a-change-behind-the-ui), then step 3.
+- **Text:** a change to docs, a README, copy or config goes in the PR as a ```diff block.
+  An image of text is larger and harder to read than the diff.
 
-An illustration simplifies. It shows what changed, from what to what, where, and why the after
-state fixes the problem, in less than the diff takes to read. Leave it out when a reader
-gets the change at a glance, as with a dependency bump or a rename. Command output and test
-runs stay as text in the PR.
+Leave the image out when a reader gets the change at a glance, as with a dependency bump or
+a rename. Command output and test runs stay as text in the PR. An image the user handed you
+goes out as it is.
 
-An image the user handed you goes out as it is.
+## What the image says
 
-Every image you make:
-
-- **One idea.** One changed element or behaviour, or one before/after pair of it.
-- **Highlighted.** On a page, a ring and a short label on the changed element, the rest
-  dimmed. In an illustration, `<mark>` on the changed step, row or value.
-- **Cropped.** The changed element and a little context, never the full page. In an
-  illustration, what changed and its neighbours, never the whole system.
-- **Captioned.** A title and one line on the image itself: what changed, and for a fix,
-  why the after state fixes it.
-- **Labelled.** Before and after, side by side or stacked.
-- **The app's default theme.** Light unless the app ships dark by default. When the app
-  follows the system, set it: `playwright-cli -s=shots set-color-scheme light`.
-  Illustrations are light.
-- **Sized for where it lands.** 948px wide for GitHub, 1200px for Slack.
+- **The real case.** Use the record, input and numbers from the PR description, the ticket,
+  or the test the PR adds: the actual names, the 60 s timeout, "19 results, now 24".
+- **Before shows the failure** the way the user met it: the error they saw, the wrong value,
+  the row that went missing. After shows the same case working.
+- **One change, one shape.** Draw each change once. A flow and a table of the same change
+  say it twice.
+- **One image per question.** A PR or thread can carry several images, and each answers one
+  question: one per UI change, one for the backend and one for the frontend, one for the
+  fix and one for the checks that nothing else broke.
+- **Anchors, not context.** Keep what changed and one unchanged neighbour on each side, so
+  the reader sees where it sits. Cut the rest.
+- **Few words.** A title only when the diagram needs one, naming the case ("Importing a
+  3,441-row CSV"). No caption paragraph. A side gets at most one short `.note` line, and
+  only when the picture can't say it.
+- **The reader's words.** Domain terms from the repo's glossary, not function names.
 
 ## 1. Open the page at 2x
 
 The default session is 1x, which blurs once the frame scales the crop. Open a named session
-with a 2x config:
+with a 2x config, in the app's default theme (`playwright-cli -s=shots set-color-scheme
+light` when it follows the system):
 
 ```bash
 printf '{ "browser": { "contextOptions": { "deviceScaleFactor": 2, "viewport": { "width": 1280, "height": 900 } } } }\n' > /tmp/shots.config.json
@@ -60,149 +61,131 @@ Skill tool with `playwright-cli` for the commands. For a before/after pair, shoo
 selector, viewport and theme twice: the base state first (the default branch, or what is
 deployed), then the branch.
 
-## 2. Highlight and crop
+## 2. Crop, and spotlight when the crop is busy
 
-Write the snippet with `LABEL` replaced by a few words naming the change ("New: config
-command", "Uploader now set"):
+Crop to the smallest element that changed: the cell, not the table. When that crop holds
+only the change, shoot it plain. The Before and After tags carry the comparison:
 
 ```bash
-cat > /tmp/highlight.js <<'EOF'
-el => {
-  const label = "LABEL";
-  const pad = 24;
-  document.querySelectorAll(".shot-mark").forEach((n) => n.remove());
-  el.scrollIntoView({ block: "center", behavior: "instant" });
-  const r = el.getBoundingClientRect();
-  const mark = (css, text = "") => {
-    const n = Object.assign(document.createElement("div"), { className: "shot-mark", textContent: text });
-    Object.assign(n.style, { position: "fixed", zIndex: "2147483647", pointerEvents: "none", boxSizing: "border-box" }, css);
-    document.documentElement.append(n);
-    return n;
-  };
-  const ring = { left: r.left - 4, top: r.top - 4, width: r.width + 8, height: r.height + 8 };
-  const px = (box) => Object.fromEntries(Object.entries(box).map(([k, v]) => [k, `${v}px`]));
-  mark({ ...px(ring), border: "3px solid #e5484d", borderRadius: "6px", boxShadow: "0 0 0 100vmax rgb(0 0 0 / 0.35)" });
-  mark({ ...px({ left: ring.left, top: ring.top - 24 }), height: "24px", padding: "2px 8px", borderRadius: "4px 4px 0 0",
-    background: "#e5484d", color: "#fff", font: "600 13px/20px system-ui, sans-serif" }, label);
-  mark(px({ left: Math.max(ring.left - pad, 0), top: Math.max(ring.top - 24 - pad, 0),
-    width: ring.width + 2 * pad, height: ring.height + 24 + 2 * pad })).id = "shot-region";
-}
-EOF
+playwright-cli -s=shots screenshot "<selector>" --hires --filename=/abs/path/after.png
+```
+
+When the change sits in a larger view the reader needs, such as a busy screen where it is
+one row among many, spotlight it with [`highlight.js`](highlight.js) from this skill's
+folder. It rings the element, darkens the rest, and hangs a label naming the change ("Stays
+active at 13/13") under the ring's bottom-right corner. Set `BEFORE` to `true` for the
+before shot:
+
+```bash
+sed -e 's/LABEL/Stays active at 13\/13/' -e 's/BEFORE/false/' -e 's/EMPTY//' <skill-dir>/highlight.js > /tmp/highlight.js
 playwright-cli -s=shots eval "$(cat /tmp/highlight.js)" "<selector>"
 playwright-cli -s=shots screenshot "#shot-region" --hires --filename=/abs/path/after.png
 ```
 
+When the fix is that something no longer appears on the page, the after shot rings an
+empty slot where it was. Set `EMPTY` to a few words for it ("Not created") and point
+`<selector>` at the element now in its place.
+
 `<selector>` is a snapshot ref (`e12`) or a selector that matches one element
-(`table tr:nth-child(3) td.uploader`, `.markdown-body pre >> nth=0`). Pick the smallest
-element that changed: the cell, not the table. The snippet adds a transparent
-`#shot-region` box around the ring, so the screenshot is the element plus `pad` pixels of
-context. Raise `pad` for more context. Run the snippet again after any navigation or
-re-render, since the marks go with the old DOM.
+(`table tr:nth-child(3) td.status`). The region is the element plus 16px. Raise `pad` in
+the script for more context. Run it again after any navigation or re-render, since the
+marks go with the old DOM.
 
 ## 2b. Illustrate a change behind the UI
 
-Skip steps 1 and 2. Build the before and the after as HTML, each in a `figure` of step 3's
-frame in place of the `img`. Use whatever shape makes the change clearest. The common ones:
+Skip steps 1 and 2. Build the before and the after as HTML inside step 3's panel, using the
+classes in [`frame.css`](frame.css). Pick the shape that shows the problem:
 
-- **Flow:** boxes and arrows for the steps a request, task or record goes through.
-- **Table:** cases or records down the side and what each one gets. Suits a rule or a
-  calculation that treats cases differently.
-- **Timeline:** the order things happen in, when the change moves a step or changes what
-  runs at once.
-- **States:** the states a record moves through, and what moves it.
-- **Where data lives:** which table or field holds a value, and where it now comes from.
+- **Flow or states:** one `.lane` per side, steps as `.node`, edges as `.to` with an
+  optional label. Unchanged steps line up across the lanes, and a step the fix removes is
+  left out of the after lane.
+- **Table:** one table, cases down the side, a `before` and an `after` column, and a `tfoot`
+  total when a count proves the fix. Suits a rule that treats cases differently.
+- **Timeline:** `.time` rails on a shared clock, for a change in what runs when or at once.
+  A `.cut` marks a deadline such as a timeout.
+- **Order:** a `.cols` strip, for where a column, record or step lands. A `.gap` marks one
+  that is missing.
 
-Name things in the reader's words, the domain terms from the repo's glossary rather than
-function names. Keep what changed and one neighbour on each side. Build each side from the
-code on that side: the base branch for Before, your branch for After.
-
-A flow:
+`<mark>` goes on what changed. A flow, with the state change on its edge label:
 
 ```html
-<figure class="before"><figcaption>Before</figcaption>
-  <div class="flow"><span class="node">Account created</span>→<span class="node">Email verified</span>→<mark class="node">Welcome email skips invited accounts</mark></div>
-</figure>
-<figure class="after"><figcaption>After</figcaption>
-  <div class="flow"><span class="node">Account created</span>→<span class="node">Email verified</span>→<mark class="node">Welcome email goes to every verified account</mark></div>
-  <p class="why">Invited accounts get the welcome email they were missing.</p>
-</figure>
+<div class="side before"><span class="tag">Before</span>
+  <div class="lane"><span class="node">Placed</span><span class="to">card declined</span><mark class="node">Cancelled</mark></div></div>
+<div class="side after"><span class="tag">After</span>
+  <div class="lane"><span class="node">Placed</span><span class="to">card declined</span><mark class="node">Awaiting payment</mark><span class="to">paid within 3 days</span><span class="node">Paid</span></div></div>
 ```
 
-A table, one per side:
+A table:
 
 ```html
-<figure class="after"><figcaption>After</figcaption>
-  <table>
-    <tr><th>Account</th><th>Welcome email</th></tr>
-    <tr><td>Signed up</td><td>Sent on verify</td></tr>
-    <tr><td>Invited</td><td><mark>Sent on verify</mark></td></tr>
-  </table>
-</figure>
+<table>
+  <thead><tr><th>Invoice</th><th class="before">Before</th><th class="after">After</th></tr></thead>
+  <tr><td>Annual, first year</td><td>$408</td><td>$408</td></tr>
+  <tr><td>Annual, renewal</td><td class="before"><mark>$480</mark></td><td class="after"><mark>$408</mark></td></tr>
+</table>
 ```
 
-The `.why` line under the after side says why it fixes the problem. Stack one `.flow` per
-branch for a path that splits.
+A timeline, with `--span` and every `--at` and `--to` in seconds:
+
+```html
+<div class="side before"><span class="tag">Before</span>
+  <div class="time" style="--span:210">
+    <i>Browser</i><div class="rail"><span style="--at:0;--to:60">One request, waiting</span><span class="fail" style="--at:62">Network error</span></div>
+    <i>Server</i><div class="rail"><span style="--at:0;--to:198">Import finishes, nobody listening</span></div>
+    <div class="cut" style="--at:60"><b>Proxy drops idle requests at 60 s</b></div>
+  </div></div>
+<div class="time" style="--span:210"><span></span><div class="axis"><span style="--at:0">0</span><span style="--at:60">1 min</span><span style="--at:120">2 min</span><span style="--at:180">3 min</span></div></div>
+```
+
+On the after side, `.wait` draws polling or a queue, `.win` the moment it works, and `.end`
+right-aligns a bar to its `--at`. An order strip:
+
+```html
+<div class="cols"><span>Cart</span><mark>Payment<small>before shipping</small></mark><span>Shipping</span><span class="gap">no review</span></div>
+```
+
+Build each side from the code on that side: the base branch for Before, your branch for
+After.
 
 ## 3. Frame
 
-Write the frame next to the PNGs, fill in the title and caption, and render it:
+Copy [`frame.css`](frame.css) from this skill's folder next to the PNGs, write the frame
+beside it, and render it:
 
 ```html
 <!doctype html>
 <meta charset="utf-8">
-<style>
-  html { background: #ffffff; color: #1f2328; }
-  html.dark { background: #0d1117; color: #e6edf3; }
-  body { margin: 24px; font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif; }
-  h1 { margin: 0 0 4px; font-size: 18px; }
-  .caption { margin: 0 0 16px; opacity: 0.75; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid.stacked { grid-template-columns: 1fr; }
-  figure { margin: 0; border: 1px solid #d1d9e0; border-radius: 8px; overflow: hidden; }
-  .dark figure { border-color: #3d444d; }
-  figcaption { padding: 6px 12px; font-weight: 600; border-bottom: inherit; }
-  .before figcaption { color: #cf222e; }
-  .after figcaption { color: #1a7f37; }
-  img { display: block; width: 100%; }
-  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; }
-  .node { padding: 4px 10px; border: 1px solid #d1d9e0; border-radius: 6px; }
-  mark { border-radius: 3px; color: inherit; }
-  .before mark { background: #ffcecb; }
-  .after mark { background: #dafbe1; }
-  table { margin: 12px; border-collapse: collapse; }
-  th, td { padding: 4px 10px; border: 1px solid #d1d9e0; text-align: left; }
-  .why { margin: 0; padding: 0 12px 12px; opacity: 0.75; }
-</style>
-<h1>TITLE: what changed, in the reader's words</h1>
-<p class="caption">CAPTION: where it is, and what to look at.</p>
-<div class="grid stacked">
-  <figure class="before"><figcaption>Before</figcaption><img src="before.png" alt="Before"></figure>
-  <figure class="after"><figcaption>After</figcaption><img src="after.png" alt="After"></figure>
+<link rel="stylesheet" href="frame.css">
+<h1>Optional: the case, in the reader's words</h1>
+<div class="panel pair">
+  <div class="side before"><span class="tag">Before</span><img class="shot" src="before.png" alt="Before"></div>
+  <div class="side after"><span class="tag">After</span><img class="shot" src="after.png" alt="After"></div>
 </div>
 ```
 
 ```bash
+cp <skill-dir>/frame.css /abs/path/
 gh-attach shot /abs/path/frame.html /abs/path/evidence.png --width 948
 ```
 
-- `stacked` puts after under before, which suits a crop wider than it is tall. Drop the
-  class for side by side.
-- A single image keeps one `figure` and drops its `figcaption`.
-- `class="dark"` on `<html>` when the app's default theme is dark.
-- `--width 1200` for Slack.
+- `pair` puts the sides next to each other. Drop it to stack them, which suits a crop wider
+  than it is tall and every illustration.
+- An illustration puts step 2b's markup in the `.panel` in place of the `img` sides.
+- `--width 948` for GitHub, `--width 1200` for Slack.
 
 ## 4. Look before posting
 
 Read every PNG you made, the crops and the framed image, with the Read tool. Post it only
 when all of these hold:
 
-- It shows the page you meant, not a blank or `about:blank` frame. Each illustration
-  matches the code on its side.
-- The ring or `<mark>` sits on what changed.
-- The title, caption, label and Before/After text are readable at the posted width.
-- Before and after differ where the label says they do.
+- It shows the page you meant, not a blank or `about:blank` frame.
+- A reader who knows only the bug report can tell from the image alone what went wrong and
+  what is fixed.
+- `<mark>` or the ring sits on what changed, and nothing else draws the eye.
+- The ring's label hides no neighbour the reader needs. When it does, shorten the label.
+- Every word is readable at the posted width, and the sides line up where they match.
 
-Anything else, fix the selector, state or frame and shoot again.
+Anything else, fix the selector, state, content or frame and shoot again.
 
 ## playwright-cli traps
 
@@ -210,16 +193,14 @@ Anything else, fix the selector, state or frame and shoot again.
   files and URLs.
 - A screenshot of a page that never loaded saves `about:blank` and exits 0. The URL check
   in step 1 catches it.
-- A page with smooth scrolling moves after the snippet measures, and the ring lands off
-  the element. The snippet scrolls with `behavior: "instant"` for this reason; keep it.
 - The marks are `position: fixed`, so the region has to fit in the viewport. For a taller
-  element, `playwright-cli -s=shots resize 1280 1600` and run the snippet again.
+  element, `playwright-cli -s=shots resize 1280 1600` and run the script again.
 - `playwright-cli -s=shots close` when done. A session left open keeps the browser running.
 
 ## Hand off
 
-GitHub: call the Skill tool with `gh-attach` and put the framed PNG in the PR description
-under `## Evidence`. Slack or Jira: hand the PNG to whatever posts the message.
+GitHub: call the Skill tool with `gh-attach` and put each framed PNG in the PR description
+under `## Evidence`. Slack or Jira: hand the PNGs to whatever posts the message.
 
 ## Requirements
 

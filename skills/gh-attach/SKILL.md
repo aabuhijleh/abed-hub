@@ -12,7 +12,7 @@ allowed-tools: Glob, Bash(gh pr view:*), Bash(gh pr edit:*), Bash(gh pr comment:
 # Attach an image to a PR or issue
 
 This skill starts from an image on disk. The `screenshots` skill makes one: it highlights
-the change, frames it with a caption and before/after labels, and renders the frame with
+the change, frames it with before/after labels, and renders the frame with
 `gh-attach shot <page.html|url> <out.png> [--width 948]`, which this package ships.
 
 `gh` uploads and embeds in one command, with the `gh` token you already have, so there is

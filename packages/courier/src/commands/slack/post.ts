@@ -59,7 +59,7 @@ export default defineCommand({
       targetArg ??
       (await prompt({
         message: "Channel id, or a permalink to reply under",
-        placeholder: "C0BES8Q6YTT",
+        placeholder: "C0123456789",
         validate: (value) => (value?.trim() ? undefined : "Required"),
       }));
 
