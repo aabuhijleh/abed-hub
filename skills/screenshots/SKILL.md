@@ -29,9 +29,12 @@ goes out as it is.
 ## What the image says
 
 - **The real case.** Use the record, input and numbers from the PR description, the ticket,
-  or the test the PR adds: the actual row labels, the 60 s timeout, "19 candidates, now 24".
+  or the test the PR adds: the actual names, the 60 s timeout, "19 results, now 24".
 - **Before shows the failure** the way the user met it: the error they saw, the wrong value,
   the row that went missing. After shows the same case working.
+- **Draw what stopped.** When the fix is that something no longer happens, such as a record
+  no longer created, a message no longer sent or a step skipped, After keeps its place as an
+  empty slot and marks the slot.
 - **One change, one shape.** Draw each change once. A flow and a table of the same change
   say it twice.
 - **One image per question.** A PR or thread can carry several images, and each answers one
@@ -39,8 +42,8 @@ goes out as it is.
   fix and one for the checks that nothing else broke.
 - **Anchors, not context.** Keep what changed and one unchanged neighbour on each side, so
   the reader sees where it sits. Cut the rest.
-- **Few words.** A title only when the diagram needs one, naming the case ("Onboarding a
-  3,441-row model"). No caption paragraph. A side gets at most one short `.note` line, and
+- **Few words.** A title only when the diagram needs one, naming the case ("Importing a
+  3,441-row CSV"). No caption paragraph. A side gets at most one short `.note` line, and
   only when the picture can't say it.
 - **The reader's words.** Domain terms from the repo's glossary, not function names.
 
@@ -77,13 +80,17 @@ active at 13/13") under the ring's bottom-right corner. Set `BEFORE` to `true` f
 before shot:
 
 ```bash
-sed -e 's/LABEL/Stays active at 13\/13/' -e 's/BEFORE/false/' <skill-dir>/highlight.js > /tmp/highlight.js
+sed -e 's/LABEL/Stays active at 13\/13/' -e 's/BEFORE/false/' -e 's/EMPTY//' <skill-dir>/highlight.js > /tmp/highlight.js
 playwright-cli -s=shots eval "$(cat /tmp/highlight.js)" "<selector>"
 playwright-cli -s=shots screenshot "#shot-region" --hires --filename=/abs/path/after.png
 ```
 
+For an empty slot, set `EMPTY` to a few words for it ("Not created") and point `<selector>`
+at the element now in its place. The script draws the slot before that element and rings
+it.
+
 `<selector>` is a snapshot ref (`e12`) or a selector that matches one element
-(`table tr:nth-child(3) td.uploader`). The region is the element plus 16px. Raise `pad` in
+(`table tr:nth-child(3) td.status`). The region is the element plus 16px. Raise `pad` in
 the script for more context. Run it again after any navigation or re-render, since the
 marks go with the old DOM.
 
@@ -98,8 +105,9 @@ classes in [`frame.css`](frame.css). Pick the shape that shows the problem:
   total when a count proves the fix. Suits a rule that treats cases differently.
 - **Timeline:** `.time` rails on a shared clock, for a change in what runs when or at once.
   A `.cut` marks a deadline such as a timeout.
-- **Order:** a `.cols` strip, for where a column, record or step lands. A `.gap` marks one
-  that is missing.
+- **Order:** a `.cols` strip, for where a column, record or step lands.
+
+A `.gap` is an empty slot in any shape: a node, a cell, a bar or a column.
 
 `<mark>` goes on what changed. A flow, with the state change on its edge label:
 
@@ -136,7 +144,7 @@ On the after side, `.wait` draws polling or a queue, `.win` the moment it works,
 right-aligns a bar to its `--at`. An order strip:
 
 ```html
-<div class="cols"><span>2024Q4</span><mark>2025FY<small>misplaced</small></mark><span>2025Q1</span><span class="gap">no FY</span></div>
+<div class="cols"><span>Cart</span><mark>Payment<small>before shipping</small></mark><span>Shipping</span><span class="gap">no review</span></div>
 ```
 
 Build each side from the code on that side: the base branch for Before, your branch for

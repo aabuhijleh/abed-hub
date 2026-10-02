@@ -207,10 +207,6 @@ tfoot td {
 .after .cols > mark small {
   color: var(--now-tint);
 }
-.cols > .gap {
-  background: repeating-linear-gradient(45deg, #fff 0 6px, #eee 6px 12px);
-  color: var(--quiet);
-}
 
 /* timeline: --span is the clock length; each bar sits at --at and runs to --to, in the same unit */
 .time {
@@ -294,4 +290,13 @@ tfoot td {
 }
 .axis > span:first-child {
   transform: none;
+}
+
+/* an empty slot, in any shape */
+.panel .gap {
+  background: repeating-linear-gradient(45deg, #fff 0 6px, #eee 6px 12px);
+  color: var(--quiet);
+  border-style: dashed;
+  box-shadow: none;
+  font-style: italic;
 }
