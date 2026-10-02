@@ -69,11 +69,28 @@ th.after {
   color: var(--now);
 }
 
+/* a rule between before and after */
+.panel:not(.pair) > .side + .side {
+  border-top: 2.5px dashed var(--ink);
+  padding-top: 22px;
+}
+.pair {
+  position: relative;
+}
+.pair::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 50%;
+  border-left: 2.5px dashed var(--ink);
+}
+
 /* screenshots */
 .pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 20px 48px;
   align-items: start;
 }
 .shot {

@@ -1,9 +1,9 @@
 ---
 name: screenshots
 description: >-
-  Make an evidence image: highlight the changed element, crop to it, and frame it with
-  before/after labels. Use for a screenshot, an evidence image, a before/after, or an image
-  attachment for a PR, Slack message or Jira ticket, including an illustration of how a
+  Make evidence images: highlight each changed element, crop to it, and frame it with
+  before/after labels. Use for screenshots, evidence images, before/afters, or image
+  attachments for a PR, Slack message or Jira ticket, including illustrations of how a
   change behind the UI reworks the logic or the data flow.
 license: MIT
 allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*)
@@ -176,6 +176,8 @@ when all of these hold:
 - A reader who knows only the bug report can tell from the image alone what went wrong and
   what is fixed.
 - `<mark>` or the ring sits on what changed, and nothing else draws the eye.
+- The ring's label covers no text or control the reader needs. The script puts it in the
+  emptiest corner it finds; when every corner is busy, shorten the label.
 - Every word is readable at the posted width, and the sides line up where they match.
 
 Anything else, fix the selector, state, content or frame and shoot again.
