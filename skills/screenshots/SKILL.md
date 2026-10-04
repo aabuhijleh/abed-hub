@@ -4,14 +4,16 @@ description: >-
   Make evidence images: highlight each changed element, crop to it, and frame it with
   before/after labels. Use for screenshots, evidence images, before/afters, or image
   attachments for a PR, Slack message or Jira ticket, including illustrations of how a
-  change behind the UI reworks the logic or the data flow.
+  change behind the UI reworks the logic or the data flow, and of what happened when an
+  answer or finding explains a bug or a result.
 license: MIT
 allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*)
 ---
 
 # Screenshots
 
-This skill makes the image only. The PR's prose comes from `/pr` or the repo's template.
+This skill makes the image only. The prose comes from `/pr`, the repo's template, or the
+answer it goes with.
 
 ## When to shoot
 
@@ -21,10 +23,16 @@ This skill makes the image only. The PR's prose comes from `/pr` or the repo's t
   [Step 2b](#2b-illustrate-a-change-behind-the-ui), then step 3.
 - **Text:** a change to docs, a README, copy or config goes in the PR as a ```diff block.
   An image of text is larger and harder to read than the diff.
+- **Explaining what happened:** an answer or finding gets one illustration per finding,
+  showing how it happened as a flow, timeline or table, with `<mark>` on the cause.
+  [Step 2b](#2b-illustrate-a-change-behind-the-ui), then step 3, as one
+  `<div class="side before">` with no `.tag`, so the cause gets the failure colour.
+  A screenshot in an answer gets the ring and label from step 2.
 
 Leave the image out when a reader gets the change at a glance, as with a dependency bump or
 a rename. Command output and test runs stay as text in the PR. An image the user handed you
-goes out as it is.
+goes out as it is only when it already shows the point. Otherwise ring the part the answer
+is about.
 
 ## What the image says
 

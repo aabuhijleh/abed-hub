@@ -37,7 +37,8 @@ Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it.
 split the work. `screenshots` crops to the changed element, rings it when the crop holds
 more than the change, and frames before and after side by side. For a change behind the
 UI, it draws the real failing case before and after instead, as a flow, a table, a timeline
-or an order strip. A text change goes in the PR as a diff instead of an image.
+or an order strip. It draws an answer's finding the same way, with the cause marked. A
+text change goes in the PR as a diff instead of an image.
 `gh-attach` puts the result in the PR description under `## Evidence`.
 
 ```bash
