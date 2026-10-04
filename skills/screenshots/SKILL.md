@@ -1,40 +1,49 @@
 ---
 name: screenshots
 description: >-
-  Make evidence images: highlight each changed element, crop to it, and frame it with
-  before/after labels. Use for screenshots, evidence images, before/afters, or image
-  attachments for a PR, Slack message or Jira ticket, including illustrations of how a
-  change behind the UI reworks the logic or the data flow.
+  Make images that explain something at a glance: screenshots with the point ringed and
+  labelled, and illustrations drawn as a flow, timeline, table or order strip. Use for any
+  image that goes with text, in a PR, an answer, a Slack message, a Jira ticket, a doc or a
+  report: a before/after of a change, what happened in a bug or an incident, how a system
+  or its data flow works, or a result worth seeing.
 license: MIT
 allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*)
 ---
 
 # Screenshots
 
-This skill makes the image only. The PR's prose comes from `/pr` or the repo's template.
+This skill makes the image only, wherever it goes: a PR, an answer, a Slack or Jira post, a
+doc. The prose comes from whatever it goes with, such as `/pr` or the repo's template.
+
+The **point** is what the image is for: a change, the cause of a bug, how something works,
+a result. Every step below centres on it.
 
 ## When to shoot
 
-- **Visible in the app:** a screenshot of the page, steps 1 to 3.
-- **Behind the UI:** an illustration, when the diff makes the change hard to follow: reworked
-  logic, a new path through the work, data that now flows somewhere else.
-  [Step 2b](#2b-illustrate-a-change-behind-the-ui), then step 3.
-- **Text:** a change to docs, a README, copy or config goes in the PR as a ```diff block.
-  An image of text is larger and harder to read than the diff.
+- **On screen:** a screenshot of the page, steps 1 to 3.
+- **Behind the UI:** an illustration, when prose or a diff makes the point hard to follow:
+  logic, a path through the work, where data flows, what runs when.
+  [Step 2b](#2b-illustrate-what-the-ui-doesnt-show), then step 3.
+- **A change:** a before and an after, for either of the above.
+- **Anything else:** what happened in a bug, how a system works, a finding, a result. One
+  image per point, as one `<div class="side before">` with no `.tag`, so the `<mark>` on
+  the cause gets the failure colour.
+- **Text:** a change to docs, a README, copy or config goes in as a ```diff block. An image
+  of text is larger and harder to read than the diff.
 
-Leave the image out when a reader gets the change at a glance, as with a dependency bump or
-a rename. Command output and test runs stay as text in the PR. An image the user handed you
-goes out as it is.
+Leave the image out when a reader gets the point at a glance, as with a dependency bump or
+a rename. Command output and test runs stay as text. An image the user handed you goes out
+as it is only when it already shows the point. Otherwise ring the part the text is about.
 
 ## What the image says
 
-- **The real case.** Use the record, input and numbers from the PR description, the ticket,
-  or the test the PR adds: the actual names, the 60 s timeout, "19 results, now 24".
+- **The real case.** Use the record, input and numbers from the PR, the ticket, the thread
+  or the question: the actual names, the 60 s timeout, "19 results, now 24".
 - **Before shows the failure** the way the user met it: the error they saw, the wrong value,
   the row that went missing. After shows the same case working.
 - **One change, one shape.** Draw each change once. A flow and a table of the same change
   say it twice.
-- **One image per question.** A PR or thread can carry several images, and each answers one
+- **One image per question.** A PR, answer or thread can carry several images, and each answers one
   question: one per UI change, one for the backend and one for the frontend, one for the
   fix and one for the checks that nothing else broke.
 - **Anchors, not context.** Keep what changed and one unchanged neighbour on each side, so
@@ -91,9 +100,9 @@ empty slot where it was. Set `EMPTY` to a few words for it ("Not created") and p
 the script for more context. Run it again after any navigation or re-render, since the
 marks go with the old DOM.
 
-## 2b. Illustrate a change behind the UI
+## 2b. Illustrate what the UI doesn't show
 
-Skip steps 1 and 2. Build the before and the after as HTML inside step 3's panel, using the
+Skip steps 1 and 2. Build each side as HTML inside step 3's panel, using the
 classes in [`frame.css`](frame.css). Pick the shape that shows the problem:
 
 - **Flow or states:** one `.lane` per side, steps as `.node`, edges as `.to` with an
@@ -179,9 +188,9 @@ Read every PNG you made, the crops and the framed image, with the Read tool. Pos
 when all of these hold:
 
 - It shows the page you meant, not a blank or `about:blank` frame.
-- A reader who knows only the bug report can tell from the image alone what went wrong and
-  what is fixed.
-- `<mark>` or the ring sits on what changed, and nothing else draws the eye.
+- A reader who knows only the question or the bug report gets the point from the image
+  alone.
+- `<mark>` or the ring sits on the point, and nothing else draws the eye.
 - The ring's label hides no neighbour the reader needs. When it does, shorten the label.
 - Every word is readable at the posted width, and the sides line up where they match.
 
@@ -200,7 +209,8 @@ Anything else, fix the selector, state, content or frame and shoot again.
 ## Hand off
 
 GitHub: call the Skill tool with `gh-attach` and put each framed PNG in the PR description
-under `## Evidence`. Slack or Jira: hand the PNGs to whatever posts the message.
+under `## Evidence`, or in the issue or comment it explains. Anywhere else, such as Slack,
+Jira, a doc or an answer's attachments: hand the PNGs to whatever posts or saves it.
 
 ## Requirements
 
