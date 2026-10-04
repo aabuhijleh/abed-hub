@@ -67,11 +67,11 @@ describe("gh-attach", () => {
 
   test("installs the skills that take a shot and drive a page", () => {
     expect(spec.skills.map((dep) => dep.name)).toEqual(
-      expect.arrayContaining(["gh-attach", "screenshots", "playwright-cli"]),
+      expect.arrayContaining(["gh-attach", "visuals", "playwright-cli"]),
     );
   });
 
-  test("installs the pr skill that screenshots and gh-stack defer to", () => {
+  test("installs the pr skill that visuals and gh-stack defer to", () => {
     expect(spec.skills).toContainEqual({
       name: "pr",
       repo: "mattpocock/skills",

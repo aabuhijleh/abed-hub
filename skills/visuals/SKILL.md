@@ -1,5 +1,5 @@
 ---
-name: screenshots
+name: visuals
 description: >-
   Make images that explain something at a glance: screenshots with the point ringed and
   labelled, and illustrations drawn as a flow, timeline, table or order strip. Use for any
@@ -10,7 +10,7 @@ license: MIT
 allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*)
 ---
 
-# Screenshots
+# Visuals
 
 This skill makes the image only, wherever it goes: a PR, an answer, a Slack or Jira post, a
 doc. The prose comes from whatever it goes with, such as `/pr` or the repo's template.

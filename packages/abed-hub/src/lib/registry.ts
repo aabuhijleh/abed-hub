@@ -82,7 +82,7 @@ export const SPECS: Record<Component, ComponentSpec> = {
     ],
     skills: [
       { name: "gh-attach", repo: HUB, dir: "skills" },
-      { name: "screenshots", repo: HUB, dir: "skills" },
+      { name: "visuals", repo: HUB, dir: "skills" },
       {
         name: "playwright-cli",
         repo: "microsoft/playwright-cli",

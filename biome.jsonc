@@ -49,7 +49,7 @@
   "overrides": [
     {
       // playwright-cli eval takes this file as one expression, so it has no trailing ;.
-      "includes": ["skills/screenshots/highlight.js"],
+      "includes": ["skills/visuals/highlight.js"],
       "formatter": { "enabled": false }
     }
   ],

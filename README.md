@@ -24,7 +24,7 @@ abed-hub config    # where every config file is, and what is in it
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
 | [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in, and a browser |
-| [screenshots](#-gh-attach) | Take an annotated before/after image of the change. | gh-attach, and the `playwright-cli` skill |
+| [visuals](#-gh-attach) | Take an annotated before/after image of the change. | gh-attach, and the `playwright-cli` skill |
 | [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 | [deslop](#-deslop) | Cut AI tells from PR bodies, Slack and Jira posts, and docs. | Nothing |
@@ -34,7 +34,7 @@ Set up one. Come back for the others when you need them.
 ## 📎 [gh-attach](https://www.npmjs.com/package/@aabuhijleh/gh-attach)
 
 Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it. Two skills
-split the work. `screenshots` crops to the changed element, rings it when the crop holds
+split the work. `visuals` crops to the changed element, rings it when the crop holds
 more than the change, and frames before and after side by side. For a change behind the
 UI, it draws the real failing case before and after instead, as a flow, a table, a timeline
 or an order strip. The same images explain anything else, in an answer, a Slack or Jira
@@ -82,7 +82,7 @@ under `## Evidence` in a description that already exists.
 
    ```bash
    bunx skills add aabuhijleh/abed-hub -s gh-attach -g
-   bunx skills add aabuhijleh/abed-hub -s screenshots -g
+   bunx skills add aabuhijleh/abed-hub -s visuals -g
    bunx skills add microsoft/playwright-cli -s playwright-cli -g
    bunx skills add mattpocock/skills -s pr -g
    ```
@@ -226,7 +226,7 @@ and deleting the directory is a clean reset.
 
 ```bash
 bun remove -g @aabuhijleh/abed-hub @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove abed-hub gh-attach screenshots gh-stack courier deslop playwright-cli pr -g -y
+bunx skills remove abed-hub gh-attach visuals gh-stack courier deslop playwright-cli pr -g -y
 gh extension remove github/gh-stack
 ```
 
@@ -239,6 +239,9 @@ one does, take those names out of the first two lines.
 Before `deslop`, abed-hub installed Cursor's `unslop` and edited its frontmatter. A machine
 set up then still has that copy in `~/.agents/skills`, and abed-hub leaves it there. Remove
 it with `bunx skills remove unslop -g`.
+
+The `visuals` skill was called `screenshots` until the rename, and abed-hub leaves the old
+copy in place too. Remove it with `bunx skills remove screenshots -g`.
 
 Chromium and your tokens stay. Chromium is shared with every other playwright install on the
 machine, and the tokens save you a browser trip next time. Delete either by hand.
