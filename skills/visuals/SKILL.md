@@ -56,7 +56,8 @@ Done when every field is filled and every value in Data names its source.
 | where an item lands in an order            | order strip                 | [diagrams.md](diagrams.md)       |
 | a rule that treats cases differently       | table                       | [diagrams.md](diagrams.md)       |
 | one number moving                          | stat card                   | [charts.md](charts.md)           |
-| numbers across cases                       | bars                        | [charts.md](charts.md)           |
+| numbers across categories                  | bars                        | [charts.md](charts.md)           |
+| counts per day, week or release            | columns                     | [charts.md](charts.md)           |
 | a metric over time around an event         | line + marker               | [charts.md](charts.md)           |
 | where it fails across two dimensions       | matrix                      | [charts.md](charts.md)           |
 | where items drop out of a pipeline         | funnel                      | [charts.md](charts.md)           |
@@ -132,8 +133,11 @@ have shown.
 ## 5. Hand back
 
 Return each PNG's path with its claim as the alt text. Order them so the **lead image**
-comes first: the one whose claim answers the question asked. Add a summary image (a stat
-card, or a box diagram with every cause marked) only when no single finding answers it.
+comes first: the one whose claim answers the question as asked. When the question asks for
+a number, the lead image's headline and a stat card carry that number, and the finding
+about it (the day it dropped) goes under the card in the same panel. Add a summary image (a
+stat card, or a box diagram with every cause marked) only when no single finding answers
+it.
 
 For a PR, call the Skill tool with `gh-attach` and put each image under `## Evidence`.
 

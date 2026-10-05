@@ -185,5 +185,7 @@ and a `tfoot` total when a count proves the fix. Mark only the cells that change
 - A label holding `(`, `)`, `:` or `"` breaks the parse. Quote it: `A["Retry (5x)"]`.
 - A parse error makes `gh-attach shot` fail with the message. In a `flowchart`, its line
   number counts the three `classDef` lines `render.js` adds after the first line.
+- A `<br/>` in a label is dropped and the words run together. Put the second part in
+  parentheses or shorten the label.
 - `flowchart LR` suits 948px. Switch to `TB` only when the chain is longer than about six
   nodes.
