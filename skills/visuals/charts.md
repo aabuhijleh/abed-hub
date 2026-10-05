@@ -8,8 +8,13 @@ on `frame.css`.
 
 One number moving, or two or three that move together. Each `.stat` has a `<small>` label,
 the old value in `<s>`, the new one in `<mark>` (or `<b>` when it is unchanged), and the
-delta in `<em>` (`<em class="bad">` when it got worse). A finding with one number drops the
-`<s>`.
+delta in `<em>` (`<em class="bad">` when it got worse).
+
+- A card holds one value. Parts of a total get a card each, or go in stacked columns.
+- The `<s>` and the delta come in when the question asks for a comparison or the change
+  is a finding the answer mentions. The delta is a number (`−25%`, `3× as many`), with what it
+  compares against after it.
+- A finding with one number drops the `<s>`.
 
 ```html
 <h1>Search is 7× faster after the index on <mark class="good">title</mark></h1>
@@ -63,16 +68,17 @@ The same cases measured twice. Pair `.was` and `.now` bars under one label, with
 ## Columns
 
 Counts per day, week or release, where time runs left to right. Vega-Lite `bar`, drawn by
-`render.js`. Give the bars a `stroke` and set `"sort": null` so the days keep their order.
-A `condition` on `color` fills the bar the claim is about, and a `text` layer puts each
-count on top. When the question asked for the total, a stat card with it sits above.
+`render.js`, which fills bars in yellow with an ink stroke. Set `"sort": null` so the days
+keep their order. A `condition` on `color` turns the bar the claim is about coral, and a
+`text` layer puts each count on top. When the question asked for the total, a stat card
+with it sits above.
 
 ```html
 <h1>The nightly import created 48,210 records in 5 days, almost none on Saturday</h1>
 <div class="panel">
 <div class="stats">
   <div class="stat"><small>Records created, Sep 30 to Oct 4</small><b>48,210</b></div>
-  <div class="stat"><small>On Saturday, Oct 4</small><mark>180</mark><em class="bad">vs 12,000 a day before it</em></div>
+  <div class="stat"><small>On Saturday, Oct 4</small><mark>180</mark><em class="bad">−99% vs the days before</em></div>
 </div>
 <script type="application/vega-lite+json">
 {
@@ -86,9 +92,48 @@ count on top. When the question asked for the total, a stat card with it sits ab
     "y": {"field":"n","type":"quantitative","title":"Records created","axis":{"format":",d"}}
   },
   "layer": [
-    {"mark": {"type":"bar","stroke":"#111","strokeWidth":2.5,"width":{"band":0.6}},
-     "encoding": {"color": {"condition":{"test":"datum.cause","value":"#ff8a6b"},"value":"#fff"}}},
+    {"mark": {"type":"bar","width":{"band":0.6}},
+     "encoding": {"color": {"condition":{"test":"datum.cause","value":"#ff8a6b"},"value":"#ffd84d"}}},
     {"mark": {"type":"text","dy":-10,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"field":"n","format":",d"}}}
+  ]
+}
+</script>
+</div>
+```
+
+## Stacked columns
+
+Counts over time that split into parts: by source, by type, by team. The columns spec with
+a `color` field: blue for the part the claim names, yellow for the rest, a legend on top. `y` and
+`text` sum `n`, so the bars stack and the count on top is the day's total. Coral stays free
+for a cause.
+
+```html
+<h1>The nightly import created 48,210 records in 5 days, two thirds from the API</h1>
+<div class="panel">
+<div class="stats">
+  <div class="stat"><small>Records created, Sep 30 to Oct 4</small><b>48,210</b></div>
+  <div class="stat"><small>From the API</small><b>32,140</b></div>
+  <div class="stat"><small>From CSV uploads</small><b>16,070</b></div>
+</div>
+<script type="application/vega-lite+json">
+{
+  "height": 300,
+  "data": {"values": [
+    {"day":"Tue, Sep 30","source":"API","n":8320},{"day":"Tue, Sep 30","source":"CSV upload","n":4160},
+    {"day":"Wed, Oct 1","source":"API","n":7950},{"day":"Wed, Oct 1","source":"CSV upload","n":3970},
+    {"day":"Thu, Oct 2","source":"API","n":8510},{"day":"Thu, Oct 2","source":"CSV upload","n":4250},
+    {"day":"Fri, Oct 3","source":"API","n":7240},{"day":"Fri, Oct 3","source":"CSV upload","n":3630},
+    {"day":"Sat, Oct 4","source":"API","n":120},{"day":"Sat, Oct 4","source":"CSV upload","n":60}
+  ]},
+  "encoding": {
+    "x": {"field":"day","type":"ordinal","sort":null,"title":null,"axis":{"labelAngle":0,"labelFontSize":14,"labelColor":"#111","labelFontWeight":700}},
+    "y": {"aggregate":"sum","field":"n","type":"quantitative","title":"Records created","axis":{"format":",d"}}
+  },
+  "layer": [
+    {"mark": {"type":"bar","width":{"band":0.6}},
+     "encoding": {"color": {"field":"source","type":"nominal","sort":null,"title":null,"scale":{"range":["#5b5bf7","#ffd84d"]},"legend":{"orient":"top","labelFontSize":14,"labelColor":"#111","labelFontWeight":700}}}},
+    {"mark": {"type":"text","dy":-10,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"aggregate":"sum","field":"n","format":",d"}}}
   ]
 }
 </script>
@@ -192,6 +237,6 @@ value that differs.
   nothing, and every point lands on the y axis.
 - Leave `timeUnit` off ISO times. It bins them all to midnight.
 - Set `color` only on the layer that is the cause, such as the event label. The theme
-  draws everything else in ink.
+  draws lines and points in ink and fills bars yellow.
 - A spec error reaches `gh-attach shot`, which fails with the message. Fix the spec and
   render again.

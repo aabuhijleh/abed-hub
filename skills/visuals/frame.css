@@ -14,6 +14,7 @@
   --now: #5b5bf7;
   --now-tint: #e3e3ff;
   --quiet: #6b6b6b;
+  --fill: var(--ground);
 }
 html {
   background: var(--ground);
@@ -371,7 +372,7 @@ tfoot td {
   white-space: nowrap;
 }
 .bars > span {
-  background: #fff;
+  background: var(--fill);
 }
 .bars > .was {
   background: var(--was-tint);
@@ -462,7 +463,7 @@ td:has(> mark) {
   font-weight: 700;
 }
 .funnel > span {
-  background: #fff;
+  background: var(--fill);
 }
 .funnel > mark {
   font-weight: 900;
