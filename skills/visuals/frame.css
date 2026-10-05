@@ -1,4 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&display=block");
+@font-face {
+  font-family: Archivo;
+  src: url("archivo.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: block;
+}
 :root {
   --ink: #111;
   --paper: #fffdf7;
@@ -67,6 +72,21 @@ th.after {
 }
 .after .note {
   color: var(--now);
+}
+
+/* finding and result: the claim is the h1, and a bare mark is the cause */
+mark {
+  background: var(--was);
+  color: var(--ink);
+  font-weight: 900;
+  padding: 0 4px;
+}
+mark.good {
+  background: var(--now);
+  color: #fff;
+}
+h1 mark {
+  padding: 0 6px;
 }
 
 /* a rule between before and after */
@@ -160,17 +180,6 @@ th.before {
 td small {
   color: var(--quiet);
   font-weight: 500;
-}
-td.before mark {
-  background: var(--was-tint);
-  color: var(--was-ink);
-  padding: 2px 8px;
-}
-td.after mark {
-  background: var(--now);
-  color: #fff;
-  font-weight: 900;
-  padding: 2px 8px;
 }
 tfoot td {
   font-weight: 900;
@@ -294,4 +303,292 @@ tfoot td {
 }
 .axis > span:first-child {
   transform: none;
+}
+
+/* stat: one number moving. s is the old value, mark the new one, em the delta */
+.stats {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 18px;
+}
+.stat {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 2.5px solid var(--ink);
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.stat > small {
+  font-size: 13px;
+  color: var(--quiet);
+}
+.stat > s {
+  font-size: 22px;
+  color: var(--quiet);
+  text-decoration-thickness: 3px;
+}
+.stat > mark,
+.stat > b {
+  font-size: 46px;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  padding: 0 6px;
+  margin-left: -6px;
+}
+.stat > em {
+  font-style: normal;
+  font-weight: 900;
+  color: var(--now);
+}
+.stat > em.bad {
+  color: var(--was-ink);
+}
+
+/* bars: --max is the scale, each bar's --v its value, in one unit */
+.bars {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 14px;
+  align-items: center;
+}
+.bars > i {
+  font-style: normal;
+  font-weight: 700;
+}
+.bars > span,
+.bars > mark {
+  width: calc(var(--v) / var(--max) * 100%);
+  min-width: max-content;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border: 2.5px solid var(--ink);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.bars > span {
+  background: #fff;
+}
+.bars > .was {
+  background: var(--was-tint);
+  color: var(--was-ink);
+}
+.bars > .now {
+  background: var(--now);
+  color: #fff;
+}
+.bars > mark,
+.funnel > mark {
+  background: var(--was);
+}
+.bars > mark.good,
+.funnel > mark.good {
+  background: var(--now);
+}
+.bars > mark {
+  margin: 0;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+/* a gap between groups when a pair of bars shares one label */
+.bars > i:not(:empty):not(:first-child),
+.bars > i:not(:empty):not(:first-child) + * {
+  margin-top: 12px;
+}
+.key {
+  display: flex;
+  gap: 10px;
+}
+.tag.before {
+  background: var(--was-tint);
+  color: var(--was-ink);
+}
+.tag.after {
+  background: var(--now);
+  color: #fff;
+}
+
+/* charts and diagrams drawn by render.js */
+.chart {
+  width: 100%;
+}
+pre.mermaid {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* matrix: a table whose cells pass or fail */
+td.ok,
+td.no {
+  text-align: center;
+  font-weight: 900;
+}
+td.ok {
+  background: #fff;
+  color: var(--quiet);
+}
+td.no {
+  background: var(--was);
+}
+td.no mark,
+td.ok mark {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+td:has(> mark) {
+  outline: 4px solid var(--ink);
+  outline-offset: -4px;
+}
+
+/* funnel: --max is what went in, each stage's --v what is left; .drop names the loss */
+.funnel {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.funnel > span,
+.funnel > mark {
+  width: calc(var(--v) / var(--max) * 100%);
+  min-width: max-content;
+  box-sizing: border-box;
+  padding: 8px 14px;
+  text-align: center;
+  border: 2.5px solid var(--ink);
+  font-weight: 700;
+}
+.funnel > span {
+  background: #fff;
+}
+.funnel > mark {
+  font-weight: 900;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.funnel > .drop {
+  width: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  color: var(--was-ink);
+}
+.funnel > .drop.cause {
+  font-weight: 900;
+  font-size: 15px;
+}
+
+/* record diff: a table of fields, one column per record */
+table.diff td:not(:first-child) {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 14px;
+  font-weight: 500;
+}
+table.diff tr.same td {
+  color: var(--quiet);
+}
+
+/* tree: nested lists, a mark on each node of the path */
+ul.tree,
+ul.tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tree ul {
+  margin-left: 12px;
+  padding-left: 22px;
+  border-left: 2.5px solid var(--ink);
+}
+ul.tree li {
+  position: relative;
+  padding: 3px 0;
+}
+ul.tree ul > li::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 16px;
+  width: 16px;
+  border-top: 2.5px solid var(--ink);
+}
+ul.tree ul > li:last-child::after {
+  content: "";
+  position: absolute;
+  left: -25px;
+  top: 18px;
+  bottom: 0;
+  border-left: 3px solid var(--paper);
+}
+ul.tree span,
+ul.tree mark {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  background: #fff;
+}
+ul.tree mark {
+  background: var(--was);
+}
+ul.tree small {
+  margin-left: 8px;
+  color: var(--quiet);
+  font-weight: 500;
+}
+
+/* pin: a ring on an image you already have, at --x --y --w --h in percent of the image */
+.pin {
+  position: relative;
+  overflow: hidden;
+  outline: 1px solid rgb(17 17 17 / 0.2);
+}
+.pin > img {
+  display: block;
+  width: 100%;
+}
+.pin > b {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  border: 4px solid var(--was);
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.45);
+}
+.pin > b > span {
+  position: absolute;
+  right: -4px;
+  top: calc(100% + 8px);
+  padding: 3px 10px;
+  background: var(--was);
+  color: var(--ink);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.pin > b.up > span {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+.pin > b.right > span {
+  right: auto;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* table cells: last, so they outrank the shape marks above */
+td.before mark {
+  background: var(--was-tint);
+  color: var(--was-ink);
+  padding: 2px 8px;
+}
+td.after mark {
+  background: var(--now);
+  color: #fff;
+  font-weight: 900;
+  padding: 2px 8px;
 }
