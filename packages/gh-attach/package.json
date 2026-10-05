@@ -1,6 +1,6 @@
 {
   "name": "@aabuhijleh/gh-attach",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Screenshot a page to a PNG sized for GitHub, ready to attach to a pull request or issue with gh --attach.",
   "keywords": [
     "github",
