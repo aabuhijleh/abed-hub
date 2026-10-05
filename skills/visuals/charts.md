@@ -60,6 +60,41 @@ The same cases measured twice. Pair `.was` and `.now` bars under one label, with
 </div>
 ```
 
+## Columns
+
+Counts per day, week or release, where time runs left to right. Vega-Lite `bar`, drawn by
+`render.js`. Give the bars a `stroke` and set `"sort": null` so the days keep their order.
+A `condition` on `color` fills the bar the claim is about, and a `text` layer puts each
+count on top. When the question asked for the total, a stat card with it sits above.
+
+```html
+<h1>The nightly import created 48,210 records in 5 days, almost none on Saturday</h1>
+<div class="panel">
+<div class="stats">
+  <div class="stat"><small>Records created, Sep 30 to Oct 4</small><b>48,210</b></div>
+  <div class="stat"><small>On Saturday, Oct 4</small><mark>180</mark><em class="bad">vs 12,000 a day before it</em></div>
+</div>
+<script type="application/vega-lite+json">
+{
+  "height": 300,
+  "data": {"values": [
+    {"day":"Tue, Sep 30","n":12480},{"day":"Wed, Oct 1","n":11920},{"day":"Thu, Oct 2","n":12760},
+    {"day":"Fri, Oct 3","n":10870},{"day":"Sat, Oct 4","n":180,"cause":true}
+  ]},
+  "encoding": {
+    "x": {"field":"day","type":"ordinal","sort":null,"title":null,"axis":{"labelAngle":0,"labelFontSize":14,"labelColor":"#111","labelFontWeight":700}},
+    "y": {"field":"n","type":"quantitative","title":"Records created","axis":{"format":",d"}}
+  },
+  "layer": [
+    {"mark": {"type":"bar","stroke":"#111","strokeWidth":2.5,"width":{"band":0.6}},
+     "encoding": {"color": {"condition":{"test":"datum.cause","value":"#ff8a6b"},"value":"#fff"}}},
+    {"mark": {"type":"text","dy":-10,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"field":"n","format":",d"}}}
+  ]
+}
+</script>
+</div>
+```
+
 ## Line + marker
 
 A metric over time around an event: a deploy, an incident, a config change. Vega-Lite, drawn
