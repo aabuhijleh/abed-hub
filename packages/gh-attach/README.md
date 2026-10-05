@@ -11,6 +11,9 @@ gh-attach shot ./page.html ./out.png --width 948
 downscaling. The shot is cropped to the page's content, so a short page does not come back
 padded with blank space.
 
+A page that draws after load, such as a chart or a diagram, sets `window.rendered` to a
+promise. `shot` waits for it, up to 20 s, and fails with the page's error when it rejects.
+
 Uploading is [`gh`'s job](https://cli.github.com) since 2.99.0. `gh pr comment 12 --attach
 ./out.png` uploads and embeds in one command, against the token `gh` already holds. This
 package used to do that too, through a browser session cookie, back when GitHub had no

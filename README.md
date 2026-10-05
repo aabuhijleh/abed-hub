@@ -24,7 +24,7 @@ abed-hub config    # where every config file is, and what is in it
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
 | [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in, and a browser |
-| [visuals](#-gh-attach) | Take an annotated before/after image of the change. | gh-attach, and the `playwright-cli` skill |
+| [visuals](#-gh-attach) | Draw the image that proves a claim: a ringed screenshot, a diagram, or a chart. | gh-attach, and the `playwright-cli` skill |
 | [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 | [deslop](#-deslop) | Cut AI tells from PR bodies, Slack and Jira posts, and docs. | Nothing |
@@ -34,12 +34,12 @@ Set up one. Come back for the others when you need them.
 ## 📎 [gh-attach](https://www.npmjs.com/package/@aabuhijleh/gh-attach)
 
 Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it. Two skills
-split the work. `visuals` crops to the changed element, rings it when the crop holds
-more than the change, and frames before and after side by side. For a change behind the
-UI, it draws the real failing case before and after instead, as a flow, a table, a timeline
-or an order strip. The same images explain anything else, in an answer, a Slack or Jira
-post, or a doc: what happened in a bug, how a system works, a result. A text change goes in
-as a diff instead of an image.
+split the work. `visuals` draws one image per claim, such as "Checkout errors tripled
+after the 14:02 deploy". The image is a screenshot ringed on the point, a diagram (flow,
+sequence, box, tree, timeline), or a chart (stat card, bars, line with an event marker,
+matrix, funnel, record diff). It suits a PR's before and after, or an answer, a Slack or
+Jira post, or a doc. The agent then reads each image back and redraws it until the image
+alone proves the claim. A text change goes in as a diff instead of an image.
 `gh-attach` puts the result in the PR description under `## Evidence`.
 
 ```bash

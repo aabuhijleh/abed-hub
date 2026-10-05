@@ -79,6 +79,16 @@ function findBrowser(): string | null {
   return null;
 }
 
+const RENDER_TIMEOUT_MS = 20_000;
+
+/** A page that draws after load (a chart, a diagram) sets `window.rendered` to a promise; shot waits for it. */
+export function renderedExpression(timeoutMs = RENDER_TIMEOUT_MS): string {
+  return `Promise.race([
+    Promise.resolve(window.rendered).then(() => null, (e) => String(e && e.message || e)),
+    new Promise((ok) => setTimeout(() => ok("window.rendered did not settle in ${timeoutMs / 1000} s"), ${timeoutMs})),
+  ])`;
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: playwright is an optional peer, so it has no types here.
 type Chromium = any;
 
@@ -165,6 +175,12 @@ export default defineCommand({
 
     // Evaluated as source text, not a closure: these run in the browser, and
     // typing them here would mean pulling DOM libs into a CLI package.
+    const renderError = await page.evaluate(renderedExpression());
+    if (renderError) {
+      console.error(`failed: ${renderError}`);
+      await browser.close();
+      process.exit(1);
+    }
     await page.evaluate("document.fonts && document.fonts.ready");
     await page.waitForTimeout(250);
 
