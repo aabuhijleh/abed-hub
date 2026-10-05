@@ -58,6 +58,7 @@ Done when every field is filled and every value in Data names its source.
 | one number moving                          | stat card                   | [charts.md](charts.md)           |
 | numbers across categories                  | bars                        | [charts.md](charts.md)           |
 | counts per day, week or release            | columns                     | [charts.md](charts.md)           |
+| counts over time that split into parts     | stacked columns             | [charts.md](charts.md)           |
 | a metric over time around an event         | line + marker               | [charts.md](charts.md)           |
 | where it fails across two dimensions       | matrix                      | [charts.md](charts.md)           |
 | where items drop out of a pipeline         | funnel                      | [charts.md](charts.md)           |
@@ -102,7 +103,8 @@ What goes on the image:
 - **The headline is the claim** in about 12 plain words a stranger repeats after one
   read: the reader's words from the UI, the ticket or the thread, and a concrete number or
   cause.
-- **One mark per image,** on the claim's subject. Everything else stays ink on white.
+- **One mark per image,** on the claim's subject. Chart bars and columns are filled
+  yellow, and everything else stays ink on white.
 - **Anchors:** what the claim is about, plus one unchanged neighbour on each side so the
   reader sees where it sits.
 - **Labels of a few words.** A side gets one `.note` line only when the picture can't say
@@ -120,8 +122,11 @@ these hold:
   on it matches Data. The mark sits on the claim's subject, and nothing else pulls the eye.
 - **Makes sense:** the shape suits the claim (numbers as bars or a stat, not a table of
   them). Every label is readable and whole, nothing overlaps or runs off the panel, rows
-  and sides line up, and a stranger to the codebase knows every term.
+  and sides line up, and a stranger to the codebase knows every term. Each stat card holds
+  one value under a one-line label.
 - **The headline reads clearly:** one read, no function names, the number or cause in it.
+  Its period matches the chart's: "in 5 days" over 5 columns, a partial day dropped or
+  named.
 
 When a check fails, fix it at the level it lives at and render again: the words, then the
 data shown, then the shape, then the claim itself when it was too vague to draw. When the
@@ -135,7 +140,10 @@ have shown.
 Return each PNG's path with its claim as the alt text. Order them so the **lead image**
 comes first: the one whose claim answers the question as asked. When the question asks for
 a number, the lead image's headline and a stat card carry that number, and the finding
-about it (the day it dropped) goes under the card in the same panel. Add a summary image (a
+about it (the day it dropped) goes under the card in the same panel. More cards sit beside
+it when the answer rests on them, such as the parts of the total. A comparison with an
+earlier period goes on only when the question asks for one. A finding about something
+else, such as a source that stopped, gets its own image after the lead. Add a summary image (a
 stat card, or a box diagram with every cause marked) only when no single finding answers
 it.
 

@@ -86,7 +86,7 @@ window.rendered = (async () => {
       },
       line: { color: ink, strokeWidth: 3 },
       point: { color: ink, filled: true, size: 70, opacity: 1 },
-      bar: { color: ink },
+      bar: { color: color("--fill"), stroke: ink, strokeWidth: 2.5 },
       rule: { color: color("--was-ink"), strokeWidth: 3, strokeDash: [6, 4] },
       text: { font, fontSize: 13, fontWeight: 700, color: ink },
     };
