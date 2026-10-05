@@ -463,7 +463,7 @@ td:has(> mark) {
   font-weight: 700;
 }
 .funnel > span {
-  background: #fff;
+  background: var(--fill);
 }
 .funnel > mark {
   font-weight: 900;

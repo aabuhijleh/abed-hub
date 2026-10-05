@@ -11,8 +11,8 @@ the old value in `<s>`, the new one in `<mark>` (or `<b>` when it is unchanged),
 delta in `<em>` (`<em class="bad">` when it got worse).
 
 - A card holds one value. Parts of a total get a card each, or go in stacked columns.
-- The `<s>` and the delta come in only when the question asks for a comparison or the
-  change is the finding. The delta is a number (`−25%`, `3× as many`), with what it
+- The `<s>` and the delta come in when the question asks for a comparison or the change
+  is a finding the answer mentions. The delta is a number (`−25%`, `3× as many`), with what it
   compares against after it.
 - A finding with one number drops the `<s>`.
 

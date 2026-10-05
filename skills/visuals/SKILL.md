@@ -141,11 +141,11 @@ Return each PNG's path with its claim as the alt text. Order them so the **lead 
 comes first: the one whose claim answers the question as asked. When the question asks for
 a number, the lead image's headline and a stat card carry that number, and the finding
 about it (the day it dropped) goes under the card in the same panel. More cards sit beside
-it when the answer rests on them, such as the parts of the total. A comparison with an
-earlier period goes on only when the question asks for one. A finding about something
-else, such as a source that stopped, gets its own image after the lead. Add a summary image (a
-stat card, or a box diagram with every cause marked) only when no single finding answers
-it.
+it when the answer rests on them, such as the parts of the total. Draw the other findings
+the answer mentions too. One about that number, such as a drop against the days before
+shown as a delta, goes under its card. One about something else, such as a source that
+stopped, gets its own image after the lead. Add a summary image (a stat card, or a box
+diagram with every cause marked) only when no single finding answers it.
 
 For a PR, call the Skill tool with `gh-attach` and put each image under `## Evidence`.
 
