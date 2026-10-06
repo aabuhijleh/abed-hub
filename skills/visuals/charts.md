@@ -189,9 +189,12 @@ ink stroke.
 
 - Five slices or fewer. Fold the smallest into "Other".
 - Largest first from 12 o'clock, clockwise: `order` sorts `n` descending.
-- Each slice labelled directly: its name and percent, then its count on a second line.
-  A `transform` computes both from the counts, and a two-item array is two lines. The
-  slice the claim is about is coral.
+- Each slice labelled directly with its name and percent, which a `transform` computes
+  from the counts. The slice the claim is about is coral.
+- Optional: the count on a second line, when the reader needs the counts as well as the
+  shares. The example has it: `label` is a two-item array, and each item is a line. For
+  one line, make `label` the first item alone.
+- Optional: a caption, as in SKILL.md step 3. The example has one.
 - Each label starts 14px outside the ring at its slice's middle angle, `mid`. A label on
   the right half starts there, one on the left ends there, and one near the top or bottom
   sits above or below it, so every label keeps the same gap to the ring.

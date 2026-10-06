@@ -111,8 +111,8 @@ What goes on the image:
   reader sees where it sits.
 - **Labels of a few words.** A side gets one `.note` line only when the picture can't say
   it.
-- **A caption, when the claim needs qualifying.** A `<p>` last in the panel, under any
-  shape, is the caption: the period, what is left out, the source, a breakdown too fine
+- **An optional caption, when the claim needs qualifying.** A `<p>` last in the panel,
+  under any shape, is the caption: the period, what is left out, the source, a breakdown too fine
   to draw ("Billing: 820 refunds and 420 invoice questions"). Up to two lines, and none
   when the headline and shape say it all. A number the claim rests on goes in the shape,
   and the caption adds what the shape can't hold.
