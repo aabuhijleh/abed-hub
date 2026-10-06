@@ -154,7 +154,8 @@ Two or three series per day, week or release, side by side, when the claim compa
 series rather than their sum, or names a part too small to stack ("only 412 in the mobile
 app"). The columns spec with `xOffset` on the series field: blue for the series the claim
 names, yellow for the rest, a legend `render.js` draws on top as coloured squares, and each
-count on its own bar.
+count on its own bar. Chart only the series the headline compares, and give any other
+series a stat card, so each bar stays wide enough for its count.
 
 ```html
 <h1>Chat overtook email in week 39 and doubled it by week 40</h1>
