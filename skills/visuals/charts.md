@@ -73,7 +73,8 @@ The same cases measured twice. Pair `.was` and `.now` bars under one label, with
 
 Counts per day, week or release, where time runs left to right. Vega-Lite `bar`, drawn by
 `render.js`, which fills bars in yellow with an ink stroke. Set `"sort": null` so the days
-keep their order. A `condition` on `color` turns the bar the claim is about coral, and a
+keep their order. Cut the days from the query's own window, so a window from 03:40 to 03:40
+over 5 days gives 5 columns, each named by the day it starts, and the caption names the cut. A `condition` on `color` turns the bar the claim is about coral, and a
 `text` layer puts each count on top. When the question asked for the total, a stat card
 with it sits above. Each column carries one count: a second series gets columns of its own,
 [grouped](#grouped-columns) or [stacked](#stacked-columns).
