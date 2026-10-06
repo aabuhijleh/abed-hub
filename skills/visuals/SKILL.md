@@ -111,10 +111,11 @@ What goes on the image:
   reader sees where it sits.
 - **Labels of a few words.** A side gets one `.note` line only when the picture can't say
   it.
-- **A caption for what qualifies the claim.** One `<p class="caption">`, last in the
-  panel, any shape: the period, what is left out, the source, a breakdown too fine to
-  draw ("Billing: 820 refunds and 420 invoice questions"). Up to two lines. A number the
-  claim rests on goes in the shape, and the caption adds what the shape can't hold.
+- **A caption, when the claim needs qualifying.** A `<p>` last in the panel, under any
+  shape, is the caption: the period, what is left out, the source, a breakdown too fine
+  to draw ("Billing: 820 refunds and 420 invoice questions"). Up to two lines, and none
+  when the headline and shape say it all. A number the claim rests on goes in the shape,
+  and the caption adds what the shape can't hold.
 
 `render.js` draws Mermaid diagrams and Vega-Lite charts in the frame's style, then checks
 the fit. `gh-attach shot` waits for it, and fails when anything runs off the panel or out

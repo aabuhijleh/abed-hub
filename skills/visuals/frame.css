@@ -69,8 +69,8 @@ th.after {
 .note {
   font-weight: 700;
 }
-/* caption: the panel's last line, for scope and source */
-.caption {
+/* caption: a paragraph straight in the panel, for scope and source */
+.panel > p {
   margin: 0;
   padding-top: 12px;
   border-top: 2px solid #ececec;

@@ -234,7 +234,7 @@ ink stroke.
   ]
 }
 </script>
-<p class="caption">Tickets opened Sep 1 to Sep 30, spam left out. Billing: 820 refunds and 420 invoice questions.</p>
+<p>Tickets opened Sep 1 to Sep 30, spam left out. Billing: 820 refunds and 420 invoice questions.</p>
 </div>
 ```
 
