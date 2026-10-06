@@ -69,6 +69,15 @@ th.after {
 .note {
   font-weight: 700;
 }
+/* caption: the panel's last line, for scope and source */
+.caption {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 2px solid #ececec;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--quiet);
+}
 .before .note {
   color: var(--was-ink);
 }
