@@ -59,7 +59,7 @@ Done when every field is filled and every value in Data names its source.
 | numbers across categories                  | bars                        | [charts.md](charts.md)           |
 | counts per day, week or release            | columns                     | [charts.md](charts.md)           |
 | counts over time that split into parts     | stacked columns             | [charts.md](charts.md)           |
-| two or three series over time, compared    | grouped columns             | [charts.md](charts.md)           |
+| series over time compared, or a tiny part  | grouped columns             | [charts.md](charts.md)           |
 | shares of one whole                        | pie                         | [charts.md](charts.md)           |
 | a metric over time around an event         | line + marker               | [charts.md](charts.md)           |
 | where it fails across two dimensions       | matrix                      | [charts.md](charts.md)           |
@@ -115,7 +115,7 @@ What goes on the image:
   under any shape, is the caption: the period, what is left out, the source, a breakdown too fine
   to draw ("Billing: 820 refunds and 420 invoice questions"). Up to two lines, and none
   when the headline and shape say it all. A number the claim rests on goes in the shape,
-  and the caption adds what the shape can't hold.
+  and the caption adds what the shape can't hold. The chart's legend names its colours.
 
 `render.js` draws Mermaid diagrams and Vega-Lite charts in the frame's style, then checks
 the fit. `gh-attach shot` waits for it, and fails when anything runs off the panel or out
