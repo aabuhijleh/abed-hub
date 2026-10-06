@@ -322,6 +322,7 @@ tfoot td {
 .stat {
   grid-row: span 4;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: subgrid;
   justify-items: start;
   padding: 16px 18px;
