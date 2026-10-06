@@ -73,9 +73,11 @@ The same cases measured twice. Pair `.was` and `.now` bars under one label, with
 
 Counts per day, week or release, where time runs left to right. Vega-Lite `bar`, drawn by
 `render.js`, which fills bars in yellow with an ink stroke. Set `"sort": null` so the days
-keep their order. A `condition` on `color` turns the bar the claim is about coral, and a
+keep their order. Cut the days from the query's own window, so a window from 03:40 to 03:40
+over 5 days gives 5 columns, each named by the day it starts, and the caption names the cut. A `condition` on `color` turns the bar the claim is about coral, and a
 `text` layer puts each count on top. When the question asked for the total, a stat card
-with it sits above.
+with it sits above. Each column carries one count: a second series gets columns of its own,
+[grouped](#grouped-columns) or [stacked](#stacked-columns).
 
 ```html
 <h1>The nightly import created 48,210 records in 5 days, almost none on Saturday</h1>
@@ -108,9 +110,11 @@ with it sits above.
 ## Stacked columns
 
 Counts over time that split into parts: by source, by type, by team. The columns spec with
-a `color` field: blue for the part the claim names, yellow for the rest, a legend on top. `y` and
-`text` sum `n`, so the bars stack and the count on top is the day's total. Coral stays free
-for a cause.
+a `color` field: blue for the part the claim names, yellow for the rest, and a legend
+`render.js` draws on top as coloured squares. `y` and `text` sum `n`, so the bars stack and
+the count on top is the day's total. Coral stays free for a cause. A part under about 5% of
+its column is a sliver in the stack, so it goes in grouped columns, where its count sits on
+its own bar.
 
 ```html
 <h1>The nightly import created 48,210 records in 5 days, two thirds from the API</h1>
@@ -136,7 +140,7 @@ for a cause.
   },
   "layer": [
     {"mark": {"type":"bar","width":{"band":0.6}},
-     "encoding": {"color": {"field":"source","type":"nominal","sort":null,"title":null,"scale":{"range":["#5b5bf7","#ffd84d"]},"legend":{"orient":"top","labelFontSize":14,"labelColor":"#111","labelFontWeight":700}}}},
+     "encoding": {"color": {"field":"source","type":"nominal","sort":null,"title":null,"scale":{"range":["#5b5bf7","#ffd84d"]}}}},
     {"mark": {"type":"text","dy":-10,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"aggregate":"sum","field":"n","format":",d"}}}
   ]
 }
@@ -147,9 +151,11 @@ for a cause.
 ## Grouped columns
 
 Two or three series per day, week or release, side by side, when the claim compares the
-series rather than their sum. The columns spec with `xOffset` on the series field: blue for
-the series the claim names, yellow for the rest, a legend on top, and each count on its own
-bar.
+series rather than their sum, or names a part too small to stack ("only 412 in the mobile
+app"). The columns spec with `xOffset` on the series field: blue for the series the claim
+names, yellow for the rest, a legend `render.js` draws on top as coloured squares, and each
+count on its own bar. Chart only the series the headline compares, and give any other
+series a stat card, so each bar stays wide enough for its count.
 
 ```html
 <h1>Chat overtook email in week 39 and doubled it by week 40</h1>
@@ -171,7 +177,7 @@ bar.
   },
   "layer": [
     {"mark": {"type":"bar","width":{"band":0.85}},
-     "encoding": {"color": {"field":"channel","type":"nominal","sort":null,"title":null,"scale":{"range":["#ffd84d","#5b5bf7"]},"legend":{"orient":"top","labelFontSize":14,"labelColor":"#111","labelFontWeight":700}}}},
+     "encoding": {"color": {"field":"channel","type":"nominal","sort":null,"title":null,"scale":{"range":["#ffd84d","#5b5bf7"]}}}},
     {"mark": {"type":"text","dy":-10,"fontSize":13,"fontWeight":900}, "encoding": {"text":{"field":"n","format":",d"}}}
   ]
 }
@@ -339,6 +345,8 @@ value that differs.
 - Leave `timeUnit` off ISO times. It bins them all to midnight.
 - Set `color` only on the layer that is the cause, such as the event label. The theme
   draws lines and points in ink and fills bars and arcs yellow.
+- A `color` field gets its legend from the theme: coloured squares in a row on top. Set
+  `"title": null` on the field and leave the `legend` out.
 - A layer's `encoding` reaches every layer nested in it, and a layer whose data lacks the
   field draws nothing. A layer with its own data, such as the pie's total, sits beside the
   encoded layer, not inside it.
