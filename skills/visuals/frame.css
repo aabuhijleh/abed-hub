@@ -433,6 +433,10 @@ tfoot td {
 .chart {
   width: 100%;
 }
+/* vega-embed's empty bindings form, which keeps a 1em margin on a page without a doctype */
+.chart > form {
+  margin: 0;
+}
 pre.mermaid {
   margin: 0;
   display: flex;

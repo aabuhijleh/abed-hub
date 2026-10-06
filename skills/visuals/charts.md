@@ -191,6 +191,9 @@ ink stroke.
 - Largest first from 12 o'clock, clockwise: `order` sorts `n` descending.
 - Each slice labelled directly with its name and percent, which a `transform` computes from
   the counts. The slice the claim is about is coral.
+- Each label starts 14px outside the ring at its slice's middle angle, `mid`. A label on
+  the right half starts there, one on the left ends there, and one near the top or bottom
+  sits above or below it, so every label keeps the same gap to the ring.
 - Shares across days or teams go in stacked columns, and shares of different wholes in
   bars.
 
@@ -199,13 +202,15 @@ ink stroke.
 <div class="panel">
 <script type="application/vega-lite+json">
 {
-  "height": 320,
+  "height": 270,
   "layer": [
     {"data": {"values": [
        {"topic":"Billing","n":1240,"claim":true},{"topic":"Login","n":310},{"topic":"Bug reports","n":260},{"topic":"Other","n":190}
      ]},
      "transform": [
        {"joinaggregate":[{"op":"sum","field":"n","as":"total"}]},
+       {"window":[{"op":"sum","field":"n","as":"upto"}],"sort":[{"field":"n","order":"descending"}]},
+       {"calculate":"2 * PI * (datum.upto - datum.n / 2) / datum.total","as":"mid"},
        {"calculate":"datum.topic + ' ' + format(datum.n / datum.total, '.0%')","as":"label"}
      ],
      "encoding": {
@@ -215,7 +220,10 @@ ink stroke.
      "layer": [
        {"mark": {"type":"arc","innerRadius":80,"outerRadius":130},
         "encoding": {"color": {"condition":{"test":"datum.claim","value":"#ff8a6b"},"value":"#ffd84d"}}},
-       {"mark": {"type":"text","radius":185,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"field":"label"}}}
+       {"mark": {"type":"text","radius":144,"fontSize":15,"fontWeight":900,
+                 "align":{"expr":"sin(datum.mid) >= 0 ? 'left' : 'right'"},
+                 "baseline":{"expr":"cos(datum.mid) > 0.7 ? 'bottom' : cos(datum.mid) < -0.7 ? 'top' : 'middle'"}},
+        "encoding": {"text":{"field":"label"}}}
      ]},
     {"data": {"values":[{"total":"2,000","unit":"tickets"}]},
      "layer": [
