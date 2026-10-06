@@ -189,8 +189,12 @@ ink stroke.
 
 - Five slices or fewer. Fold the smallest into "Other".
 - Largest first from 12 o'clock, clockwise: `order` sorts `n` descending.
-- Each slice labelled directly with its name and percent, which a `transform` computes from
-  the counts. The slice the claim is about is coral.
+- Each slice labelled directly with its name and percent, which a `transform` computes
+  from the counts. The slice the claim is about is coral.
+- Optional: the count on a second line, when the reader needs the counts as well as the
+  shares. The example has it: `label` is a two-item array, and each item is a line. For
+  one line, make `label` the first item alone.
+- Optional: a caption, as in SKILL.md step 3. The example has one.
 - Each label starts 14px outside the ring at its slice's middle angle, `mid`. A label on
   the right half starts there, one on the left ends there, and one near the top or bottom
   sits above or below it, so every label keeps the same gap to the ring.
@@ -211,7 +215,7 @@ ink stroke.
        {"joinaggregate":[{"op":"sum","field":"n","as":"total"}]},
        {"window":[{"op":"sum","field":"n","as":"upto"}],"sort":[{"field":"n","order":"descending"}]},
        {"calculate":"2 * PI * (datum.upto - datum.n / 2) / datum.total","as":"mid"},
-       {"calculate":"datum.topic + ' ' + format(datum.n / datum.total, '.0%')","as":"label"}
+       {"calculate":"[datum.topic + ' ' + format(datum.n / datum.total, '.0%'), format(datum.n, ',')]","as":"label"}
      ],
      "encoding": {
        "theta": {"field":"n","type":"quantitative","stack":true},
@@ -233,6 +237,7 @@ ink stroke.
   ]
 }
 </script>
+<p>Tickets opened Sep 1 to Sep 30, spam left out. Billing: 820 refunds and 420 invoice questions.</p>
 </div>
 ```
 
