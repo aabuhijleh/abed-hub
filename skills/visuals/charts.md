@@ -1,8 +1,8 @@
 # Charts
 
 Shapes for numbers. Each example is a whole frame body: put it between the `<link>` and the
-`<script>` from SKILL.md step 3. Line charts need `render.js`, and the rest are plain HTML
-on `frame.css`.
+`<script>` from SKILL.md step 3. Columns, pies and lines are Vega-Lite, drawn by
+`render.js`, and the rest are plain HTML on `frame.css`.
 
 ## Stat card
 
@@ -10,7 +10,11 @@ One number moving, or two or three that move together. Each `.stat` has a `<smal
 the old value in `<s>`, the new one in `<mark>` (or `<b>` when it is unchanged), and the
 delta in `<em>` (`<em class="bad">` when it got worse).
 
-- A card holds one value. Parts of a total get a card each, or go in stacked columns.
+- A card holds one value under a label of a few words. Parts of a total get a card each,
+  or go in stacked columns or a pie. A breakdown goes in a chart, never in the label.
+- Up to four cards in a row. A value of 7 characters (`104,472`) fits four, and longer
+  ones fit three.
+- Each number shows once. A card holds the total, and the chart under it holds the parts.
 - The `<s>` and the delta come in when the question asks for a comparison or the change
   is a finding the answer mentions. The delta is a number (`−25%`, `3× as many`), with what it
   compares against after it.
@@ -140,6 +144,98 @@ for a cause.
 </div>
 ```
 
+## Grouped columns
+
+Two or three series per day, week or release, side by side, when the claim compares the
+series rather than their sum. The columns spec with `xOffset` on the series field: blue for
+the series the claim names, yellow for the rest, a legend on top, and each count on its own
+bar.
+
+```html
+<h1>Chat overtook email in week 39 and doubled it by week 40</h1>
+<div class="panel">
+<script type="application/vega-lite+json">
+{
+  "height": 300,
+  "data": {"values": [
+    {"week":"Week 36","channel":"Email","n":820},{"week":"Week 36","channel":"Chat","n":410},
+    {"week":"Week 37","channel":"Email","n":790},{"week":"Week 37","channel":"Chat","n":560},
+    {"week":"Week 38","channel":"Email","n":760},{"week":"Week 38","channel":"Chat","n":720},
+    {"week":"Week 39","channel":"Email","n":640},{"week":"Week 39","channel":"Chat","n":980},
+    {"week":"Week 40","channel":"Email","n":580},{"week":"Week 40","channel":"Chat","n":1170}
+  ]},
+  "encoding": {
+    "x": {"field":"week","type":"ordinal","sort":null,"title":null,"axis":{"labelAngle":0,"labelFontSize":14,"labelColor":"#111","labelFontWeight":700}},
+    "xOffset": {"field":"channel","type":"nominal","sort":null},
+    "y": {"field":"n","type":"quantitative","title":"Tickets","axis":{"format":",d"}}
+  },
+  "layer": [
+    {"mark": {"type":"bar","width":{"band":0.85}},
+     "encoding": {"color": {"field":"channel","type":"nominal","sort":null,"title":null,"scale":{"range":["#ffd84d","#5b5bf7"]},"legend":{"orient":"top","labelFontSize":14,"labelColor":"#111","labelFontWeight":700}}}},
+    {"mark": {"type":"text","dy":-10,"fontSize":13,"fontWeight":900}, "encoding": {"text":{"field":"n","format":",d"}}}
+  ]
+}
+</script>
+</div>
+```
+
+Horizontal bars side by side are [Bars, before and after](#bars-before-and-after).
+
+## Pie
+
+Shares of one whole, when the claim is a share ("62% of tickets"). Vega-Lite `arc` as a
+donut with the total in the middle, drawn by `render.js`, which fills arcs yellow with an
+ink stroke.
+
+- Five slices or fewer. Fold the smallest into "Other".
+- Largest first from 12 o'clock, clockwise: `order` sorts `n` descending.
+- Each slice labelled directly with its name and percent, which a `transform` computes from
+  the counts. The slice the claim is about is coral.
+- Each label starts 14px outside the ring at its slice's middle angle, `mid`. A label on
+  the right half starts there, one on the left ends there, and one near the top or bottom
+  sits above or below it, so every label keeps the same gap to the ring.
+- Shares across days or teams go in stacked columns, and shares of different wholes in
+  bars.
+
+```html
+<h1>Billing questions are 62% of the 2,000 support tickets in September</h1>
+<div class="panel">
+<script type="application/vega-lite+json">
+{
+  "height": 270,
+  "layer": [
+    {"data": {"values": [
+       {"topic":"Billing","n":1240,"claim":true},{"topic":"Login","n":310},{"topic":"Bug reports","n":260},{"topic":"Other","n":190}
+     ]},
+     "transform": [
+       {"joinaggregate":[{"op":"sum","field":"n","as":"total"}]},
+       {"window":[{"op":"sum","field":"n","as":"upto"}],"sort":[{"field":"n","order":"descending"}]},
+       {"calculate":"2 * PI * (datum.upto - datum.n / 2) / datum.total","as":"mid"},
+       {"calculate":"datum.topic + ' ' + format(datum.n / datum.total, '.0%')","as":"label"}
+     ],
+     "encoding": {
+       "theta": {"field":"n","type":"quantitative","stack":true},
+       "order": {"field":"n","sort":"descending"}
+     },
+     "layer": [
+       {"mark": {"type":"arc","innerRadius":80,"outerRadius":130},
+        "encoding": {"color": {"condition":{"test":"datum.claim","value":"#ff8a6b"},"value":"#ffd84d"}}},
+       {"mark": {"type":"text","radius":144,"fontSize":15,"fontWeight":900,
+                 "align":{"expr":"sin(datum.mid) >= 0 ? 'left' : 'right'"},
+                 "baseline":{"expr":"cos(datum.mid) > 0.7 ? 'bottom' : cos(datum.mid) < -0.7 ? 'top' : 'middle'"}},
+        "encoding": {"text":{"field":"label"}}}
+     ]},
+    {"data": {"values":[{"total":"2,000","unit":"tickets"}]},
+     "layer": [
+       {"mark": {"type":"text","x":{"expr":"width / 2"},"y":{"expr":"height / 2"},"dy":-8,"fontSize":34,"fontWeight":900}, "encoding": {"text":{"field":"total"}}},
+       {"mark": {"type":"text","x":{"expr":"width / 2"},"y":{"expr":"height / 2"},"dy":20,"fontSize":14,"color":"#6b6b6b"}, "encoding": {"text":{"field":"unit"}}}
+     ]}
+  ]
+}
+</script>
+</div>
+```
+
 ## Line + marker
 
 A metric over time around an event: a deploy, an incident, a config change. Vega-Lite, drawn
@@ -237,6 +333,9 @@ value that differs.
   nothing, and every point lands on the y axis.
 - Leave `timeUnit` off ISO times. It bins them all to midnight.
 - Set `color` only on the layer that is the cause, such as the event label. The theme
-  draws lines and points in ink and fills bars yellow.
+  draws lines and points in ink and fills bars and arcs yellow.
+- A layer's `encoding` reaches every layer nested in it, and a layer whose data lacks the
+  field draws nothing. A layer with its own data, such as the pie's total, sits beside the
+  encoded layer, not inside it.
 - A spec error reaches `gh-attach shot`, which fails with the message. Fix the spec and
   render again.

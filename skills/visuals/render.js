@@ -1,4 +1,4 @@
-// Draws the frame's Mermaid diagrams and Vega-Lite charts in frame.css colours. gh-attach shot waits on window.rendered.
+// Draws the frame's Mermaid diagrams and Vega-Lite charts in frame.css colours, then fails the render when anything runs off its box. gh-attach shot waits on window.rendered.
 window.rendered = (async () => {
   const css = getComputedStyle(document.documentElement);
   const color = (name) => css.getPropertyValue(name).trim();
@@ -87,6 +87,7 @@ window.rendered = (async () => {
       line: { color: ink, strokeWidth: 3 },
       point: { color: ink, filled: true, size: 70, opacity: 1 },
       bar: { color: color("--fill"), stroke: ink, strokeWidth: 2.5 },
+      arc: { color: color("--fill"), stroke: ink, strokeWidth: 2.5 },
       rule: { color: color("--was-ink"), strokeWidth: 3, strokeDash: [6, 4] },
       text: { font, fontSize: 13, fontWeight: 700, color: ink },
     };
@@ -108,9 +109,42 @@ window.rendered = (async () => {
     }
   }
 
+  // Every element stays inside the content box of its nearest panel or stat card.
+  function overflows() {
+    const boxes = ".panel, .stat";
+    const found = [];
+    for (const el of document.querySelectorAll(".panel *")) {
+      if (el instanceof SVGElement && !(el instanceof SVGSVGElement)) continue;
+      if (found.some((outer) => outer.el.contains(el))) continue;
+      const box = el.parentElement.closest(boxes);
+      const r = el.getBoundingClientRect();
+      if (!r.width) continue;
+      const b = box.getBoundingClientRect();
+      const s = getComputedStyle(box);
+      const left =
+        b.left + parseFloat(s.borderLeftWidth) + parseFloat(s.paddingLeft);
+      const right =
+        b.right - parseFloat(s.borderRightWidth) - parseFloat(s.paddingRight);
+      // A mark may bleed into the padding by its own inline padding.
+      const slack = el.matches(".stat > mark, .stat > b") ? 8 : 1;
+      const by = Math.max(r.right - right, left - r.left);
+      if (by > slack) found.push({ el, box, by: Math.ceil(by) });
+    }
+    return found.map(({ el, box, by }) => {
+      const text = el.textContent.trim().replace(/\s+/g, " ").slice(0, 40);
+      const where = box.matches(".stat") ? "its stat card" : "the panel";
+      return `<${el.tagName.toLowerCase()}> "${text}" runs ${by}px past ${where}`;
+    });
+  }
+
   await Promise.all([
     diagrams.length && drawDiagrams(),
     charts.length && drawCharts(),
   ]);
   await document.fonts.ready;
+  const misfits = overflows();
+  if (misfits.length)
+    throw new Error(
+      `${misfits.join("; ")}. Shorten the labels, show fewer cards or bars, or switch shape.`,
+    );
 })();

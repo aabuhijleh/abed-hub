@@ -35,6 +35,7 @@ h1 {
 }
 .panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 22px;
   background: var(--paper);
   border: 3px solid var(--ink);
@@ -110,7 +111,7 @@ h1 mark {
 /* screenshots */
 .pair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px 48px;
   align-items: start;
 }
@@ -198,6 +199,9 @@ tfoot td {
   border: 2.5px solid var(--ink);
   margin-left: -2.5px;
   background: #fff;
+}
+.cols > :first-child {
+  margin-left: 0;
 }
 .cols small {
   display: block;
@@ -306,34 +310,40 @@ tfoot td {
   transform: none;
 }
 
-/* stat: one number moving. s is the old value, mark the new one, em the delta */
+/* stat: one number moving. s is the old value, mark the new one, em the delta.
+   Cards share rows through subgrid, so values line up when a label wraps */
 .stats {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 18px;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(4, auto);
+  gap: 4px 18px;
 }
 .stat {
+  grid-row: span 4;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
   justify-items: start;
-  align-content: start;
-  gap: 4px;
   padding: 16px 18px;
   border: 2.5px solid var(--ink);
   background: #fff;
   box-shadow: 4px 4px 0 var(--ink);
 }
 .stat > small {
+  grid-row: 1;
   font-size: 13px;
   color: var(--quiet);
 }
 .stat > s {
+  grid-row: 2;
   font-size: 22px;
   color: var(--quiet);
   text-decoration-thickness: 3px;
 }
 .stat > mark,
 .stat > b {
+  grid-row: 3;
   font-size: 46px;
   line-height: 1.05;
   font-weight: 900;
@@ -341,7 +351,14 @@ tfoot td {
   padding: 0 6px;
   margin-left: -6px;
 }
+.stats:has(> .stat:nth-child(4)) .stat > :is(mark, b) {
+  font-size: 34px;
+}
+.stats:has(> .stat:nth-child(5)) .stat > :is(mark, b) {
+  font-size: 26px;
+}
 .stat > em {
+  grid-row: 4;
   font-style: normal;
   font-weight: 900;
   color: var(--now);
@@ -353,7 +370,7 @@ tfoot td {
 /* bars: --max is the scale, each bar's --v its value, in one unit */
 .bars {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: fit-content(40%) minmax(0, 1fr);
   gap: 8px 14px;
   align-items: center;
 }
@@ -415,6 +432,10 @@ tfoot td {
 /* charts and diagrams drawn by render.js */
 .chart {
   width: 100%;
+}
+/* vega-embed's empty bindings form, which keeps a 1em margin on a page without a doctype */
+.chart > form {
+  margin: 0;
 }
 pre.mermaid {
   margin: 0;

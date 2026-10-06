@@ -59,6 +59,8 @@ Done when every field is filled and every value in Data names its source.
 | numbers across categories                  | bars                        | [charts.md](charts.md)           |
 | counts per day, week or release            | columns                     | [charts.md](charts.md)           |
 | counts over time that split into parts     | stacked columns             | [charts.md](charts.md)           |
+| two or three series over time, compared    | grouped columns             | [charts.md](charts.md)           |
+| shares of one whole                        | pie                         | [charts.md](charts.md)           |
 | a metric over time around an event         | line + marker               | [charts.md](charts.md)           |
 | where it fails across two dimensions       | matrix                      | [charts.md](charts.md)           |
 | where items drop out of a pipeline         | funnel                      | [charts.md](charts.md)           |
@@ -110,8 +112,10 @@ What goes on the image:
 - **Labels of a few words.** A side gets one `.note` line only when the picture can't say
   it.
 
-`render.js` is needed only for a Mermaid diagram or a Vega-Lite chart. It draws them in the
-frame's style and sets `window.rendered`, which `gh-attach shot` waits for.
+`render.js` draws Mermaid diagrams and Vega-Lite charts in the frame's style, then checks
+the fit. `gh-attach shot` waits for it, and fails when anything runs off the panel or out
+of its stat card, naming the element and by how much. Fix the frame (shorter labels, fewer
+cards or bars, another shape) and render again.
 
 ## 4. Look and improve
 
