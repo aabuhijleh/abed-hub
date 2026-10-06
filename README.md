@@ -36,10 +36,11 @@ Set up one. Come back for the others when you need them.
 Screenshots a page to a PNG sized for GitHub, and teaches an agent to attach it. Two skills
 split the work. `visuals` draws one image per claim, such as "Checkout errors tripled
 after the 14:02 deploy". The image is a screenshot ringed on the point, a diagram (flow,
-sequence, box, tree, timeline), or a chart (stat card, bars, line with an event marker,
-matrix, funnel, record diff). It suits a PR's before and after, or an answer, a Slack or
-Jira post, or a doc. The agent then reads each image back and redraws it until the image
-alone proves the claim. A text change goes in as a diff instead of an image.
+sequence, box, tree, timeline), or a chart (stat card, bars, columns, pie, line with an
+event marker, matrix, funnel, record diff). It suits a PR's before and after, or an
+answer, a Slack or Jira post, or a doc. The render fails when a label or bar runs off the
+panel. The agent then reads each image back and redraws it until the image alone proves
+the claim. A text change goes in as a diff instead of an image.
 `gh-attach` puts the result in the PR description under `## Evidence`.
 
 ```bash
