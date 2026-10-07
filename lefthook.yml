@@ -1,19 +1,25 @@
 pre-commit:
-  parallel: true
-  commands:
-    check:
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,css}"
-      run: bunx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
-      stage_fixed: true
+  jobs:
+    # Runs first and alone, since it stages files the checks below read.
+    - name: skills-sync
+      run: bun run skills:sync --stage
 
-    typecheck:
-      glob: "*.{ts,tsx,mts,cts}"
-      run: bun run typecheck
+    - group:
+        parallel: true
+        jobs:
+          - name: check
+            glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,css}"
+            run: bunx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+            stage_fixed: true
 
-    test:
-      glob: "*.{ts,tsx}"
-      run: bun test
+          - name: typecheck
+            glob: "*.{ts,tsx,mts,cts}"
+            run: bun run typecheck
 
-    skills-lint:
-      glob: "skills/**"
-      run: bun run skills:lint
+          - name: test
+            glob: "*.{ts,tsx}"
+            run: bun test
+
+          - name: skills-lint
+            glob: "skills/**"
+            run: bun run skills:lint

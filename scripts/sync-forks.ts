@@ -2,8 +2,9 @@
  * Bring every forked skill up to its upstream's latest commit, keeping our
  * frontmatter and the patches in `lib/forks.ts`.
  *
- * `bun run skills:sync` writes the update. `--check` writes nothing, exits 1 when
- * a body was edited outside a patch, and only warns when upstream has moved on.
+ * `bun run skills:sync` writes the update, and `--stage` also stages it, which the
+ * pre-commit hook uses. `--check` writes nothing and exits 1 when a fork is behind
+ * upstream or its body was edited outside a patch.
  */
 import path from "node:path";
 import {
@@ -17,6 +18,7 @@ import {
 } from "./lib/forks";
 
 const check = process.argv.includes("--check");
+const stage = process.argv.includes("--stage");
 const skills = path.join(import.meta.dir, "..", "skills");
 const headers: Record<string, string> = process.env.GITHUB_TOKEN
   ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
@@ -31,8 +33,18 @@ for (const fork of FORKS) {
   const credits = await creditsFile.text();
 
   const pinned = pinnedCommit(credits);
-  const latest = await latestCommit(fork);
-  const before = await upstreamAt(fork, pinned);
+  let latest: string;
+  let before: string;
+  try {
+    latest = await latestCommit(fork);
+    before = await upstreamAt(fork, pinned);
+  } catch (error) {
+    if (!stage) throw error;
+    console.log(
+      `▲ ${fork.skill}: skipped, GitHub is unreachable. CI checks it`,
+    );
+    continue;
+  }
 
   if (!bodyMatches(fork, local, before)) {
     console.log(
@@ -49,14 +61,16 @@ for (const fork of FORKS) {
 
   if (check) {
     console.log(
-      `▲ ${fork.skill}: upstream moved ${short(pinned)} -> ${short(latest)}. Run bun run skills:sync`,
+      `✖ ${fork.skill}: upstream moved ${short(pinned)} -> ${short(latest)}. Run bun run skills:sync`,
     );
+    failed = true;
     continue;
   }
 
   const after = await upstreamAt(fork, latest);
   await Bun.write(skillFile, rebuild(fork, local, after));
   await Bun.write(creditsFile, repin(credits, latest));
+  if (stage) await Bun.$`git add ${skillFile.name} ${creditsFile.name}`;
   console.log(`↑ ${fork.skill}: ${short(pinned)} -> ${short(latest)}`);
 
   if (frontmatterOf(before) !== frontmatterOf(after)) {
