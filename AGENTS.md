@@ -24,7 +24,10 @@ change (`*.test.ts`).
 - Third-party skills (`playwright-cli`, `pr`) are installed as upstream ships them, never
   edited. A skill this repo needs changed gets copied into `skills/`, the way `deslop` copies
   Cursor's `unslop`, with the upstream named in `metadata.credits` and a `CREDITS.md` that
-  says what changed and carries the license notice.
+  says what changed and carries the license notice. Register the copy in `FORKS` in
+  [`scripts/lib/forks.ts`](scripts/lib/forks.ts). A change to a forked skill's body goes
+  there as a patch, then `bun run skills:sync` rewrites the body. Its frontmatter is edited
+  in place.
 
 ## Docs sync
 

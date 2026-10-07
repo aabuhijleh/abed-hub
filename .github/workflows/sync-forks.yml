@@ -1,0 +1,44 @@
+name: Sync forked skills
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-forks
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      BRANCH: chore/sync-forked-skills
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun run skills:sync
+
+      - name: Open or update the PR
+        run: |
+          if git diff --quiet; then
+            echo "Every fork is in step with upstream."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git commit -am "chore(skills): sync forked skills with upstream"
+          git push --force origin "$BRANCH"
+          if [ -z "$(gh pr list --head "$BRANCH" --json number --jq '.[]')" ]; then
+            gh pr create --head "$BRANCH" \
+              --title "chore(skills): sync forked skills with upstream" \
+              --body "Runs \`bun run skills:sync\`. Our frontmatter and the patches in \`scripts/lib/forks.ts\` are kept, and CREDITS.md pins the new commit."
+          fi

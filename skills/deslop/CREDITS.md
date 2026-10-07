@@ -5,7 +5,9 @@ by [Lauren Tan](https://github.com/poteto), from Cursor's pstack plugin, taken a
 [`70b2dc8`](https://github.com/cursor/plugins/blob/70b2dc8b4b85c8d5648624ca40d692c421fff32f/pstack/skills/unslop/SKILL.md).
 
 The body is unslop's, word for word, apart from the title. The rule numbers stay as they
-are, since other skills cite them. Three things changed, all in the frontmatter:
+are, since other skills cite them. `bun run skills:sync` pulls upstream's latest body and
+repins the commit above. The title change is a patch in `scripts/lib/forks.ts`. Three things
+changed, all in the frontmatter:
 
 - The name is `deslop`, so it can sit next to an installed `unslop` without one
   overwriting the other.

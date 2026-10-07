@@ -12,6 +12,26 @@ bun run build
 Lefthook runs biome, the typecheck, and the tests on commit, plus `bun run skills:lint` when
 a skill changes. `bun run verify:fix` runs the same set and lets biome write its fixes.
 
+## Forked skills
+
+`deslop` is Cursor's `unslop` with our own frontmatter and a few patches. `FORKS` in
+[`scripts/lib/forks.ts`](scripts/lib/forks.ts) lists each forked skill, its upstream file,
+and the patches as exact find-and-replace pairs. `CREDITS.md` pins the upstream commit.
+
+```bash
+bun run skills:sync        # take upstream's latest body, apply the patches, repin CREDITS.md
+bun run skills:sync:check  # fail if the body differs from the pinned upstream plus the patches
+```
+
+Sync stops when a patch no longer matches upstream exactly once, so you fix the patch and
+nothing gets applied in the wrong place. Upstream's frontmatter is never copied over. When it
+changes, sync prints a compare link so you can decide whether ours should follow.
+
+CI runs the check on every PR. [Sync forked skills](.github/workflows/sync-forks.yml) runs
+the sync every Monday and opens a PR when upstream has moved. A PR opened with the workflow
+token does not start other workflows, so push a commit to it, or close and reopen it, to run
+Code quality.
+
 ## Releasing
 
 Bumping a version is the whole release. Merge the bump to main and

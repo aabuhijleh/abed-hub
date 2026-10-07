@@ -28,4 +28,7 @@ jobs:
       - run: bun run check
       - run: bun test
       - run: bun run skills:lint
+      - run: bun run skills:sync:check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - run: bun run build
