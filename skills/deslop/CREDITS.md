@@ -12,9 +12,9 @@ changed, all in the frontmatter:
 - The name is `deslop`, so it can sit next to an installed `unslop` without one
   overwriting the other.
 - The description names what it applies to: PR titles and bodies, Slack and Jira posts,
-  agent answers, READMEs and other human docs. It also leaves the fixed headings and bold
-  labels of the `pr` skill and of PR templates alone. Upstream's description fires on any
-  writing.
+  READMEs and other human docs. It leaves out agent answers, so it doesn't fire on every
+  reply. It also leaves the fixed headings and bold labels of the `pr` skill and of PR
+  templates alone. Upstream's description fires on any writing.
 - An agent can invoke it. Upstream sets `disable-model-invocation: true`, which stops one
   skill from calling another.
 

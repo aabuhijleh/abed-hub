@@ -1,9 +1,9 @@
 ---
 name: deslop
 description: >-
-  Cut AI tells from prose people read: PR titles and bodies, Slack and Jira posts, agent
-  answers, READMEs and other human docs. Leave the fixed headings and bold labels of the
-  `pr` skill and of PR templates as they are.
+  Cut AI tells from prose people read: PR titles and bodies, Slack and Jira posts, READMEs
+  and other human docs. Leave the fixed headings and bold labels of the `pr` skill and of PR
+  templates as they are.
 license: MIT
 allowed-tools: Read, Edit
 metadata:
