@@ -165,6 +165,10 @@ For a PR, call the Skill tool with `gh-attach` and put each image under `## Evid
 
 - **Charts and diagrams need `gh-attach` 0.3.0 or later.** Older `shot` captures before
   Mermaid and Vega-Lite finish, and the PNG comes back with an empty panel.
+- **Every image you hand back is a frame rendered by `gh-attach shot`, whether it goes to
+  a PR, Slack, Jira or a doc.** `shot` only renders: it writes the frame's `h1` into the
+  PNG's `Title`, and an agent runner may refuse an image without one. A screenshot goes
+  into the frame as its `<img>` first. Needs `gh-attach` 0.4.0 or later.
 - **Link `frame.css` where it sits.** A copy elsewhere loses `archivo.woff2` and falls back
   to the system font.
 - **`render.js` stays a classic `<script src>`.** Chrome blocks module scripts on a `file:`
@@ -179,5 +183,5 @@ For a PR, call the Skill tool with `gh-attach` and put each image under `## Evid
 
 `playwright-cli`, a chromium build and `gh-attach`, all installed by the abed-hub
 `gh-attach` component. Charts and diagrams load Mermaid and Vega-Lite from jsDelivr, so
-they need the network. When a tool is missing or `gh-attach` is older than 0.3.0, call the
+they need the network. When a tool is missing or `gh-attach` is older than 0.4.0, call the
 Skill tool with `abed-hub` and repair the `gh-attach` component.

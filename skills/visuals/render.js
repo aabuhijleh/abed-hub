@@ -159,4 +159,8 @@ window.rendered = (async () => {
     throw new Error(
       `${misfits.join("; ")}. Shorten the labels, show fewer cards or bars, or switch shape.`,
     );
+  // gh-attach shot writes this into the PNG's Title, so a checker can tell a frame from a raw shot.
+  window.claim = (document.querySelector("h1")?.textContent ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
 })();

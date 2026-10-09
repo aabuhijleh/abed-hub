@@ -14,6 +14,10 @@ padded with blank space.
 A page that draws after load, such as a chart or a diagram, sets `window.rendered` to a
 promise. `shot` waits for it, up to 20 s, and fails with the page's error when it rejects.
 
+A page can also set `window.claim` to a string, such as the headline that says what the
+image proves. `shot` writes it into the PNG's standard `Title` field, as UTF-8 text, so a
+script that checks images can tell a framed render from a raw screenshot.
+
 Uploading is [`gh`'s job](https://cli.github.com) since 2.99.0. `gh pr comment 12 --attach
 ./out.png` uploads and embeds in one command, against the token `gh` already holds. This
 package used to do that too, through a browser session cookie, back when GitHub had no

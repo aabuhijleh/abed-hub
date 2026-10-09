@@ -1,9 +1,10 @@
 import { execSync } from "node:child_process";
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { defineCommand } from "citty";
+import { withPngTitle } from "./png-title";
 
 /**
  * Screenshot a local HTML file or a URL to a PNG, for PR evidence images.
@@ -207,9 +208,13 @@ export default defineCommand({
       await page.waitForTimeout(120);
     }
 
+    const claim = await page.evaluate(
+      "typeof window.claim === 'string' ? window.claim.trim() : ''",
+    );
     const outPath = isAbsolute(out) ? out : resolve(out);
-    await page.screenshot({ path: outPath, fullPage: true });
+    const png = await page.screenshot({ fullPage: true });
     await browser.close();
+    writeFileSync(outPath, claim ? withPngTitle(png, claim) : png);
 
     if (pageErrors.length) {
       console.error(
