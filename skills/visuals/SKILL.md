@@ -116,6 +116,9 @@ What goes on the image:
   to draw ("Billing: 820 refunds and 420 invoice questions"). Up to two lines, and none
   when the headline and shape say it all. A number the claim rests on goes in the shape,
   and the caption adds what the shape can't hold. The chart's legend names its colours.
+- **Words through deslop, once.** Before the first render, invoke the `deslop` skill and
+  run it over the headline, labels and caption in one pass. One call per
+  session covers every image. Re-renders keep the words unless a step 4 check fails on them.
 
 `render.js` draws Mermaid diagrams and Vega-Lite charts in the frame's style, then checks
 the fit. `gh-attach shot` waits for it, and fails when anything runs off the panel or out

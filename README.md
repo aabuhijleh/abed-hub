@@ -24,7 +24,7 @@ abed-hub config    # where every config file is, and what is in it
 | Skill | Use it for | Also needs |
 | --- | --- | --- |
 | [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in, and a browser |
-| [visuals](#-gh-attach) | Draw the image that proves a claim: a ringed screenshot, a diagram, or a chart. | gh-attach, and the `playwright-cli` skill |
+| [visuals](#-gh-attach) | Draw the image that proves a claim: a ringed screenshot, a diagram, or a chart. | gh-attach, and the `playwright-cli` and `deslop` skills |
 | [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 | [deslop](#-deslop) | Cut AI tells from PR bodies, Slack and Jira posts, and docs. | Nothing |
