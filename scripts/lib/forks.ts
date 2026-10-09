@@ -25,7 +25,15 @@ export const FORKS: Fork[] = [
     skill: "deslop",
     repo: "cursor/plugins",
     path: "pstack/skills/unslop/SKILL.md",
-    patches: [{ find: "\n# Unslop\n", replace: "\n# Deslop\n" }],
+    patches: [
+      { find: "\n# Unslop\n", replace: "\n# Deslop\n" },
+      {
+        find: "spell out arrows and abbreviations.\n",
+        replace:
+          "spell out arrows and abbreviations.\n" +
+          '34. **ASD-STE100 Simplified Technical English.** Follow STE where it makes the text clearer. Keep an instruction to about 20 words and a description to about 25. Write one action per step, in the imperative. Use the simple present and past tenses. Use each verb in its literal sense: "cut a tag" becomes "create a tag", "hand-cut the release" becomes "create the release manually". Break a noun cluster longer than three words: "session token refresh handler" becomes "the handler that refreshes the session token". Keep code, product names, and the reader\'s own terms as they are.\n',
+      },
+    ],
   },
 ];
 
@@ -69,6 +77,24 @@ export function bodyMatches(
     split(local, `skills/${fork.skill}/SKILL.md`).body ===
     patchedBody(fork, upstream)
   );
+}
+
+/** `write` is a plain sync, `stage` the pre-commit hook, `check` CI. */
+export type SyncMode = "write" | "stage" | "check";
+
+/**
+ * What a sync does with one fork. A plain sync rewrites a body that differs from
+ * upstream plus the patches, which is how a new patch lands. The hook and CI refuse it.
+ */
+export function syncAction(
+  mode: SyncMode,
+  bodyInStep: boolean,
+  upstreamMoved: boolean,
+): "in-step" | "edited" | "behind" | "write" {
+  if (!bodyInStep && mode !== "write") return "edited";
+  if (bodyInStep && !upstreamMoved) return "in-step";
+  if (mode === "check") return "behind";
+  return "write";
 }
 
 export function frontmatterOf(text: string): string {

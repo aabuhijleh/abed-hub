@@ -24,6 +24,9 @@ bun run skills:sync        # take upstream's latest body, apply the patches, rep
 bun run skills:sync:check  # fail if upstream moved, or the body differs from it plus the patches
 ```
 
+To change a forked skill's body, add or edit a patch and run `bun run skills:sync`, which
+rewrites the body. The commit hook and CI reject a body edited directly.
+
 Sync stops when a patch no longer matches upstream exactly once, so you fix the patch and
 nothing gets applied in the wrong place. Upstream's frontmatter is never copied over. When it
 changes, sync prints a compare link so you can decide whether ours should follow.

@@ -6,6 +6,7 @@ import {
   pinnedCommit,
   rebuild,
   repin,
+  syncAction,
 } from "./forks";
 
 const fork: Fork = {
@@ -90,5 +91,27 @@ describe("pinnedCommit and repin", () => {
 
   test("refuses credits without a pinned link", () => {
     expect(() => pinnedCommit("no link")).toThrow("full commit sha");
+  });
+});
+
+describe("syncAction", () => {
+  test("leaves a fork alone when its body and upstream are unchanged", () => {
+    expect(syncAction("write", true, false)).toBe("in-step");
+    expect(syncAction("check", true, false)).toBe("in-step");
+  });
+
+  test("rewrites the body on a plain sync after a patch changes", () => {
+    expect(syncAction("write", false, false)).toBe("write");
+  });
+
+  test("refuses a body edited outside a patch in the hook and in CI", () => {
+    expect(syncAction("stage", false, false)).toBe("edited");
+    expect(syncAction("check", false, true)).toBe("edited");
+  });
+
+  test("takes upstream's update except in CI, which reports it behind", () => {
+    expect(syncAction("write", true, true)).toBe("write");
+    expect(syncAction("stage", true, true)).toBe("write");
+    expect(syncAction("check", true, true)).toBe("behind");
   });
 });

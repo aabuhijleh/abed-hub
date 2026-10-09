@@ -2,9 +2,10 @@
  * Bring every forked skill up to its upstream's latest commit, keeping our
  * frontmatter and the patches in `lib/forks.ts`.
  *
- * `bun run skills:sync` writes the update, and `--stage` also stages it, which the
- * pre-commit hook uses. `--check` writes nothing and exits 1 when a fork is behind
- * upstream or its body was edited outside a patch.
+ * `bun run skills:sync` writes the update, and rewrites a body that differs from
+ * upstream plus the patches. `--stage` also stages the update, which the pre-commit
+ * hook uses. `--check` writes nothing. Both exit 1 on a body edited outside a patch,
+ * and `--check` also exits 1 when a fork is behind upstream.
  */
 import path from "node:path";
 import {
@@ -15,10 +16,16 @@ import {
   pinnedCommit,
   rebuild,
   repin,
+  type SyncMode,
+  syncAction,
 } from "./lib/forks";
 
-const check = process.argv.includes("--check");
 const stage = process.argv.includes("--stage");
+const mode: SyncMode = process.argv.includes("--check")
+  ? "check"
+  : stage
+    ? "stage"
+    : "write";
 const skills = path.join(import.meta.dir, "..", "skills");
 const headers: Record<string, string> = process.env.GITHUB_TOKEN
   ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
@@ -46,24 +53,38 @@ for (const fork of FORKS) {
     continue;
   }
 
-  if (!bodyMatches(fork, local, before)) {
+  const action = syncAction(
+    mode,
+    bodyMatches(fork, local, before),
+    latest !== pinned,
+  );
+
+  if (action === "edited") {
     console.log(
-      `✖ ${fork.skill}: the body differs from upstream ${pinned.slice(0, 7)} plus the patches. Move the edit into scripts/lib/forks.ts`,
+      `✖ ${fork.skill}: the body differs from upstream ${short(pinned)} plus the patches. Move the edit into scripts/lib/forks.ts and run bun run skills:sync`,
+    );
+    failed = true;
+    continue;
+  }
+
+  if (action === "in-step") {
+    console.log(`✔ ${fork.skill}: in step with ${fork.repo}@${short(pinned)}`);
+    continue;
+  }
+
+  if (action === "behind") {
+    console.log(
+      `✖ ${fork.skill}: upstream moved ${short(pinned)} -> ${short(latest)}. Run bun run skills:sync`,
     );
     failed = true;
     continue;
   }
 
   if (latest === pinned) {
-    console.log(`✔ ${fork.skill}: in step with ${fork.repo}@${short(pinned)}`);
-    continue;
-  }
-
-  if (check) {
+    await Bun.write(skillFile, rebuild(fork, local, before));
     console.log(
-      `✖ ${fork.skill}: upstream moved ${short(pinned)} -> ${short(latest)}. Run bun run skills:sync`,
+      `↻ ${fork.skill}: rewrote the body from ${fork.repo}@${short(pinned)} plus the patches`,
     );
-    failed = true;
     continue;
   }
 
