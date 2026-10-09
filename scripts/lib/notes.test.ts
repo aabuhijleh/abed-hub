@@ -18,7 +18,7 @@ describe("previousTag", () => {
     "gh-attach@0.10.0",
   ];
 
-  test("picks this package's newest tag below the version being cut", () => {
+  test("picks this package's newest tag below the version being released", () => {
     expect(previousTag(tags, "@aabuhijleh/gh-attach", "0.11.0")).toBe(
       "gh-attach@0.10.0",
     );

@@ -42,7 +42,7 @@ jobs:
       matrix:
         package: ${{ fromJSON(needs.plan.outputs.matrix) }}
     permissions:
-      # Cuts the release tag and opens the GitHub Release.
+      # Creates the release tag and opens the GitHub Release.
       contents: write
       # The OIDC token npm trades for a short-lived publish token. This is the
       # whole reason there is no NPM_TOKEN secret in this repo.
@@ -74,7 +74,7 @@ jobs:
       - run: npm stage publish
         working-directory: ${{ matrix.package.dir }}
 
-      # gh cuts the tag itself, at the SHA that built the tarball, so there is
+      # gh creates the tag itself, at the SHA that built the tarball, so there is
       # no git identity to configure and no tag to push.
       #
       # Matrix values go through env rather than into the run: line. They come

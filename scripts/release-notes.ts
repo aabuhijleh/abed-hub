@@ -2,7 +2,7 @@
  * Tag a staged release and open a GitHub Release for it.
  *
  * Runs once per package in the stage matrix, straight after `npm stage publish`,
- * so a failed publish never leaves a release behind. `gh release create` cuts
+ * so a failed publish never leaves a release behind. `gh release create` creates
  * the tag itself at the SHA that built the tarball, which means no git identity
  * and no tag push here.
  *

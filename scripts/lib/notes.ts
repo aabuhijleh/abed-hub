@@ -18,7 +18,7 @@ export function releaseTag(pkg: string, version: string): string {
 }
 
 /**
- * The newest tag already cut for this package, or null on its first release.
+ * The newest tag already created for this package, or null on its first release.
  * This is what bounds both the commit list and GitHub's generated notes, so
  * each package's notes cover the range since its own last release rather than
  * since whatever else happened to ship.
