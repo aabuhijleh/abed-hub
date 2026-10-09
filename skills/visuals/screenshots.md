@@ -88,6 +88,31 @@ percentages. The first render is usually a few percent off, so nudge and render 
 For a change, one `.side before` and one `.side after`, each with its `.tag` and `img`.
 Use `class="panel pair"` for two crops narrower than they are wide.
 
+## The product's icons
+
+When an image names a UI state the product marks with an icon (a tick, a status badge, a
+"?"), it draws that icon wherever it names the state, so the reader matches the image to
+the screen.
+
+1. Find the component that draws the state: search the UI code for the state's label,
+   `aria-label` or tooltip.
+2. Copy the icon. For an icon library, take the path data from the installed package
+   (lucide-react: `dist/esm/icons/<name>.mjs`, under `node_modules` or the bun cache) into
+   an `<svg viewBox="0 0 24 24">`. A glyph the component draws as text stays text.
+3. Copy its colour into `--c`: follow the class (`text-success`) to its variable in the
+   app's theme CSS. Add `pill` when the component draws a bordered badge.
+
+```html
+<span class="icon" style="--c:oklch(0.55 0.16 163)"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+<span class="icon pill" style="--c:oklch(0.58 0.22 27)"><svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>25.0</span>
+<span class="icon pill" style="--c:oklch(0.52 0.13 65)">?</span>
+```
+
+`.icon svg` draws lucide's 2px round stroke. A filled icon set takes
+`style="fill:currentColor;stroke:none"` on the `svg`. When the product has no icon for the
+state, or its source is out of reach, use the nearest emoji (✅ ❌ ❓ ⚠️). Mermaid and
+Vega-Lite labels take the emoji too, since they can't hold the `svg`.
+
 ## playwright-cli traps
 
 - A screenshot of a page that never loaded saves `about:blank` and exits 0. The URL check

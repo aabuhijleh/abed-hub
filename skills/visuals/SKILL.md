@@ -109,6 +109,9 @@ What goes on the image:
   yellow, and everything else stays ink on white.
 - **Anchors:** what the claim is about, plus one unchanged neighbour on each side so the
   reader sees where it sits.
+- **The product's own icon for each UI state it names,** in the headline, labels and
+  table cells: the tick, badge or glyph the reader sees on screen, copied as
+  [screenshots.md](screenshots.md#the-products-icons) says.
 - **Labels of a few words.** A side gets one `.note` line only when the picture can't say
   it.
 - **An optional caption, when the claim needs qualifying.** A `<p>` last in the panel,
@@ -135,7 +138,8 @@ these hold:
 - **Makes sense:** the shape suits the claim (numbers as bars or a stat, not a table of
   them). Every label is readable and whole, nothing overlaps or runs off the panel, rows
   and sides line up, and a stranger to the codebase knows every term. Each stat card holds
-  one value under a one-line label.
+  one value under a one-line label. Every UI state it names shows the product's icon, or
+  an emoji when the product has none.
 - **The headline reads clearly:** one read, no function names, the number or cause in it.
   Its period matches the chart's: "in 5 days" over 5 columns, a partial day dropped or
   named.

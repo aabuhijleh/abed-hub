@@ -602,6 +602,35 @@ ul.tree small {
   transform: translateY(-50%);
 }
 
+/* icon: a product's own mark for a UI state, its svg copied from the source, --c its colour */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--c, currentColor);
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+.icon svg {
+  width: 1.2em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon.pill {
+  padding: 0 0.4em;
+  border: 1.5px solid color-mix(in oklch, var(--c) 40%, transparent);
+  background:
+    linear-gradient(color-mix(in oklch, var(--c) 12%, transparent) 0 0), #fff;
+  font-weight: 800;
+}
+h1 .icon {
+  font-size: 0.8em;
+}
+
 /* table cells: last, so they outrank the shape marks above */
 td.before mark {
   background: var(--was-tint);

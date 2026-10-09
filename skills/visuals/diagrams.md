@@ -166,6 +166,12 @@ is missing, and a `<small>` inside a cell explains it.
 A rule that treats cases differently. Cases down the side, a `before` and an `after` column,
 and a `tfoot` total when a count proves the fix. Mark only the cells that change.
 
+When the rule decides which state the UI shows, list every case the code tells apart, one
+row each, with an unchanged case first as the anchor. A short example under each case
+(`<small>310 = 310 + blank</small>`) makes it concrete. Each cell holds the state's
+[icon](screenshots.md#the-products-icons), and a state the UI draws as nothing gets the
+words for it in `<small>`.
+
 ```html
 <h1>Renewals are charged the first-year price again</h1>
 <div class="panel">
