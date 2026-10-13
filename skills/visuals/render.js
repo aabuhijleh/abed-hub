@@ -1,4 +1,4 @@
-// Draws the frame's Mermaid diagrams and Vega-Lite charts in frame.css colours, then fails the render when anything runs off its box. gh-attach shot waits on window.rendered.
+// Draws the frame's Mermaid diagrams, Vega-Lite charts and pin dims in frame.css colours, then fails the render when anything runs off its box. gh-attach shot waits on window.rendered.
 window.rendered = (async () => {
   const css = getComputedStyle(document.documentElement);
   const color = (name) => css.getPropertyValue(name).trim();
@@ -149,6 +149,24 @@ window.rendered = (async () => {
     });
   }
 
+  // One shared dim per pin, so a second ring doesn't darken the first.
+  function dimPins() {
+    for (const pin of document.querySelectorAll(".pin")) {
+      const holes = [...pin.querySelectorAll(":scope > b")].map((b) => {
+        const v = (name) => b.style.getPropertyValue(name);
+        const [l, t] = [v("--x"), v("--y")];
+        const r = `calc(${l} + ${v("--w")} + 8px)`;
+        const d = `calc(${t} + ${v("--h")} + 8px)`;
+        return `, ${l} ${t}, ${r} ${t}, ${r} ${d}, ${l} ${d}, ${l} ${t}, 0 0`;
+      });
+      const dim = document.createElement("i");
+      dim.className = "dim";
+      dim.style.clipPath = `polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0${holes.join("")})`;
+      pin.querySelector("img").after(dim);
+    }
+  }
+
+  dimPins();
   await Promise.all([
     diagrams.length && drawDiagrams(),
     charts.length && drawCharts(),

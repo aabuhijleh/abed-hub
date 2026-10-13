@@ -2,7 +2,7 @@
 
 `deslop` is a copy of [`unslop`](https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md)
 by [Lauren Tan](https://github.com/poteto), from Cursor's pstack plugin, taken at commit
-[`70b2dc8`](https://github.com/cursor/plugins/blob/70b2dc8b4b85c8d5648624ca40d692c421fff32f/pstack/skills/unslop/SKILL.md).
+[`bc697d0`](https://github.com/cursor/plugins/blob/bc697d0a5a163cec979e362b601e36f5616083fd/pstack/skills/unslop/SKILL.md).
 
 The body is unslop's, word for word, with two patches in `scripts/lib/forks.ts`. The title
 is `Deslop`, and rule 34 adds ASD-STE100 Simplified Technical English as a rule that bends

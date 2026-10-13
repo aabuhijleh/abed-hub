@@ -105,8 +105,9 @@ What goes on the image:
 - **The headline is the claim** in about 12 plain words a stranger repeats after one
   read: the reader's words from the UI, the ticket or the thread, and a concrete number or
   cause.
-- **One mark per image,** on the claim's subject. Chart bars and columns are filled
-  yellow, and everything else stays ink on white.
+- **A mark on each part of the claim, and on nothing else.** A claim with a cause and an
+  effect marks both, such as the figure clicked and the row it selects. Chart bars and
+  columns are filled yellow, and everything else stays ink on white.
 - **Anchors:** what the claim is about, plus one unchanged neighbour on each side so the
   reader sees where it sits.
 - **The product's own icon for each UI state it names,** in the headline, labels and
@@ -134,7 +135,7 @@ Read every PNG with the Read tool, then re-read the brief. The image passes when
 these hold:
 
 - **Proves the claim:** a reader who has only the image can state the claim. Every number
-  on it matches Data. The mark sits on the claim's subject, and nothing else pulls the eye.
+  on it matches Data. Each part of the claim has its mark, and nothing else pulls the eye.
 - **Makes sense:** the shape suits the claim (numbers as bars or a stat, not a table of
   them). Every label is readable and whole, nothing overlaps or runs off the panel, rows
   and sides line up, and a stranger to the codebase knows every term. Each stat card holds

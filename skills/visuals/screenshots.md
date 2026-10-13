@@ -1,6 +1,6 @@
 # Screenshots
 
-Three shapes: a plain crop, a crop with a ring on the point, and a pin on an image you
+Three shapes: a plain crop, a crop with rings on the point, and a pin on an image you
 already have. Each ends as an `<img>` inside the frame from SKILL.md step 3.
 
 ## Open the page at 2x
@@ -43,28 +43,34 @@ playwright-cli -s=shots screenshot "<selector>" --hires --filename=/tmp/visuals/
 
 When the claim sits in a larger view the reader needs, ring it with
 [`highlight.js`](highlight.js) from this skill's folder. It rings the element, darkens the
-rest, and hangs a label under the ring's bottom-right corner. Set `BEFORE` to `true` for a
-before shot, which rings in coral:
+rest, and hangs a label under the ring's bottom-right corner, or over it at the bottom of
+the viewport. Set `BEFORE` to `true` for a before shot, which rings in coral:
 
 ```bash
-sed -e 's/LABEL/Declined, now waits for payment/' -e 's/BEFORE/false/' -e 's/EMPTY//' <skill-dir>/highlight.js > /tmp/highlight.js
+sed -e 's/LABEL/Declined, now waits for payment/' -e 's/BEFORE/false/' -e 's/EMPTY//' -e 's/ADD/false/' <skill-dir>/highlight.js > /tmp/highlight.js
 playwright-cli -s=shots eval "$(cat /tmp/highlight.js)" "<selector>"
 playwright-cli -s=shots screenshot "#shot-region" --hires --filename=/tmp/visuals/<slug>/after.png
 ```
+
+Ring every part of the claim. When a click in one place changes another, ring the figure
+clicked and the row it selects. Ring the first part with `ADD` set to `false`, which clears
+older rings, and each further part with `ADD` set to `true`. The rings share one dim, and
+the region grows to hold them all, so take the screenshot once, after the last ring.
 
 When the claim is that something no longer appears, the after shot rings an empty slot
 where it was. Set `EMPTY` to a few words for it ("Not created") and point `<selector>` at
 the element now in its place.
 
-`<selector>` is a snapshot ref (`e12`) or a selector that matches one element
-(`table tr:nth-child(3)`). The region is the element plus 16px. Raise `pad` in the script
+`<selector>` is a snapshot ref (`e12`, or `f1e57` inside an iframe) or a selector that
+matches one element (`table tr:nth-child(3)`). An element in a same-origin iframe rings
+like any other. The region is the rings and their labels plus 16px. Raise `pad` in the script
 for more context. Run it again after any navigation or re-render, since the marks go with
 the old DOM.
 
 ## Pin: an image you already have
 
 An image the user sent goes back with the point ringed. Put it in a `.pin` and place a
-`<b>` ring with `--x --y --w --h` in percent of the image. The label hangs under the ring;
+`<b>` ring on each part of the claim, with `--x --y --w --h` in percent of the image. The label hangs under the ring;
 `class="up"` hangs it above, `class="right"` beside it:
 
 ```html
@@ -118,6 +124,7 @@ Vega-Lite labels take the emoji too, since they can't hold the `svg`.
 - A screenshot of a page that never loaded saves `about:blank` and exits 0. The URL check
   above catches it.
 - The marks are `position: fixed`, so the region has to fit in the viewport. For a taller
-  element, `playwright-cli -s=shots resize 1280 1600` and run the script again.
+  element or rings far apart, `playwright-cli -s=shots resize 1280 1600` and ring them all
+  again.
 - `playwright-cli -s=shots close` when done, and stop the `http.server`. A session left
   open keeps the browser running.

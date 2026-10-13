@@ -561,7 +561,7 @@ ul.tree small {
   font-weight: 500;
 }
 
-/* pin: a ring on an image you already have, at --x --y --w --h in percent of the image */
+/* pin: rings on an image you already have, each at --x --y --w --h in percent of the image */
 .pin {
   position: relative;
   overflow: hidden;
@@ -578,8 +578,12 @@ ul.tree small {
   width: var(--w);
   height: var(--h);
   border: 4px solid var(--was);
-  border-radius: 6px;
-  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.45);
+}
+/* render.js cuts a hole in the dim for each ring */
+.pin > i.dim {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
 }
 .pin > b > span {
   position: absolute;
