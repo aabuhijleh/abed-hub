@@ -5,7 +5,7 @@ description: >-
   diagram, or a chart. Use when a PR change needs a before/after, a finding needs its
   cause shown, a system or flow needs explaining, or a result is in numbers.
 license: MIT
-allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*), Bash(mkdir:*), Bash(python3 -m http.server:*), Bash(magick identify:*)
+allowed-tools: Bash(playwright-cli:*), Bash(gh-attach shot:*), Bash(printf:*), Bash(cat:*), Bash(cp:*), Bash(sed:*), Bash(mkdir:*), Bash(python3 -m http.server:*), Bash(magick identify:*), Bash(gh pr view:*), Bash(git fetch:*), Bash(git worktree:*)
 ---
 
 # Visuals
@@ -35,8 +35,8 @@ Shape:  line + marker
 - **Branch** is what the image is for: **change** (a before and an after), **finding**
   (what happened and why), **explainer** (how something works), or **result** (numbers).
 - **Data** is every name and number the image will show, each with its source: the
-  ticket, the thread, a query you ran, the code on each branch. Use the real case: the
-  actual record, the 60 s timeout, "19 results, now 24".
+  ticket, the thread, a query you ran, the code on the base branch and the PR's branch.
+  Use the real case: the actual record, the 60 s timeout, "19 results, now 24".
 - **Shape** comes from step 2.
 
 Done when every field is filled and every value in Data names its source.
@@ -97,8 +97,20 @@ The layout follows the branch:
 - **change:** one `<div class="side before">` and one `<div class="side after">`, each
   opening with `<span class="tag">Before</span>` or `After`. Stacked by default.
   `class="panel pair"` puts them side by side, which suits two narrow screenshots. The
-  `h1` names the case ("Importing a 3,441-row CSV") or the claim. Before shows the failure
-  the way the user met it, after the same case working, each built from its own branch.
+  `h1` names the case ("Importing a 3,441-row CSV") or the claim. Before is the **base
+  branch**, the one the PR merges into, and after is the PR's branch with all its commits.
+  Both show the same case: before the failure the way the user met it, after the case
+  working.
+
+For a change, `gh pr view --json baseRefName -q .baseRefName` names the base branch, and
+with no PR yet it is the branch you will open one against. Build before from a worktree of
+it, so the PR's branch stays checked out:
+
+```bash
+git fetch origin <base> && git worktree add /tmp/visuals/<slug>/base origin/<base>
+```
+
+`git worktree remove /tmp/visuals/<slug>/base` once the before shot is taken.
 
 What goes on the image:
 

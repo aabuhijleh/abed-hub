@@ -17,8 +17,8 @@ playwright-cli -s=shots --raw eval "() => location.href"
 
 The `eval` must print the URL you opened. Then drive the app to the state the claim is
 about; call the Skill tool with `playwright-cli` for the commands. For a before/after pair,
-shoot the same selector, viewport and theme twice: the base state first (the default
-branch, or what is deployed), then the branch.
+shoot the same selector, viewport and theme twice: before on the base branch first, then
+after on the PR's branch, as SKILL.md step 3 says.
 
 When there is no running app, or the state is hard to reach, start the dev server, or
 write the page as HTML with mock data in the job folder and serve it, since
