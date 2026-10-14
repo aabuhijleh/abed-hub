@@ -15,7 +15,9 @@ playwright-cli -s=shots open --config=/tmp/shots.config.json <url>
 playwright-cli -s=shots --raw eval "() => location.href"
 ```
 
-The `eval` must print the URL you opened. Then drive the app to the state the claim is
+The `eval` must print the URL you opened. When it prints a sign-in page, sign the session in
+the way the app documents (a saved login state loads with `playwright-cli -s=shots
+state-load <file>`), then open the URL again. Then drive the app to the state the claim is
 about; call the Skill tool with `playwright-cli` for the commands. For a before/after pair,
 shoot the same selector, viewport and theme twice: before on the base branch first, then
 after on the PR's branch, as SKILL.md step 3 says.
