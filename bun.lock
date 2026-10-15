@@ -14,7 +14,7 @@
     },
     "packages/abed-hub": {
       "name": "@aabuhijleh/abed-hub",
-      "version": "0.2.0",
+      "version": "0.4.0",
       "bin": {
         "abed-hub": "./dist/abed-hub.js",
       },
@@ -50,7 +50,7 @@
     },
     "packages/gh-attach": {
       "name": "@aabuhijleh/gh-attach",
-      "version": "0.2.0",
+      "version": "0.4.0",
       "bin": {
         "gh-attach": "./dist/gh-attach.js",
       },
