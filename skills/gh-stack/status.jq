@@ -1,7 +1,10 @@
+def check_name: .name // .context;
+
 def bucket:
   if .__typename == "CheckRun" then
     if .status != "COMPLETED" then "pending"
     elif (.conclusion | IN("SUCCESS", "NEUTRAL", "SKIPPED")) then "pass"
+    elif .conclusion == "CANCELLED" then "cancelled"
     else "fail" end
   else
     if .state == "SUCCESS" then "pass"
@@ -9,9 +12,11 @@ def bucket:
     else "fail" end
   end;
 
-def check_name: .name // .context;
-
-def checks: [.commits.nodes[0].commit.statusCheckRollup.contexts.nodes[]?];
+# A rerun or a newer push leaves the older runs on the commit; GitHub shows only the latest.
+def checks:
+  [.commits.nodes[0].commit.statusCheckRollup.contexts.nodes[]?]
+  | group_by([.checkSuite.workflowRun.workflow.name, check_name])
+  | map(max_by(.startedAt // ""));
 
 def tally($checks):
   if ($checks | length) == 0 then "none"

@@ -7,6 +7,7 @@ interface Check {
   name: string;
   conclusion: string;
   isRequired: boolean;
+  startedAt?: string;
 }
 
 function pr(
@@ -147,6 +148,31 @@ describe("status report", () => {
     );
     expect(lines).toContain("  #12: Lint");
     expect(lines).not.toContain("Every required check is green.");
+  });
+
+  test("counts only the latest run of a check, as GitHub does", () => {
+    const lines = report({
+      ...pr(11, "main", {
+        checks: [
+          {
+            name: "Lint",
+            conclusion: "CANCELLED",
+            isRequired: false,
+            startedAt: "2026-01-01T09:00:00Z",
+          },
+          {
+            name: "Lint",
+            conclusion: "SUCCESS",
+            isRequired: false,
+            startedAt: "2026-01-01T10:00:00Z",
+          },
+          green,
+        ],
+      }),
+      ...pr(12, "feat/layer-11", { checks: [green] }),
+    });
+    expect(lines).toContain("      other: 1 pass");
+    expect(lines.some((l) => l.startsWith("Warning"))).toBe(false);
   });
 
   test("blocked with green checks points at a review or rule", () => {

@@ -33,7 +33,7 @@ fi
 stack=$(jq --argjson pr "$pr" '.[0] + {target: $pr}' <<<"$stacks")
 
 query=$(jq -r --arg trunk "$(jq -r .base.ref <<<"$stack")" '
-  def checks($n): "commits(last: 1) { nodes { commit { statusCheckRollup { contexts(first: 100) { nodes { __typename ... on CheckRun { name status conclusion isRequired(pullRequestNumber: \($n)) } ... on StatusContext { context state isRequired(pullRequestNumber: \($n)) } } } } } } }";
+  def checks($n): "commits(last: 1) { nodes { commit { statusCheckRollup { contexts(first: 100) { nodes { __typename ... on CheckRun { name status conclusion startedAt checkSuite { workflowRun { workflow { name } } } isRequired(pullRequestNumber: \($n)) } ... on StatusContext { context state isRequired(pullRequestNumber: \($n)) } } } } } } }";
   [.pull_requests[] | select(.merged_at == null and .state == "open")]
   | if length == 0 then empty else
       "query($owner: String!, $name: String!) { repository(owner: $owner, name: $name) { "
