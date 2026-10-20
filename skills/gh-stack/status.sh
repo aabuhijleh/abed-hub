@@ -5,10 +5,17 @@
 set -euo pipefail
 
 target=${1:-$(git branch --show-current)}
-if ! pr=$(gh pr view "$target" --json number --jq .number 2>/dev/null); then
-  echo "No pull request for '$target'." >&2
-  exit 2
-fi
+case $target in
+  *[!0-9]*)
+    if [[ $target =~ /pull/([0-9]+) ]]; then
+      pr=${BASH_REMATCH[1]}
+    elif ! pr=$(gh pr view "$target" --json number --jq .number 2>/dev/null); then
+      echo "No pull request for '$target'." >&2
+      exit 2
+    fi
+    ;;
+  *) pr=$target ;;
+esac
 
 if ! stacks=$(gh api "repos/{owner}/{repo}/stacks?pull_request=$pr" 2>&1); then
   if grep -q "HTTP 404" <<<"$stacks"; then
@@ -47,6 +54,27 @@ if [[ -n $query ]]; then
   prs=$(gh api graphql -F owner='{owner}' -F name='{repo}' -f query="$query" --jq .data.repository)
 fi
 
+# Test-merge only the stale or conflicting layers, so a current stack costs no fetch.
+trunk=$(jq -r .base.ref <<<"$stack")
+flagged=$(jq -r '.[] | select(.number != null)
+  | select(.mergeable == "CONFLICTING" or .mergeStateStatus == "DIRTY" or (.baseRef.compare.behindBy // 0) > 0)
+  | "\(.number) \(.baseRefName) \(.headRefName)"' <<<"$prs")
+behind=$(jq -r --argjson prs "$prs" 'to_entries[] | select(.key | startswith("t")) | select(.value.compare.behindBy > 0)
+  | .key[1:] as $n | $prs["p\($n)"] | "\(.number) \(.baseRefName) \(.headRefName)"' <<<"$prs")
+flagged=$(printf '%s\n%s\n' "$flagged" "$behind" | sed '/^$/d' | sort -u)
+files='{}'
+if [[ -n $flagged ]]; then
+  remote=$(git config remote.pushDefault || echo origin)
+  # shellcheck disable=SC2046
+  git fetch -q "$remote" "$trunk" $(awk '{print $2; print $3}' <<<"$flagged" | sort -u) 2>/dev/null || true
+  while read -r number base head; do
+    with_base=$(bash "$(dirname "$0")/conflicts.sh" "$remote/$base" "$remote/$head" | jq -R . | jq -s .)
+    with_trunk=$(bash "$(dirname "$0")/conflicts.sh" "$remote/$trunk" "$remote/$head" | jq -R . | jq -s .)
+    files=$(jq --arg n "$number" --argjson base "$with_base" --argjson trunk "$with_trunk" \
+      '. + {($n): {base: $base, trunk: $trunk}}' <<<"$files")
+  done <<<"$flagged"
+fi
+
 common_dir=$(git rev-parse --git-common-dir)
 tracked=false
 if [[ -f $common_dir/gh-stack ]] &&
@@ -57,4 +85,4 @@ if [[ -f $common_dir/gh-stack ]] &&
   tracked=true
 fi
 
-jq -r -n --argjson stack "$stack" --argjson prs "$prs" --argjson tracked "$tracked" -f "$(dirname "$0")/status.jq"
+jq -r -n --argjson stack "$stack" --argjson prs "$prs" --argjson files "$files" --argjson tracked "$tracked" -f "$(dirname "$0")/status.jq"

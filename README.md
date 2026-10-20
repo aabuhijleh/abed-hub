@@ -116,6 +116,9 @@ and behind trunk, and its required and optional checks. It ends by naming each P
 needs `gh stack sync` and why, or by saying the stack is up to date. It finds the stack
 even when this checkout has never tracked it, which `gh stack view` cannot do.
 
+Asked to approve the stack, the agent runs `approve.sh`. It approves every open PR you
+did not write and have not approved yet, all in one GitHub call, and skips drafts.
+
 `--help` covers the flags. The skill covers what `--help` leaves out: which commands open a
 full-screen TUI and hang an agent, that `submit --auto` opens drafts, how to resolve a
 rebase conflict, and what each of the ten exit codes means. It also argues against

@@ -67,7 +67,7 @@ const stack = {
   ],
 };
 
-function report(prs: object, tracked = true): string[] {
+function report(prs: object, tracked = true, files: object = {}): string[] {
   const run = Bun.spawnSync([
     "jq",
     "-r",
@@ -78,6 +78,9 @@ function report(prs: object, tracked = true): string[] {
     "--argjson",
     "prs",
     JSON.stringify(prs),
+    "--argjson",
+    "files",
+    JSON.stringify(files),
     "--argjson",
     "tracked",
     String(tracked),
@@ -90,28 +93,31 @@ function report(prs: object, tracked = true): string[] {
 
 const green: Check = { name: "Build", conclusion: "SUCCESS", isRequired: true };
 
+const row = (lines: string[], pr: number) =>
+  lines.find((l) => /\d\/\d/.test(l) && l.includes(`#${pr} `)) ?? "";
+
 describe("status report", () => {
-  test("places the target PR in the stack", () => {
+  test("counts the PRs and places each one, marking the target", () => {
     const lines = report({ ...pr(11, "main"), ...pr(12, "feat/layer-11") });
-    expect(lines[0]).toBe("Stack #7 onto main, bottom to top. #12 is 3 of 3.");
-    expect(lines).toContain("  1/3 #10 a: merged");
-    expect(
-      lines.some((l) => l.startsWith("→ 3/3 #12 c -> feat/layer-11")),
-    ).toBe(true);
+    expect(lines[0]).toBe("📚 Stack #7: 3 PRs onto main, bottom to top");
+    expect(lines[1]).toBe("👉 #12 is 3 of 3");
+    expect(row(lines, 10)).toMatch(/^ +1\/3 +#10 +a +🔀 merged$/);
+    expect(row(lines, 12)).toMatch(/^👉 +3\/3 +#12 +c /);
   });
 
-  test("a current stack says it is up to date", () => {
+  test("a current stack says so and suggests nothing", () => {
     const lines = report({
       ...pr(11, "main", { checks: [green] }),
       ...pr(12, "feat/layer-11", { checks: [green] }),
     });
-    expect(lines).toContain(
-      "Up to date: every open PR contains main and its base, with no conflicts.",
-    );
-    expect(lines).toContain("Every required check is green.");
+    expect(lines).toContain("✅ Up to date with main");
+    expect(lines).toContain("✅ Up to date with each base");
+    expect(lines).toContain("✅ No conflicts");
+    expect(lines).toContain("✅ Every check passing on every open PR");
+    expect(lines).toContain("✨ Nothing to update.");
   });
 
-  test("names each stale PR and why, then the fix", () => {
+  test("names each stale PR and suggests the sync", () => {
     const lines = report(
       {
         ...pr(11, "main", { behindTrunk: 3 }),
@@ -119,17 +125,39 @@ describe("status report", () => {
       },
       false,
     );
-    expect(lines).toContain("Needs updating:");
-    expect(lines).toContain("  #11: 3 commits behind main");
+    expect(row(lines, 12)).toContain("❌ 3 behind  ❌ 2 behind");
+    expect(lines).toContain("❌ Behind main: #11 by 3, #12 by 3");
+    expect(lines).toContain("❌ Behind its base: #12 by 2");
     expect(lines).toContain(
-      "  #12: 3 commits behind main; 2 commits behind its base feat/layer-11",
-    );
-    expect(lines).toContain(
-      "  Fix: gh stack checkout 7, then gh stack sync (rebases every layer in order, then pushes).",
+      "💡 Suggested update: gh stack checkout 7, then gh stack sync, which rebases each layer onto the one below and pushes. Rerun this report after.",
     );
   });
 
-  test("a failing required check blocks, a failing optional one warns", () => {
+  test("lists each conflict's files and how to resolve it", () => {
+    const lines = report(
+      {
+        ...pr(11, "main", { behindTrunk: 2 }),
+        ...pr(12, "feat/layer-11", { merge: "DIRTY" }),
+      },
+      true,
+      {
+        "11": { base: [], trunk: ["src/api.ts"] },
+        "12": { base: ["src/a.ts", "src/b.ts"], trunk: [] },
+      },
+    );
+    expect(row(lines, 11)).toContain("💥 2 behind");
+    expect(row(lines, 12)).toMatch(/✅ +💥 +.*💥 conflicts$/);
+    expect(lines).toContain("💥 Conflicts:");
+    expect(lines).toContain(
+      "     #12 with its base feat/layer-11: src/a.ts, src/b.ts",
+    );
+    expect(lines).toContain("     #11 with main once synced: src/api.ts");
+    expect(lines.at(-2)).toStartWith(
+      "💡 Suggested update: gh stack sync. It stops on the conflict;",
+    );
+  });
+
+  test("lists failing checks, required apart from optional", () => {
     const lines = report({
       ...pr(11, "main", {
         checks: [{ name: "Test", conclusion: "FAILURE", isRequired: true }],
@@ -141,13 +169,12 @@ describe("status report", () => {
         ],
       }),
     });
-    expect(lines).toContain("Required checks failing (blocks merge):");
-    expect(lines).toContain("  #11: Test");
-    expect(lines).toContain(
-      "Warning, optional checks failing (merge not blocked):",
-    );
-    expect(lines).toContain("  #12: Lint");
-    expect(lines).not.toContain("Every required check is green.");
+    expect(row(lines, 11)).toContain("❌ 1 required failing");
+    expect(row(lines, 12)).toContain("🟡 1 optional failing");
+    expect(lines).toContain("❌ Required checks failing (blocks merge):");
+    expect(lines).toContain("     #11: Test");
+    expect(lines).toContain("🟡 Optional checks failing (merge not blocked):");
+    expect(lines).toContain("     #12: Lint");
   });
 
   test("counts only the latest run of a check, as GitHub does", () => {
@@ -171,8 +198,8 @@ describe("status report", () => {
       }),
       ...pr(12, "feat/layer-11", { checks: [green] }),
     });
-    expect(lines).toContain("      other: 1 pass");
-    expect(lines.some((l) => l.startsWith("Warning"))).toBe(false);
+    expect(row(lines, 11)).toContain("✅ 2 passed");
+    expect(lines).toContain("✅ Every check passing on every open PR");
   });
 
   test("blocked with green checks points at a review or rule", () => {
@@ -180,8 +207,7 @@ describe("status report", () => {
       ...pr(11, "main", { merge: "BLOCKED", checks: [green] }),
       ...pr(12, "feat/layer-11", { checks: [green] }),
     });
-    expect(lines).toContain(
-      "Blocked by a review or repo rule, not a check: #11",
-    );
+    expect(row(lines, 11)).toContain("🔒 review or rule");
+    expect(lines).toContain("🔒 Waiting on a review or repo rule: #11");
   });
 });

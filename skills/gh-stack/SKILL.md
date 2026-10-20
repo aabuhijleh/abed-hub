@@ -1,13 +1,12 @@
 ---
 name: gh-stack
 description: >-
-  Work with stacked pull requests through the `gh stack` extension: find a PR's stack and
-  its place in it, keep every layer current with trunk and its base, read each layer's
-  checks, add a PR on top, split work into a stack, sync, merge. Use whenever a PR or
-  branch is in play whose base is not trunk, or for "stack", "stacked PRs", "PR on top
-  of", "restack", "sync the stack", "is my stack up to date".
+  Work with stacked pull requests through the `gh stack` extension: find a PR's stack,
+  report and update what is stale, read each layer's checks, resolve conflicts, approve the
+  stack, add a PR on top, split work into a stack, merge. Use whenever a PR or branch's base
+  is not trunk, or for "stack", "PR on top of", "restack", "approve the stack".
 license: MIT
-allowed-tools: Bash(bash *gh-stack/status.sh*), Bash(gh stack view:*), Bash(gh stack init:*), Bash(gh stack add:*), Bash(gh stack submit:*), Bash(gh stack sync:*), Bash(gh stack rebase:*), Bash(gh stack push:*), Bash(gh stack link:*), Bash(gh stack checkout:*), Bash(gh stack up:*), Bash(gh stack down:*), Bash(gh stack top:*), Bash(gh stack bottom:*), Bash(gh stack trunk:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr edit:*), Bash(gh run rerun:*), Bash(git status:*), Bash(git log:*), Bash(git add:*)
+allowed-tools: Bash(bash *gh-stack/status.sh*), Bash(bash *gh-stack/approve.sh*), Bash(gh stack view:*), Bash(gh stack init:*), Bash(gh stack add:*), Bash(gh stack submit:*), Bash(gh stack sync:*), Bash(gh stack rebase:*), Bash(gh stack push:*), Bash(gh stack link:*), Bash(gh stack checkout:*), Bash(gh stack up:*), Bash(gh stack down:*), Bash(gh stack top:*), Bash(gh stack bottom:*), Bash(gh stack trunk:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr edit:*), Bash(gh run rerun:*), Bash(git status:*), Bash(git log:*), Bash(git add:*)
 ---
 
 # Stacked pull requests
@@ -19,43 +18,48 @@ stack on GitHub. Install it with `gh extension install github/gh-stack`.
 
 GitHub holds the stack. The local tracking that `gh stack view` reads exists only after
 this checkout ran `init` or `checkout` for it, so `view` saying "not part of a stack" says
-nothing about GitHub. Before any work on a PR or branch whose base is not trunk, run:
+nothing about GitHub. Before any work on a PR or branch whose base is not trunk, and for
+every status or update request, run it from inside the repo's checkout:
 
 ```bash
 bash <skill-dir>/status.sh [pr-number | pr-url | branch]   # current branch by default
 ```
 
-It asks GitHub in two calls and prints the stack bottom to top: which PR the target is and
-its position, each layer's merge state, how many commits it trails its base and trunk, and
-its required and other checks. Then a verdict: what needs updating and why, or "Up to
-date"; which required checks fail; which optional ones fail. Exit 2 means the PR is in no
+It prints a table of the stack bottom to top, with the target PR marked 👉: each PR's
+position, whether it is behind trunk and behind its base, its checks, and its merge state.
+Verdict lines follow: up to date with trunk, with each base, checks passing (every failing
+check by PR), and 💥 conflicts. The last line is a 💡 suggested update or ✨ "Nothing to
+update". Exit 2 means the PR is in no
 stack on GitHub; a PR based on another branch is then a hand-built chain, which
 `gh stack link <bottom> ... <top>` turns into a stack.
 
-Relay the verdict to the user in those terms: name each PR that needs updating and why, or
-say the stack is up to date.
+Your answer to a status or update request opens with the whole report verbatim inside a
+` ```text ` block, every line, emoji, and row in printed order, since the columns line up
+only in monospace. After the block, give the verdict in a sentence or two. When anything is stale, end with
+the suggested update and offer to run it.
 
 ## Keep the stack current
 
 The stack is current when every open PR contains trunk and its base, has no conflicts, and
-its required checks are green. The report's "Needs updating" lines are the trigger:
+its required checks are green. Run the update when the user asks for it, or says yes to the
+suggestion:
 
-1. If the report says "not tracked locally", run `gh stack checkout <stack-number>` first.
+1. If the suggestion starts with `gh stack checkout <stack-number>`, run that first.
 2. `gh stack sync`: fetch, fast-forward trunk, rebase each layer onto the one below, push.
    A squash-merged or merged lower PR is detected and replayed past; `--prune` deletes its
-   local branch.
-3. Rerun `status.sh`. That is the proof the sync landed: `sync` exits 0 with "Sync
-   aborted" when the local and GitHub stacks diverge and no terminal can prompt. Hand that
-   case to the user to run `gh stack sync` themselves.
+   local branch. Exit 3 is a conflict: resolve it as [Conflicts](#conflicts) says.
+3. Rerun `status.sh` and show it. That is the proof the sync landed: `sync` exits 0 with
+   "Sync aborted" when the local and GitHub stacks diverge and no terminal can prompt.
+   Hand that case to the user to run `gh stack sync` themselves.
 
 Update layers only through `sync` or `rebase`. `gh pr update-branch` and the "Update
 branch" button move one layer and leave the ones above it on the old commit.
 
 ## Checks
 
-Only required checks gate a merge. A failing optional check is a warning to pass on, never
-a reason to stop. A failing required check does not end your task either: finish the work,
-then report it with the PR, the check name, and the way forward:
+Only required checks gate a merge. Report a failing optional check as a warning and carry
+on. For a failing required check, finish the task, then report the PR, the check name,
+and the way forward:
 
 - `gh pr checks <pr> --required` shows it, with the run link. Exit 1 there means a check
   failed and exit 8 means checks are pending; neither is a failure of the command.
@@ -114,17 +118,33 @@ where there is none, and set them with `gh pr edit <pr> --title <title> --body-f
 
 ## Conflicts
 
-`sync` restores every branch when it hits a conflict and exits 3. Resolve it yourself:
+The report flags conflicts before you sync: 💥 marks a layer that conflicts with its base
+now, or with trunk once synced, and "💥 Conflicts" lists each one's files. `sync` restores
+every branch when it hits a conflict and exits 3. Resolve it yourself:
 
 ```bash
 gh stack rebase              # stops on the conflict and lists the files
-# resolve each file, git add it, then:
+# resolve each file, keeping both sides' intent, git add it, then:
 gh stack rebase --continue   # repeat until it exits 0; --abort puts every branch back
+gh stack push                # rebase never pushes; this updates every PR
 ```
 
-Ask the user only when the right resolution is unclear. Until `--continue` or `--abort`
-runs, every other command fails with exit 7. An interrupted `modify` takes the same two
-flags and blocks with exit 10.
+Then rerun the report. Ask the user only when the right resolution is unclear. Until
+`--continue` or `--abort` runs, every other command fails with exit 7. An interrupted
+`modify` takes the same two flags and blocks with exit 10.
+
+## Approve the stack
+
+When the user asks to approve the stack, approve its PRs as the user:
+
+```bash
+bash <skill-dir>/approve.sh [pr-number | pr-url | branch] [--dry-run]
+```
+
+It approves, in one batched mutation, every open non-draft PR the user neither authored nor
+already approved. It lists the user's own PRs and leaves them alone, since GitHub refuses
+self-approval. The request to approve is the go-ahead; a status-only request gets
+`--dry-run` at most. Show its output in a ` ```text ` block.
 
 ## Confirm before these
 
