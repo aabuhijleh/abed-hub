@@ -4,11 +4,13 @@
  *
  * The whole release ritual is bumping a version in package.json. This diffs the
  * tree against npm's `latest` and stages only what moved, which is the same
- * check `abed-hub doctor` runs against a developer's machine.
+ * check `abed-hub doctor` runs against a developer's machine. A version whose
+ * release tag exists is already staged, so it waits for approval instead.
  *
  * Run it by hand with `bun run release:plan` to see what the next push would do.
  */
 import { appendFileSync } from "node:fs";
+import { releaseTag } from "./lib/notes";
 import {
   planReleases,
   publishablePackages,
@@ -18,12 +20,26 @@ import {
 const root = `${import.meta.dir}/..`;
 
 const packages = await publishablePackages(root);
-const plan = planReleases(packages, await publishedVersions(packages));
+const tags = new Set(
+  (await Bun.$`git ls-remote --tags --refs origin`.cwd(root).text())
+    .split("\n")
+    .map((line) => line.split("refs/tags/")[1])
+    .filter(Boolean),
+);
+const tagged = new Set(
+  packages
+    .filter((pkg) => tags.has(releaseTag(pkg.name, pkg.version)))
+    .map((pkg) => pkg.name),
+);
+const plan = planReleases(packages, await publishedVersions(packages), tagged);
 
 const width = Math.max(...plan.map((entry) => entry.name.length));
 for (const entry of plan) {
   const from = entry.published ?? "not on npm";
-  const arrow = entry.verdict === "release" ? `${from} -> ` : "";
+  const arrow =
+    entry.verdict === "release" || entry.verdict === "staged"
+      ? `${from} -> `
+      : "";
   console.log(
     `${entry.verdict.padEnd(11)} ${entry.name.padEnd(width)}  ${arrow}${entry.version}`,
   );

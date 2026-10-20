@@ -39,7 +39,8 @@ or a PR fails while a fork is behind, and so does a release.
 
 Bumping a version is the whole release. Merge the bump to main and
 [Release](.github/workflows/release.yml) diffs every package against npm and stages the
-ones that moved.
+ones that moved. npm keeps the old version as `latest` until you approve the staged one, so
+the plan skips any version that already has a release tag.
 
 ```bash
 bun run bump          # pick packages, pick patch, minor, or major

@@ -32,6 +32,16 @@ describe("planReleases", () => {
     expect(entry?.published).toBeNull();
   });
 
+  test("skips a version already tagged, which is staged and awaiting approval", () => {
+    const [entry] = planReleases(
+      [pkg("@a/one", "0.2.0")],
+      new Map([["@a/one", "0.1.0"]]),
+      new Set(["@a/one"]),
+    );
+
+    expect(entry?.verdict).toBe("staged");
+  });
+
   test("flags a package npm is ahead of, rather than downgrading it", () => {
     const [entry] = planReleases(
       [pkg("@a/one", "0.1.0")],

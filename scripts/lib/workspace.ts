@@ -45,6 +45,8 @@ export async function publishablePackages(
 export type PlanVerdict =
   /** The tree is ahead of npm. This is the one that stages a tarball. */
   | "release"
+  /** Ahead of npm, but its release tag exists: staged and awaiting approval. */
+  | "staged"
   /** npm already has this version. */
   | "current"
   /** npm is ahead. Someone published outside this pipeline. */
@@ -66,14 +68,25 @@ export interface PlanEntry extends WorkspacePackage {
  * package: npm rejects `npm stage publish` for a name it has never seen, so the
  * first version of anything has to go out by hand before this pipeline can
  * touch it.
+ *
+ * `tagged` names the packages whose release tag for this version exists. npm
+ * keeps showing the old `latest` until a staged version is approved, so the tag
+ * is what stops every later push from staging the same version again.
  */
 export function planReleases(
   packages: WorkspacePackage[],
   published: Map<string, string | null>,
+  tagged: Set<string> = new Set(),
 ): PlanEntry[] {
   return packages.map((pkg) => {
     const latest = published.get(pkg.name) ?? null;
-    return { ...pkg, published: latest, verdict: verdictFor(pkg, latest) };
+    const verdict = verdictFor(pkg, latest);
+    return {
+      ...pkg,
+      published: latest,
+      verdict:
+        verdict === "release" && tagged.has(pkg.name) ? "staged" : verdict,
+    };
   });
 }
 
