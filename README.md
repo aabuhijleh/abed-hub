@@ -25,7 +25,7 @@ abed-hub config    # where every config file is, and what is in it
 | --- | --- | --- |
 | [gh-attach](#-gh-attach) | Put a screenshot into a PR or issue. | The GitHub CLI 2.99+, signed in, and a browser |
 | [visuals](#-gh-attach) | Draw the image that proves a claim: a ringed screenshot, a diagram, or a chart. | gh-attach, and the `playwright-cli` and `deslop` skills |
-| [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, plus one extension |
+| [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, one extension, and jq |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
 | [deslop](#-deslop) | Cut AI tells from PR bodies, Slack and Jira posts, and docs. | Nothing |
 
@@ -106,13 +106,25 @@ gh stack init refactor/native-gh-attach feat/gh-stack-skill
 gh stack submit --auto --open
 ```
 
-`--help` covers the flags. The skill carries what it leaves out: which commands open a
-full-screen TUI and hang an agent, that `submit --auto` opens drafts, and what each of the
-ten exit codes means. It also argues against stacking, which is usually the right call.
+```
+is this PR's stack up to date?
+```
+
+The skill ships `status.sh`, which looks a PR up on GitHub and prints its stack from the
+bottom up. For each PR it shows the merge state, how many commits it is behind its base
+and behind trunk, and its required and optional checks. It ends by naming each PR that
+needs `gh stack sync` and why, or by saying the stack is up to date. It finds the stack
+even when this checkout has never tracked it, which `gh stack view` cannot do.
+
+`--help` covers the flags. The skill covers what `--help` leaves out: which commands open a
+full-screen TUI and hang an agent, that `submit --auto` opens drafts, how to resolve a
+rebase conflict, and what each of the ten exit codes means. It also argues against
+stacking, which is usually the right call.
 
 ### Setup
 
-1. **Install the extension.** Needs the [GitHub CLI](https://cli.github.com), signed in.
+1. **Install the extension.** Needs the [GitHub CLI](https://cli.github.com), signed in,
+   and [jq](https://jqlang.org) for the status report.
 
    ```bash
    gh extension install github/gh-stack
@@ -124,8 +136,8 @@ ten exit codes means. It also argues against stacking, which is usually the righ
    bunx skills add aabuhijleh/abed-hub -s gh-stack -g
    ```
 
-Stacked pull requests are in public preview, and a repo can have them switched off. When
-one does, every `gh stack` command exits 9.
+Stacked pull requests are generally available on github.com. A repo where they are off
+makes every `gh stack` command exit 9.
 
 ## 📬 [courier](https://www.npmjs.com/package/@aabuhijleh/courier)
 

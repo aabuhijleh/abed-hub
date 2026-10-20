@@ -21,7 +21,7 @@ all three and groups the report the same way.
 | --- | --- | --- |
 | Packages | `bun add -g` | The global version is below npm's `latest`. |
 | Skills | `bunx skills add` | `~/.agents/.skill-lock.json` holds a `skillFolderHash` the source repo no longer has. |
-| Tools | Someone else | `gh` is below 2.99, signed out, or missing the `gh-stack` extension. No chromium build is installed. The Jira or Slack credentials are unset, which is a warning. |
+| Tools | Someone else | `gh` is below 2.99, signed out, or missing the `gh-stack` extension or jq. No chromium build is installed. The Jira or Slack credentials are unset, which is a warning. |
 
 The skill check is the one worth explaining. The `skills` installer records the git tree SHA
 of the skill's folder as it stood on the source repo's default branch, so comparing it

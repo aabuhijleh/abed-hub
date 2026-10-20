@@ -83,6 +83,20 @@ async function checkGhAuth(): Promise<Finding> {
   };
 }
 
+async function checkJq(): Promise<Finding> {
+  const { ok, stdout } = await capture(["jq", "--version"]);
+  if (!ok) {
+    return {
+      kind: "tool",
+      name: "jq",
+      status: "missing",
+      detail: "the gh-stack status report runs on it",
+      fix: { run: "manual", label: "install jq from https://jqlang.org" },
+    };
+  }
+  return { kind: "tool", name: "jq", status: "ok", detail: stdout.trim() };
+}
+
 async function checkGhStackExtension(): Promise<Finding> {
   const { ok, stdout } = await capture(["gh", "extension", "list"]);
   const line = ok
@@ -222,6 +236,8 @@ export function checkTool(id: ToolId): Promise<Finding> {
       return checkGhAuth();
     case "gh-stack-ext":
       return checkGhStackExtension();
+    case "jq":
+      return checkJq();
     case "chromium":
       return checkChromium();
     case "jira-credentials":

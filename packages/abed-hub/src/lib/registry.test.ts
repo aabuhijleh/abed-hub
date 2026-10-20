@@ -80,6 +80,12 @@ describe("gh-attach", () => {
   });
 });
 
+describe("gh-stack", () => {
+  test("checks for the jq its status report runs on", () => {
+    expect(SPECS["gh-stack"].tools).toContain("jq");
+  });
+});
+
 describe("every component", () => {
   const selected = expand(COMPONENTS);
 

@@ -69,7 +69,7 @@ version number.
 | --- | --- |
 | Packages | The global bun install is below npm's `latest`. |
 | Skills | The lock file's `skillFolderHash` no longer matches the folder on the source repo. |
-| Tools | `gh` below 2.99, signed out, no `gh-stack` extension, no chromium build, or unset Jira or Slack credentials. |
+| Tools | `gh` below 2.99, signed out, no `gh-stack` extension or jq, no chromium build, or unset Jira or Slack credentials. |
 
 ## What it hands back to you
 

@@ -12,6 +12,7 @@ export type ToolId =
   | "gh"
   | "gh-auth"
   | "gh-stack-ext"
+  | "jq"
   | "chromium"
   | "jira-credentials"
   | "slack-credentials";
@@ -96,7 +97,7 @@ export const SPECS: Record<Component, ComponentSpec> = {
     summary: "Break a change into PRs that build on each other",
     packages: [],
     skills: [{ name: "gh-stack", repo: HUB, dir: "skills" }],
-    tools: ["gh", "gh-auth", "gh-stack-ext"],
+    tools: ["gh", "gh-auth", "gh-stack-ext", "jq"],
   },
   deslop: {
     summary: "Cut AI tells from PR bodies, Slack and Jira posts, and docs",

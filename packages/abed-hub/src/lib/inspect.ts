@@ -22,6 +22,7 @@ const TOOL_ORDER: ToolId[] = [
   "gh",
   "gh-auth",
   "gh-stack-ext",
+  "jq",
   "chromium",
   "jira-credentials",
   "slack-credentials",
