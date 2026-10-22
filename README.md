@@ -116,6 +116,10 @@ and behind trunk, and its required and optional checks. It ends by naming each P
 needs `gh stack sync` and why, or by saying the stack is up to date. It finds the stack
 even when this checkout has never tracked it, which `gh stack view` cannot do.
 
+After a sync pushes, the agent shows the report right away. If checks are still running,
+it starts `watch.sh` in the background, which reruns the report every 30 seconds. Once
+every check has finished, the agent posts the final report as a new message.
+
 Asked to approve the stack, the agent runs `approve.sh`. It approves every open PR you
 did not write and have not approved yet, all in one GitHub call, and skips drafts.
 

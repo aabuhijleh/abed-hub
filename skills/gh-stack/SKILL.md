@@ -6,7 +6,7 @@ description: >-
   stack, add a PR on top, split work into a stack, merge. Use whenever a PR or branch's base
   is not trunk, or for "stack", "PR on top of", "restack", "approve the stack".
 license: MIT
-allowed-tools: Bash(bash *gh-stack/status.sh*), Bash(bash *gh-stack/approve.sh*), Bash(gh stack view:*), Bash(gh stack init:*), Bash(gh stack add:*), Bash(gh stack submit:*), Bash(gh stack sync:*), Bash(gh stack rebase:*), Bash(gh stack push:*), Bash(gh stack link:*), Bash(gh stack checkout:*), Bash(gh stack up:*), Bash(gh stack down:*), Bash(gh stack top:*), Bash(gh stack bottom:*), Bash(gh stack trunk:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr edit:*), Bash(gh run rerun:*), Bash(git status:*), Bash(git log:*), Bash(git add:*)
+allowed-tools: Bash(bash *gh-stack/status.sh*), Bash(bash *gh-stack/approve.sh*), Bash(bash *gh-stack/watch.sh*), Bash(gh stack view:*), Bash(gh stack init:*), Bash(gh stack add:*), Bash(gh stack submit:*), Bash(gh stack sync:*), Bash(gh stack rebase:*), Bash(gh stack push:*), Bash(gh stack link:*), Bash(gh stack checkout:*), Bash(gh stack up:*), Bash(gh stack down:*), Bash(gh stack top:*), Bash(gh stack bottom:*), Bash(gh stack trunk:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr edit:*), Bash(gh run rerun:*), Bash(git status:*), Bash(git log:*), Bash(git add:*)
 ---
 
 # Stacked pull requests
@@ -51,6 +51,20 @@ suggestion:
 3. Rerun `status.sh` and show it. That is the proof the sync landed: `sync` exits 0 with
    "Sync aborted" when the local and GitHub stacks diverge and no terminal can prompt.
    Hand that case to the user to run `gh stack sync` themselves.
+4. Watch the pushed checks until they settle. When that report shows ⏳ or a `✅ 0 passed`
+   layer, whose checks GitHub has yet to queue, start this in the background and answer
+   with the report from step 3, saying you will report back once the checks settle:
+
+   ```bash
+   bash <skill-dir>/watch.sh [pr-number | pr-url | branch]   # same target as status.sh
+   ```
+
+   It reruns `status.sh` every 30 seconds and prints only the settled report: no ⏳ left,
+   and a layer with no checks given a minute to get some. When it exits, send that report
+   as a new message, shown the way any report is, with the verdict on which checks
+   passed and which failed. Exit 124 means checks were still running after 30 minutes;
+   show that last report and offer to keep watching. `--interval`, `--timeout`, and
+   `--grace` take seconds.
 
 Update layers only through `sync` or `rebase`. `gh pr update-branch` and the "Update
 branch" button move one layer and leave the ones above it on the old commit.
@@ -66,7 +80,8 @@ and the way forward:
 - `gh run rerun <run-id> --failed` retries a flake.
 - A real failure gets fixed on the layer that introduced it, then `gh stack sync` carries
   the fix up the stack.
-- `gh pr checks <pr> --required --watch` waits on checks still running after a push.
+- `watch.sh` waits on checks still running after a push, as step 4 of
+  [Keep the stack current](#keep-the-stack-current) says.
 
 The report's "Blocked by a review or repo rule" means required checks are green and the
 merge waits on a reviewer or a ruleset, which is the user's to handle.
