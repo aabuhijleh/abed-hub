@@ -1,19 +1,21 @@
 ---
 name: gh-attach
 description: >-
-  Attach an image or video that already exists to a GitHub pull request or issue with
-  `gh --attach`, in the description or as a comment. Use for "attach this image to the
-  PR", "put this file in the issue", "put the image under Evidence in the open PR". To
-  take or annotate the image first, use `visuals`.
+  Upload a frame the `visuals` skill rendered, or a video, to a GitHub pull request or
+  issue with `gh --attach`, in the description or as a comment. Use for "attach this image
+  to the PR", "put this file in the issue", "put the image under Evidence in the open PR".
+  A raw screenshot goes through `visuals` first.
 license: MIT
 allowed-tools: Glob, Bash(gh pr view:*), Bash(gh pr edit:*), Bash(gh pr comment:*), Bash(gh pr create:*), Bash(gh issue view:*), Bash(gh issue edit:*), Bash(gh issue comment:*), Bash(gh issue create:*), Bash(grep:*), Bash(awk:*)
 ---
 
 # Attach an image to a PR or issue
 
-This skill starts from an image on disk. The `visuals` skill makes one: it highlights
-the change, frames it with before/after labels, and renders the frame with
-`gh-attach shot <page.html|url> <out.png> [--width 948]`, which this package ships.
+This skill starts from a **frame**: the PNG the `visuals` skill renders under
+`/tmp/visuals/<slug>/` with `gh-attach shot`. A frame states its claim, rings the point and
+pairs before with after. A screenshot from `playwright-cli`, a smoke test or a scratch folder
+is raw input: run `visuals` on it, then attach the frame it hands back. Only a file the user
+handed you to post as is skips `visuals`.
 
 `gh` uploads and embeds in one command, with the `gh` token you already have, so there is
 no separate credential to manage. PR evidence goes under `## Evidence`: on an open PR, use
