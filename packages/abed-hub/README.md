@@ -38,14 +38,13 @@ told it is missing chromium.
 | --- | --- |
 | `gh-attach` | Draw an annotated screenshot, diagram, or chart and put it into a PR or issue. Brings `@playwright/cli`, chromium, and the `visuals`, `playwright-cli`, and `pr` skills. |
 | `gh-stack` | Break a change into PRs that build on each other. |
-| `deslop` | Cut AI tells from PR bodies, Slack and Jira posts, and docs. abed-hub's own copy of Cursor's `unslop` skill. |
 | `courier` | Move files in and out of Jira issues and Slack threads. |
 
-Name them to skip the prompt. `all` is all four.
+Name them to skip the prompt. `all` is all three.
 
-Some names are gone. `writing-great-prs` and its alias `prs` moved to `gh-attach` and
-`deslop`, and `unslop` is now `deslop`. Naming an old one prints where it went, and a saved
-selection that holds one reads as its replacements.
+Some names are gone. `writing-great-prs` and its alias `prs` moved to `gh-attach`. `deslop`
+and `unslop` were removed with no replacement. Naming an old one prints what happened to it,
+and a saved selection that holds one reads as its replacements, if it has any.
 
 ```bash
 abed-hub setup gh-attach courier

@@ -20,22 +20,7 @@ export interface Patch {
   replace: string;
 }
 
-export const FORKS: Fork[] = [
-  {
-    skill: "deslop",
-    repo: "cursor/plugins",
-    path: "pstack/skills/unslop/SKILL.md",
-    patches: [
-      { find: "\n# Unslop\n", replace: "\n# Deslop\n" },
-      {
-        find: "spell out arrows and abbreviations.\n",
-        replace:
-          "spell out arrows and abbreviations.\n" +
-          '34. **ASD-STE100 Simplified Technical English.** Follow STE where it makes the text clearer. Keep an instruction to about 20 words and a description to about 25. Write one action per step, in the imperative. Use the simple present and past tenses. Use each verb in its literal sense: "cut a tag" becomes "create a tag", "hand-cut the release" becomes "create the release manually". Break a noun cluster longer than three words: "session token refresh handler" becomes "the handler that refreshes the session token". Keep code, product names, and the reader\'s own terms as they are.\n',
-      },
-    ],
-  },
-];
+export const FORKS: Fork[] = [];
 
 /** CREDITS.md links the upstream file at the commit the copy was taken from. */
 const PINNED_LINK = /\[`([0-9a-f]{7,40})`\]\(([^)]*\/blob\/)([0-9a-f]{40})\//;

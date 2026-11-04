@@ -17,13 +17,13 @@ change (`*.test.ts`).
 ## Writing
 
 - Any `SKILL.md`, or this file: call the Skill tool with `writing-for-agents` first.
-- READMEs, CONTRIBUTING, and PR bodies: call the Skill tool with `deslop`. PR bodies follow
-  [the template](.github/pull_request_template.md).
+- READMEs, CONTRIBUTING, and PR bodies: write them in ASD-STE100 Simplified Technical
+  English. PR bodies follow [the template](.github/pull_request_template.md).
 - A skill's frontmatter and links follow the rules in
   [`scripts/lib/skills.ts`](scripts/lib/skills.ts), which `verify` checks.
 - Third-party skills (`playwright-cli`, `pr`) are installed as upstream ships them, never
-  edited. A skill this repo needs changed gets copied into `skills/`, the way `deslop` copies
-  Cursor's `unslop`, with the upstream named in `metadata.credits` and a `CREDITS.md` that
+  edited. A skill this repo needs changed gets copied into `skills/`, with the upstream
+  named in `metadata.credits` and a `CREDITS.md` that
   says what changed and carries the license notice. Register the copy in `FORKS` in
   [`scripts/lib/forks.ts`](scripts/lib/forks.ts). A change to a forked skill's body goes
   there as a patch, then `bun run skills:sync` rewrites the body. Its frontmatter is edited
