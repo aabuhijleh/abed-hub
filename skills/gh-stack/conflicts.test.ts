@@ -7,8 +7,13 @@ const script = path.join(import.meta.dir, "conflicts.sh");
 
 let repo: string;
 
+// A git hook exports GIT_DIR, which would point these commands at the outer repo.
+const env = Object.fromEntries(
+  Object.entries(process.env).filter(([key]) => !key.startsWith("GIT_")),
+);
+
 function git(...args: string[]) {
-  const run = Bun.spawnSync(["git", ...args], { cwd: repo });
+  const run = Bun.spawnSync(["git", ...args], { cwd: repo, env });
   if (run.exitCode !== 0) throw new Error(run.stderr.toString());
 }
 
@@ -20,7 +25,7 @@ async function commit(branch: string, file: string, text: string) {
 }
 
 function conflicts(base: string, head: string): string {
-  return Bun.spawnSync(["bash", script, base, head], { cwd: repo })
+  return Bun.spawnSync(["bash", script, base, head], { cwd: repo, env })
     .stdout.toString()
     .trim();
 }
