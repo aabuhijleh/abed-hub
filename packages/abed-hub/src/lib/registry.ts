@@ -1,9 +1,4 @@
-export const COMPONENTS = [
-  "gh-attach",
-  "gh-stack",
-  "deslop",
-  "courier",
-] as const;
+export const COMPONENTS = ["gh-attach", "gh-stack", "courier"] as const;
 
 export type Component = (typeof COMPONENTS)[number];
 
@@ -99,12 +94,6 @@ export const SPECS: Record<Component, ComponentSpec> = {
     skills: [{ name: "gh-stack", repo: HUB, dir: "skills" }],
     tools: ["gh", "gh-auth", "gh-stack-ext", "jq"],
   },
-  deslop: {
-    summary: "Cut AI tells from PR bodies, Slack and Jira posts, and docs",
-    packages: [],
-    skills: [{ name: "deslop", repo: HUB, dir: "skills" }],
-    tools: [],
-  },
   courier: {
     summary: "Move files in and out of Jira issues and Slack threads",
     packages: [{ pkg: "@aabuhijleh/courier", bin: "jira" }],
@@ -127,14 +116,16 @@ export function isComponent(value: string): value is Component {
 
 /** Names that used to be components, and the ones that took over their parts. */
 export const REMOVED: Record<string, Component[]> = {
-  "writing-great-prs": ["gh-attach", "deslop"],
-  prs: ["gh-attach", "deslop"],
-  unslop: ["deslop"],
+  "writing-great-prs": ["gh-attach"],
+  prs: ["gh-attach"],
+  unslop: [],
+  deslop: [],
 };
 
 export function removedMessage(name: string): string | null {
   const successors = REMOVED[name];
   if (!successors) return null;
+  if (successors.length === 0) return `${name} was removed.`;
   return `${name} was removed. Its parts are in ${successors.join(" and ")}.`;
 }
 
@@ -145,10 +136,10 @@ export function componentsHelp(fallback: string): string {
     const key = successors.join(" and ");
     bySuccessors.set(key, [...(bySuccessors.get(key) ?? []), name]);
   }
-  const removed = [...bySuccessors].map(
-    ([successors, names]) =>
-      `${names.join(" and ")} ${names.length > 1 ? "are" : "is"} gone: use ${successors}.`,
-  );
+  const removed = [...bySuccessors].map(([successors, names]) => {
+    const gone = `${names.join(" and ")} ${names.length > 1 ? "are" : "is"} gone`;
+    return successors ? `${gone}: use ${successors}.` : `${gone}.`;
+  });
   return [`all, or any of: ${COMPONENTS.join(", ")}.`, fallback, ...removed]
     .filter(Boolean)
     .join(" ");

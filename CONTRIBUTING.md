@@ -15,7 +15,8 @@ write its fixes.
 
 ## Forked skills
 
-`deslop` is Cursor's `unslop` with our own frontmatter and a few patches. `FORKS` in
+A forked skill is a third-party skill copied into `skills/`, with our own frontmatter and a
+few patches. None is forked today. `FORKS` in
 [`scripts/lib/forks.ts`](scripts/lib/forks.ts) lists each forked skill, its upstream file,
 and the patches as exact find-and-replace pairs. `CREDITS.md` pins the upstream commit.
 

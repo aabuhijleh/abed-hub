@@ -37,14 +37,14 @@ describe("readSelection", () => {
     await writeJson("abed-hub", "config.json", {
       components: ["prs", "gh-atach", "courier"],
     });
-    expect(await readSelection()).toEqual(["gh-attach", "deslop", "courier"]);
+    expect(await readSelection()).toEqual(["gh-attach", "courier"]);
   });
 
-  test("reads a saved unslop as deslop", async () => {
+  test("drops a saved deslop or unslop", async () => {
     await writeJson("abed-hub", "config.json", {
-      components: ["unslop", "courier"],
+      components: ["deslop", "unslop", "courier"],
     });
-    expect(await readSelection()).toEqual(["deslop", "courier"]);
+    expect(await readSelection()).toEqual(["courier"]);
   });
 
   test("is null for a file that is not JSON", async () => {

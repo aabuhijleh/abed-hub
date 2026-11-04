@@ -22,15 +22,17 @@ describe("selected", () => {
   test("names what replaced a removed component", async () => {
     for (const name of ["prs", "writing-great-prs"]) {
       await expect(selected([name], false)).rejects.toThrow(
-        `${name} was removed. Its parts are in gh-attach and deslop.`,
+        `${name} was removed. Its parts are in gh-attach.`,
       );
     }
   });
 
-  test("names deslop as what replaced unslop", async () => {
-    await expect(selected(["unslop"], false)).rejects.toThrow(
-      "unslop was removed. Its parts are in deslop.",
-    );
+  test("says a component with no successor was removed", async () => {
+    for (const name of ["deslop", "unslop"]) {
+      await expect(selected([name], false)).rejects.toThrow(
+        `${name} was removed.`,
+      );
+    }
   });
 
   test("still rejects a name that never existed", async () => {
@@ -43,10 +45,6 @@ describe("selected", () => {
     await writeJson("abed-hub", "config.json", {
       components: ["writing-great-prs", "courier"],
     });
-    expect(await selected([], false)).toEqual([
-      "gh-attach",
-      "deslop",
-      "courier",
-    ]);
+    expect(await selected([], false)).toEqual(["gh-attach", "courier"]);
   });
 });
