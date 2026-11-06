@@ -1,13 +1,18 @@
 # Credits
 
-`archivo.woff2` is [Archivo](https://github.com/Omnibus-Type/Archivo) by Omnibus-Type, the
-variable font's Latin subset as [Fontsource](https://fontsource.org/fonts/archivo) ships it,
-unchanged. It is bundled so frames render in the same type with no network.
+The bundled fonts are the Latin subsets as [Fontsource](https://fontsource.org) 5.2.8 ships
+them, unchanged. They are bundled so frames render in the same type with no network.
 
-Archivo is under the SIL Open Font License 1.1:
+- `space-grotesk.woff2` is [Space Grotesk](https://github.com/floriankarsten/space-grotesk)
+  by Florian Karsten, the variable font.
+- `space-mono-400.woff2` and `space-mono-700.woff2` are
+  [Space Mono](https://github.com/googlefonts/spacemono) by Colophon Foundry.
+
+Both fonts are under the SIL Open Font License 1.1:
 
 ```
-Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
+Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
+Copyright 2016 Google Inc. All Rights Reserved. (Space Mono)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

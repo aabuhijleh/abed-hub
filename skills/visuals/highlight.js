@@ -5,7 +5,7 @@
   const add = ADD;
   const pad = 16;
   const h = 22;
-  const ink = before ? "#ff8a6b" : "#5b5bf7";
+  const ink = before ? "#ff6b9a" : "#4d9fff";
   let doc;
   try {
     doc = top.document;
@@ -25,7 +25,7 @@
   if (!add || box.top < 0 || box.bottom + h + pad > view.innerHeight) {
     target.scrollIntoView({ block: "center", behavior: "instant" });
   }
-  top.shotRings.push({ target, label, ink, text: before ? "#111" : "#fff" });
+  top.shotRings.push({ target, label, ink, text: "#111" });
   for (const n of doc.querySelectorAll(".shot-mark")) n.remove();
   const inTop = (node) => {
     const box = node.getBoundingClientRect();
@@ -116,7 +116,7 @@
         padding: "2px 8px",
         background: s.ink,
         color: s.text,
-        font: "700 13px/18px system-ui, sans-serif",
+        font: "700 13px/18px ui-monospace, Menlo, monospace",
         whiteSpace: "nowrap",
       },
       s.label,

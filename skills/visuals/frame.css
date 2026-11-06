@@ -1,37 +1,75 @@
 @font-face {
-  font-family: Archivo;
-  src: url("archivo.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "Space Grotesk";
+  src: url("space-grotesk.woff2") format("woff2");
+  font-weight: 300 700;
   font-display: block;
 }
+@font-face {
+  font-family: "Space Mono";
+  src: url("space-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("space-mono-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: block;
+}
+/* the report palette: bright fills on white, ink lines, hard shadows */
 :root {
   --ink: #111;
-  --paper: #fffdf7;
-  --ground: #ffd84d;
-  --was: #ff8a6b;
-  --was-ink: #9a3a22;
-  --was-tint: #ffe1d8;
-  --now: #5b5bf7;
-  --now-tint: #e3e3ff;
-  --quiet: #6b6b6b;
-  --fill: var(--ground);
+  --paper: #fff;
+  --soft: #f6f6f3;
+  --quiet: #555;
+  --yellow: #ffd23f;
+  --pink: #ff6b9a;
+  --blue: #4d9fff;
+  --green: #3ddc84;
+  --lilac: #b8a4ff;
+  --orange: #ff8a3d;
+  --yellow-tint: #fff4c9;
+  --pink-tint: #ffe3ec;
+  --blue-tint: #e2efff;
+  --green-tint: #dcf8e8;
+  --lilac-tint: #ece6ff;
+  --orange-tint: #ffe6d4;
+  --was: var(--pink);
+  --was-ink: #c11d4f;
+  --was-tint: var(--pink-tint);
+  --now: var(--blue);
+  --now-ink: #0b4fb3;
+  --now-tint: var(--blue-tint);
+  --good: var(--green);
+  --fill: var(--yellow);
+  --sans: "Space Grotesk", system-ui, sans-serif;
+  --mono: "Space Mono", ui-monospace, Menlo, monospace;
 }
 html {
-  background: var(--ground);
+  background: var(--paper);
   color: var(--ink);
 }
 body {
   margin: 28px;
-  font:
-    600 15px / 1.4 Archivo,
-    system-ui,
-    sans-serif;
+  font: 500 16px / 1.4 var(--sans);
 }
 h1 {
-  margin: 0 0 18px;
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  margin: 0 0 22px;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+/* an optional label above the h1: the kind of image, a ticket, a scope */
+.kicker {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 700 12px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .panel {
   display: grid;
@@ -40,13 +78,16 @@ h1 {
   background: var(--paper);
   border: 3px solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
-  padding: 24px;
+  padding: 26px;
 }
 .tag {
   display: inline-block;
-  padding: 2px 10px;
+  padding: 3px 10px;
   border: 2.5px solid var(--ink);
-  font-weight: 900;
+  box-shadow: 3px 3px 0 var(--ink);
+  font: 700 13px var(--mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 .before .tag,
 th.before {
@@ -55,7 +96,6 @@ th.before {
 .after .tag,
 th.after {
   background: var(--now);
-  color: #fff;
 }
 .side {
   display: grid;
@@ -73,22 +113,25 @@ th.after {
   color: var(--was-ink);
 }
 .after .note {
-  color: var(--now);
+  color: var(--now-ink);
 }
 
 /* finding and result: the claim is the h1, and a bare mark is the cause */
 mark {
   background: var(--was);
   color: var(--ink);
-  font-weight: 900;
+  font-weight: 700;
   padding: 0 4px;
 }
 mark.good {
-  background: var(--now);
-  color: #fff;
+  background: var(--good);
 }
 h1 mark {
-  padding: 0 6px;
+  padding: 0 8px;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* a rule between before and after */
@@ -154,8 +197,7 @@ h1 mark {
 }
 .after mark.node {
   background: var(--now);
-  color: #fff;
-  font-weight: 900;
+  font-weight: 700;
   box-shadow: 4px 4px 0 var(--ink);
 }
 
@@ -172,9 +214,11 @@ td {
   border: 2.5px solid var(--ink);
 }
 th {
-  font-weight: 900;
-  background: var(--ink);
-  color: #fff;
+  font: 700 13px var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--yellow);
+  color: var(--ink);
 }
 th.before {
   color: var(--ink);
@@ -184,7 +228,7 @@ td small {
   font-weight: 500;
 }
 tfoot td {
-  font-weight: 900;
+  font-weight: 700;
   background: var(--paper);
 }
 
@@ -215,11 +259,10 @@ tfoot td {
 }
 .after .cols > mark {
   background: var(--now);
-  color: #fff;
-  font-weight: 900;
+  font-weight: 700;
 }
 .after .cols > mark small {
-  color: var(--now-tint);
+  color: var(--ink);
 }
 .cols > .gap {
   background: repeating-linear-gradient(45deg, #fff 0 6px, #eee 6px 12px);
@@ -271,8 +314,7 @@ tfoot td {
 }
 .rail > .win {
   background: var(--now);
-  color: #fff;
-  font-weight: 900;
+  font-weight: 700;
 }
 .rail > .end {
   transform: translateX(-100%);
@@ -332,7 +374,9 @@ tfoot td {
 }
 .stat > small {
   grid-row: 1;
-  font-size: 13px;
+  font: 700 12px var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--quiet);
 }
 .stat > s {
@@ -344,10 +388,10 @@ tfoot td {
 .stat > mark,
 .stat > b {
   grid-row: 3;
-  font-size: 46px;
+  font-size: 52px;
   line-height: 1.05;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-weight: 700;
+  letter-spacing: -0.04em;
   padding: 0 6px;
   margin-left: -6px;
 }
@@ -360,8 +404,8 @@ tfoot td {
 .stat > em {
   grid-row: 4;
   font-style: normal;
-  font-weight: 900;
-  color: var(--now);
+  font-weight: 700;
+  color: var(--now-ink);
 }
 .stat > em.bad {
   color: var(--was-ink);
@@ -397,7 +441,6 @@ tfoot td {
 }
 .bars > .now {
   background: var(--now);
-  color: #fff;
 }
 .bars > mark,
 .funnel > mark {
@@ -405,7 +448,7 @@ tfoot td {
 }
 .bars > mark.good,
 .funnel > mark.good {
-  background: var(--now);
+  background: var(--good);
 }
 .bars > mark {
   margin: 0;
@@ -426,7 +469,6 @@ tfoot td {
 }
 .tag.after {
   background: var(--now);
-  color: #fff;
 }
 
 /* charts and diagrams drawn by render.js */
@@ -447,7 +489,7 @@ pre.mermaid {
 td.ok,
 td.no {
   text-align: center;
-  font-weight: 900;
+  font-weight: 700;
 }
 td.ok {
   background: #fff;
@@ -487,7 +529,7 @@ td:has(> mark) {
   background: var(--fill);
 }
 .funnel > mark {
-  font-weight: 900;
+  font-weight: 700;
   box-shadow: 4px 4px 0 var(--ink);
 }
 .funnel > .drop {
@@ -499,15 +541,15 @@ td:has(> mark) {
   color: var(--was-ink);
 }
 .funnel > .drop.cause {
-  font-weight: 900;
+  font-weight: 700;
   font-size: 15px;
 }
 
 /* record diff: a table of fields, one column per record */
 table.diff td:not(:first-child) {
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: var(--mono);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
 }
 table.diff tr.same td {
   color: var(--quiet);
@@ -592,7 +634,7 @@ ul.tree small {
   padding: 3px 10px;
   background: var(--was);
   color: var(--ink);
-  font-weight: 900;
+  font-weight: 700;
   white-space: nowrap;
 }
 .pin > b.up > span {
@@ -629,7 +671,7 @@ ul.tree small {
   border: 1.5px solid color-mix(in oklch, var(--c) 40%, transparent);
   background:
     linear-gradient(color-mix(in oklch, var(--c) 12%, transparent) 0 0), #fff;
-  font-weight: 800;
+  font-weight: 700;
 }
 h1 .icon {
   font-size: 0.8em;
@@ -643,7 +685,153 @@ td.before mark {
 }
 td.after mark {
   background: var(--now);
-  color: #fff;
-  font-weight: 900;
+  font-weight: 700;
   padding: 2px 8px;
+}
+
+/* stat card fills, as in the report: one bright card per number that matters */
+.stat.c-yellow {
+  background: var(--yellow);
+}
+.stat.c-pink {
+  background: var(--pink);
+}
+.stat.c-blue {
+  background: var(--blue);
+}
+.stat.c-green {
+  background: var(--green);
+}
+.stat.c-lilac {
+  background: var(--lilac);
+}
+.stat.c-orange {
+  background: var(--orange);
+}
+.stat[class*="c-"] > small,
+.stat[class*="c-"] > s,
+.stat[class*="c-"] > em {
+  color: var(--ink);
+}
+.stat[class*="c-"] > mark {
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+}
+
+/* freeform: parts to compose a shape no recipe covers */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+.grid2,
+.grid3,
+.grid4 {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+.grid2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.grid4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.box {
+  padding: 14px 16px;
+  border: 2.5px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.box > b:first-child {
+  display: block;
+  margin-bottom: 4px;
+  font: 700 12px var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.c-yellow {
+  background: var(--yellow);
+}
+.c-pink {
+  background: var(--pink);
+}
+.c-blue {
+  background: var(--blue);
+}
+.c-green {
+  background: var(--green);
+}
+.c-lilac {
+  background: var(--lilac);
+}
+.c-orange {
+  background: var(--orange);
+}
+.t-yellow {
+  background: var(--yellow-tint);
+}
+.t-pink {
+  background: var(--pink-tint);
+}
+.t-blue {
+  background: var(--blue-tint);
+}
+.t-green {
+  background: var(--green-tint);
+}
+.t-lilac {
+  background: var(--lilac-tint);
+}
+.t-orange {
+  background: var(--orange-tint);
+}
+.chip {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  font: 700 12px var(--mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.big {
+  display: block;
+  font-size: 64px;
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+.arrow {
+  flex: none;
+  font: 700 30px var(--mono);
+  line-height: 1;
+}
+.sticker {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  background: var(--yellow);
+  font-weight: 700;
+  transform: rotate(-2deg);
+}
+.callout {
+  padding: 12px 16px;
+  border: 2.5px solid var(--ink);
+  border-left-width: 10px;
+  background: var(--blue-tint);
+}
+.callout.bad {
+  background: var(--pink-tint);
+}
+.callout.good {
+  background: var(--green-tint);
+}
+.panel svg text {
+  font-family: var(--sans);
 }

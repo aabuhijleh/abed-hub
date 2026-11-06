@@ -3,7 +3,8 @@ window.rendered = (async () => {
   const css = getComputedStyle(document.documentElement);
   const color = (name) => css.getPropertyValue(name).trim();
   const ink = color("--ink");
-  const font = "Archivo, system-ui, sans-serif";
+  const font = color("--sans");
+  const mono = color("--mono");
   const diagrams = [...document.querySelectorAll("pre.mermaid")];
   const charts = [
     ...document.querySelectorAll('script[type="application/vega-lite+json"]'),
@@ -14,9 +15,11 @@ window.rendered = (async () => {
       "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
     );
     const marks = [
-      `classDef mark fill:${color("--was")},stroke:${ink},stroke-width:3px,color:${ink},font-weight:900`,
-      `classDef good fill:${color("--now")},stroke:${ink},stroke-width:3px,color:#fff,font-weight:900`,
-      `classDef quiet fill:#f2f2f2,stroke:${color("--quiet")},color:${color("--quiet")},stroke-dasharray:5 4`,
+      `classDef mark fill:${color("--was")},stroke:${ink},stroke-width:3px,color:${ink},font-weight:700`,
+      `classDef good fill:${color("--good")},stroke:${ink},stroke-width:3px,color:${ink},font-weight:700`,
+      `classDef now fill:${color("--now")},stroke:${ink},stroke-width:3px,color:${ink},font-weight:700`,
+      `classDef hot fill:${color("--yellow")},stroke:${ink},stroke-width:3px,color:${ink},font-weight:700`,
+      `classDef quiet fill:${color("--soft")},stroke:${color("--quiet")},color:${color("--quiet")},stroke-dasharray:5 4`,
     ].join("\n");
     for (const pre of diagrams) {
       const [head, ...rest] = pre.textContent.trim().split("\n");
@@ -31,19 +34,19 @@ window.rendered = (async () => {
       sequence: { mirrorActors: false, actorMargin: 70, messageMargin: 44 },
       themeVariables: {
         fontFamily: font,
-        fontSize: "15px",
+        fontSize: "16px",
         primaryColor: "#fff",
         primaryBorderColor: ink,
         primaryTextColor: ink,
         lineColor: ink,
-        clusterBkg: color("--paper"),
+        clusterBkg: color("--soft"),
         clusterBorder: ink,
         actorBkg: "#fff",
         actorBorder: ink,
         actorLineColor: ink,
         signalColor: ink,
         signalTextColor: ink,
-        noteBkgColor: color("--ground"),
+        noteBkgColor: color("--yellow"),
         noteBorderColor: ink,
         edgeLabelBackground: color("--paper"),
       },
@@ -52,7 +55,7 @@ window.rendered = (async () => {
         .node rect, rect.actor { rx: 0; ry: 0; }
         .cluster rect { stroke-width: 2.5px !important; stroke-dasharray: 6 4; }
         .flowchart-link, .messageLine0, .messageLine1 { stroke-width: 2.5px !important; }
-        .nodeLabel, .cluster-label, .actor, .messageText, .noteText, .edgeLabel { font-weight: 700 !important; }
+        .nodeLabel, .cluster-label, .actor, .messageText, .noteText, .edgeLabel { font-weight: 600 !important; }
         .note { stroke-width: 2.5px !important; }`,
     });
     await mermaid.run({ nodes: diagrams });
@@ -71,12 +74,13 @@ window.rendered = (async () => {
         titleFont: font,
         labelFontSize: 13,
         titleFontSize: 13,
+        titleFontWeight: 700,
         labelColor: color("--quiet"),
         titleColor: ink,
         domainColor: ink,
         domainWidth: 2,
         tickColor: ink,
-        gridColor: "#ececec",
+        gridColor: "#eee",
       },
       axisX: { tickCount: 8, labelFlush: true },
       legend: {
@@ -94,7 +98,14 @@ window.rendered = (async () => {
       },
       title: { font, fontSize: 15, color: ink },
       range: {
-        category: [ink, color("--now"), color("--was"), color("--quiet")],
+        category: [
+          color("--blue"),
+          color("--yellow"),
+          color("--pink"),
+          color("--green"),
+          color("--lilac"),
+          color("--orange"),
+        ],
       },
       line: { color: ink, strokeWidth: 3 },
       point: { color: ink, filled: true, size: 70, opacity: 1 },
@@ -102,6 +113,7 @@ window.rendered = (async () => {
       arc: { color: color("--fill"), stroke: ink, strokeWidth: 2.5 },
       rule: { color: color("--was-ink"), strokeWidth: 3, strokeDash: [6, 4] },
       text: { font, fontSize: 13, fontWeight: 700, color: ink },
+      axisY: { labelFont: mono, labelFontSize: 12 },
     };
     for (const script of charts) {
       const spec = JSON.parse(script.textContent);

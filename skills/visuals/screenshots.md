@@ -46,7 +46,7 @@ playwright-cli -s=shots screenshot "<selector>" --hires --filename=/tmp/visuals/
 When the claim sits in a larger view the reader needs, ring it with
 [`highlight.js`](highlight.js) from this skill's folder. It rings the element, darkens the
 rest, and hangs a label under the ring's bottom-right corner, or over it at the bottom of
-the viewport. Set `BEFORE` to `true` for a before shot, which rings in coral:
+the viewport. Set `BEFORE` to `true` for a before shot, which rings in pink:
 
 ```bash
 sed -e 's/LABEL/Declined, now waits for payment/' -e 's/BEFORE/false/' -e 's/EMPTY//' -e 's/ADD/false/' <skill-dir>/highlight.js > /tmp/highlight.js
