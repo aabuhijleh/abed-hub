@@ -74,7 +74,7 @@ The same cases measured twice. Pair `.was` and `.now` bars under one label, with
 Counts per day, week or release, where time runs left to right. Vega-Lite `bar`, drawn by
 `render.js`, which fills bars in yellow with an ink stroke. Set `"sort": null` so the days
 keep their order. Cut the days from the query's own window, so a window from 03:40 to 03:40
-over 5 days gives 5 columns, each named by the day it starts, and the caption names the cut. A `condition` on `color` turns the bar the claim is about coral, and a
+over 5 days gives 5 columns, each named by the day it starts, and the caption names the cut. A `condition` on `color` turns the bar the claim is about pink, and a
 `text` layer puts each count on top. When the question asked for the total, a stat card
 with it sits above. Each column carries one count: a second series gets columns of its own,
 [grouped](#grouped-columns) or [stacked](#stacked-columns).
@@ -99,7 +99,7 @@ with it sits above. Each column carries one count: a second series gets columns 
   },
   "layer": [
     {"mark": {"type":"bar","width":{"band":0.6}},
-     "encoding": {"color": {"condition":{"test":"datum.cause","value":"#ff8a6b"},"value":"#ffd84d"}}},
+     "encoding": {"color": {"condition":{"test":"datum.cause","value":"#ff6b9a"},"value":"#ffd23f"}}},
     {"mark": {"type":"text","dy":-10,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"field":"n","format":",d"}}}
   ]
 }
@@ -112,7 +112,7 @@ with it sits above. Each column carries one count: a second series gets columns 
 Counts over time that split into parts: by source, by type, by team. The columns spec with
 a `color` field: blue for the part the claim names, yellow for the rest, and a legend
 `render.js` draws on top as coloured squares. `y` and `text` sum `n`, so the bars stack and
-the count on top is the day's total. Coral stays free for a cause. A part under about 5% of
+the count on top is the day's total. Pink stays free for a cause. A part under about 5% of
 its column is a sliver in the stack, so it goes in grouped columns, where its count sits on
 its own bar.
 
@@ -140,7 +140,7 @@ its own bar.
   },
   "layer": [
     {"mark": {"type":"bar","width":{"band":0.6}},
-     "encoding": {"color": {"field":"source","type":"nominal","sort":null,"title":null,"scale":{"range":["#5b5bf7","#ffd84d"]}}}},
+     "encoding": {"color": {"field":"source","type":"nominal","sort":null,"title":null,"scale":{"range":["#4d9fff","#ffd23f"]}}}},
     {"mark": {"type":"text","dy":-10,"fontSize":15,"fontWeight":900}, "encoding": {"text":{"aggregate":"sum","field":"n","format":",d"}}}
   ]
 }
@@ -177,7 +177,7 @@ series a stat card, so each bar stays wide enough for its count.
   },
   "layer": [
     {"mark": {"type":"bar","width":{"band":0.85}},
-     "encoding": {"color": {"field":"channel","type":"nominal","sort":null,"title":null,"scale":{"range":["#ffd84d","#5b5bf7"]}}}},
+     "encoding": {"color": {"field":"channel","type":"nominal","sort":null,"title":null,"scale":{"range":["#ffd23f","#4d9fff"]}}}},
     {"mark": {"type":"text","dy":-10,"fontSize":13,"fontWeight":900}, "encoding": {"text":{"field":"n","format":",d"}}}
   ]
 }
@@ -196,7 +196,7 @@ ink stroke.
 - Five slices or fewer. Fold the smallest into "Other".
 - Largest first from 12 o'clock, clockwise: `order` sorts `n` descending.
 - Each slice labelled directly with its name and percent, which a `transform` computes
-  from the counts. The slice the claim is about is coral.
+  from the counts. The slice the claim is about is pink.
 - Optional: the count on a second line, when the reader needs the counts as well as the
   shares. The example has it: `label` is a two-item array, and each item is a line. For
   one line, make `label` the first item alone.
@@ -229,7 +229,7 @@ ink stroke.
      },
      "layer": [
        {"mark": {"type":"arc","innerRadius":80,"outerRadius":130},
-        "encoding": {"color": {"condition":{"test":"datum.claim","value":"#ff8a6b"},"value":"#ffd84d"}}},
+        "encoding": {"color": {"condition":{"test":"datum.claim","value":"#ff6b9a"},"value":"#ffd23f"}}},
        {"mark": {"type":"text","radius":144,"fontSize":15,"fontWeight":900,
                  "align":{"expr":"sin(datum.mid) >= 0 ? 'left' : 'right'"},
                  "baseline":{"expr":"cos(datum.mid) > 0.7 ? 'bottom' : cos(datum.mid) < -0.7 ? 'top' : 'middle'"}},
@@ -238,7 +238,7 @@ ink stroke.
     {"data": {"values":[{"total":"2,000","unit":"tickets"}]},
      "layer": [
        {"mark": {"type":"text","x":{"expr":"width / 2"},"y":{"expr":"height / 2"},"dy":-8,"fontSize":34,"fontWeight":900}, "encoding": {"text":{"field":"total"}}},
-       {"mark": {"type":"text","x":{"expr":"width / 2"},"y":{"expr":"height / 2"},"dy":20,"fontSize":14,"color":"#6b6b6b"}, "encoding": {"text":{"field":"unit"}}}
+       {"mark": {"type":"text","x":{"expr":"width / 2"},"y":{"expr":"height / 2"},"dy":20,"fontSize":14,"color":"#555"}, "encoding": {"text":{"field":"unit"}}}
      ]}
   ]
 }
@@ -266,12 +266,12 @@ timestamps on a plain `temporal` field.
   "encoding": {"x": {"field":"t","type":"temporal","title":null,"axis":{"format":"%H:%M"}}},
   "layer": [
     {"data": {"values":[{"from":"2026-01-05T14:02","to":"2026-01-05T14:40"}]},
-     "mark": {"type":"rect","color":"#ffe1d8"},
+     "mark": {"type":"rect","color":"#ffe3ec"},
      "encoding": {"x":{"field":"from","type":"temporal"},"x2":{"field":"to"}}},
     {"data": {"values":[{"t":"2026-01-05T14:02","label":"14:02 deploy v4.12"}]},
      "layer": [
        {"mark": "rule"},
-       {"mark": {"type":"text","align":"left","baseline":"bottom","dx":8,"y":{"expr":"height - 8"},"color":"#9a3a22","fontSize":14,"fontWeight":900}, "encoding": {"text":{"field":"label"}}}
+       {"mark": {"type":"text","align":"left","baseline":"bottom","dx":8,"y":{"expr":"height - 8"},"color":"#c11d4f","fontSize":14,"fontWeight":900}, "encoding": {"text":{"field":"label"}}}
      ]},
     {"mark": "line", "encoding": {"y": {"field":"rate","type":"quantitative","title":"Errors, % of checkouts"}}},
     {"mark": "point", "encoding": {"y": {"field":"rate","type":"quantitative"}}}

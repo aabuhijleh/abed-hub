@@ -65,9 +65,12 @@ Done when every field is filled and every value in Data names its source.
 | where it fails across two dimensions       | matrix                      | [charts.md](charts.md)           |
 | where items drop out of a pipeline         | funnel                      | [charts.md](charts.md)           |
 | which fields differ between two records    | record diff                 | [charts.md](charts.md)           |
+| anything else, or several parts in one     | freeform                    | [freeform.md](freeform.md)       |
 
-Read the file for your shape and copy its example. Draw each claim in one shape: a flow
-and a table of the same change say it twice.
+Read the file for your shape and use its example as a start, not a cage. Bend a recipe,
+combine two, or go freeform when that proves the claim more vividly: a mock of the UI
+region, a big number beside its cause, cards joined by arrows, an inline SVG. Draw each
+claim once: a flow and a table of the same change say it twice.
 
 A change to docs, copy or config goes in as a ```` ```diff ```` block, and command output
 or a test run as text. Those, a dependency bump and a rename get no image.
@@ -93,7 +96,8 @@ gh-attach shot /tmp/visuals/<slug>/frame.html /tmp/visuals/<slug>/<slug>.png
 The layout follows the branch:
 
 - **finding, result, explainer:** the claim is the `h1`. A bare `<mark>` is the cause, in
-  coral. `<mark class="good">` is a win, in blue.
+  pink. `<mark class="good">` is a win, in green. An optional `<span class="kicker">` above
+  the `h1` names the kind or scope ("Fix · checkout").
 - **change:** one `<div class="side before">` and one `<div class="side after">`, each
   opening with `<span class="tag">Before</span>` or `After`. Stacked by default.
   `class="panel pair"` puts them side by side, which suits two narrow screenshots. The
@@ -118,8 +122,10 @@ What goes on the image:
   read: the reader's words from the UI, the ticket or the thread, and a concrete number or
   cause.
 - **A mark on each part of the claim, and on nothing else.** A claim with a cause and an
-  effect marks both, such as the figure clicked and the row it selects. Chart bars and
-  columns are filled yellow, and everything else stays ink on white.
+  effect marks both, such as the figure clicked and the row it selects.
+- **Bright fills on white, by meaning.** The palette in [freeform.md](freeform.md#palette)
+  gives each colour one meaning: pink for a cause, blue for after, green for a win, yellow
+  for the thing to look at. Fill cards and bars boldly. Text stays ink on every fill.
 - **Anchors:** what the claim is about, plus one unchanged neighbour on each side so the
   reader sees where it sits.
 - **The product's own icon for each UI state it names,** in the headline, labels and
@@ -186,8 +192,8 @@ For a PR, call the Skill tool with `gh-attach` and put each image under `## Evid
   a PR, Slack, Jira or a doc.** `shot` only renders: it writes the frame's `h1` into the
   PNG's `Title`, and an agent runner may refuse an image without one. A screenshot goes
   into the frame as its `<img>` first. Needs `gh-attach` 0.4.0 or later.
-- **Link `frame.css` where it sits.** A copy elsewhere loses `archivo.woff2` and falls back
-  to the system font.
+- **Link `frame.css` where it sits.** A copy elsewhere loses the bundled Space Grotesk and
+  Space Mono files and falls back to the system font.
 - **`render.js` stays a classic `<script src>`.** Chrome blocks module scripts on a `file:`
   page.
 - **A label covers nothing the claim needs.** When a ring's label hides a neighbour that

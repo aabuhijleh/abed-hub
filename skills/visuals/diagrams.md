@@ -46,7 +46,7 @@ flowchart LR
 ## Sequence
 
 Messages between services, with the hop that fails. Mermaid `sequenceDiagram`. Name each
-part with `participant X as Name`. Wrap the failing messages in `rect rgb(255, 138, 107)`
+part with `participant X as Name`. Wrap the failing messages in `rect rgb(255, 107, 154)`
 ... `end`, and use `--x` for a message that dies. A `Note over A,B` carries the condition.
 
 ```html
@@ -59,7 +59,7 @@ sequenceDiagram
   participant S as Import server
   B->>P: Upload acme-orders.csv
   P->>S: Forward
-  rect rgb(255, 138, 107)
+  rect rgb(255, 107, 154)
   Note over B,P: 60 s with no bytes sent
   P--xB: 504 Gateway Timeout
   end
@@ -186,11 +186,12 @@ words for it in `<small>`.
 
 ## Mermaid gotchas
 
-- `:::mark`, `:::good` and `:::quiet` work in a `flowchart` only. `render.js` adds them. A
-  `sequenceDiagram` takes no classes, so mark it with a `rect` block.
+- `:::mark` (pink), `:::good` (green), `:::now` (blue), `:::hot` (yellow) and `:::quiet` work
+  in a `flowchart` only. `render.js` adds them. A `sequenceDiagram` takes no classes, so mark
+  it with a `rect` block.
 - A label holding `(`, `)`, `:` or `"` breaks the parse. Quote it: `A["Retry (5x)"]`.
 - A parse error makes `gh-attach shot` fail with the message. In a `flowchart`, its line
-  number counts the three `classDef` lines `render.js` adds after the first line.
+  number counts the five `classDef` lines `render.js` adds after the first line.
 - A `<br/>` in a label is dropped and the words run together. Put the second part in
   parentheses or shorten the label.
 - `flowchart LR` suits 948px. Switch to `TB` only when the chain is longer than about six
