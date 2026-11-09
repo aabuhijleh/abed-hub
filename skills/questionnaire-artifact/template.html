@@ -1,0 +1,898 @@
+<meta charset="utf-8">
+<title>QUESTIONNAIRE TITLE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="questionnaire-id" content="questionnaire-slug">
+<style>
+:root {
+  --ink: #111; --paper: #fff; --soft: #f6f6f3; --quiet: #555; --on: #111;
+  --yellow: #ffd23f; --pink: #ff6b9a; --blue: #4d9fff; --green: #3ddc84; --lilac: #b8a4ff; --orange: #ff8a3d;
+  --pink-tint: #ffe3ec; --green-tint: #dcf8e8; --blue-tint: #e2efff; --yellow-tint: #fff4c9;
+  --b: 3px solid var(--ink); --sh: 6px 6px 0 var(--ink); --sh-sm: 4px 4px 0 var(--ink);
+  --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans: "Space Grotesk", -apple-system, "Helvetica Neue", sans-serif;
+  --read: 0%; --rail-w: 15.5rem; --gutter: 28px;
+  color-scheme: light;
+}
+/* base */
+* { box-sizing: border-box; }
+html { scrollbar-color: var(--ink) var(--soft); scrollbar-gutter: stable; }
+html:has(dialog[open]) { overflow: hidden; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 500 18px/1.55 var(--sans); overflow-wrap: break-word; }
+a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+code { font: 600 0.82em var(--mono); background: var(--soft); color: var(--ink); border: 2px solid var(--ink); padding: 0 5px; overflow-wrap: anywhere; }
+pre { font: 500 14px/1.5 var(--mono); background: var(--soft); border: var(--b); box-shadow: var(--sh-sm); padding: 14px 16px; overflow-x: auto; }
+pre code { border: 0; padding: 0; background: none; font-size: inherit; }
+img, svg { max-width: 100%; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 var(--gutter) 96px; }
+
+/* scrollbars: chunky ink thumb on every scroll area */
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-track { background: var(--soft); border-left: 2px solid var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--ink); border: 3px solid var(--soft); }
+::-webkit-scrollbar-thumb:hover { background: var(--blue); border-color: var(--ink); }
+::-webkit-scrollbar-corner { background: var(--soft); }
+
+/* hero */
+header.hero { padding: 64px 0 24px; }
+.kicker { display: inline-block; font: 700 13px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; background: var(--ink); color: var(--paper); padding: 6px 12px; }
+h1 { font-size: clamp(36px, 6vw, 72px); line-height: 1.02; font-weight: 800; letter-spacing: -0.035em; text-transform: uppercase; margin: 22px 0 26px; overflow-wrap: anywhere; }
+h1 mark { background: var(--yellow); color: var(--on); padding: 0 0.12em; border: 3px solid #111; box-shadow: 4px 4px 0 #111; display: inline-block; transform: rotate(-1.5deg); }
+.lede { font-size: clamp(19px, 2.4vw, 23px); line-height: 1.5; max-width: 820px; font-weight: 600; margin: 0; }
+.meta { font: 400 13px/1.7 var(--mono); color: var(--quiet); margin-top: 18px; }
+
+/* sections */
+section { margin-top: 80px; scroll-margin-top: 28px; }
+h2 { font-size: clamp(28px, 4vw, 38px); line-height: 1.05; font-weight: 800; letter-spacing: -0.025em; text-transform: uppercase; margin: 0 0 10px; display: flex; align-items: center; gap: 14px; }
+h2 .n { display: inline-grid; place-items: center; width: 48px; height: 48px; background: var(--ink); color: var(--paper); font: 700 22px var(--mono); flex: none; }
+h3 { font-size: 22px; font-weight: 800; margin: 28px 0 10px; letter-spacing: -0.01em; line-height: 1.2; scroll-margin-top: 28px; }
+.sub { color: var(--quiet); font-size: 19px; font-weight: 500; margin: 0 0 24px; }
+.grid { display: grid; gap: 22px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3, .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .g2, .g3, .stats { grid-template-columns: 1fr; } }
+ul.tight, ol.tight { margin: 6px 0 0; padding-left: 22px; } .tight li { margin: 6px 0; }
+
+/* box: plain card */
+.box { border: var(--b); box-shadow: var(--sh); background: var(--paper); padding: 18px 20px; }
+.box h3 { margin-top: 0; }
+
+/* stat cards */
+.stat { padding: 20px 22px; border: 3px solid #111; box-shadow: var(--sh); background: var(--paper); }
+.stat .big { font-size: clamp(52px, 8vw, 72px); font-weight: 800; line-height: 0.9; letter-spacing: -0.04em; }
+.stat .lbl { font: 700 14px var(--mono); text-transform: uppercase; margin-top: 12px; }
+.stat .why { font-size: 17px; line-height: 1.45; margin-top: 6px; }
+.c-sun, .c-iris, .c-coral, .c-mint { color: var(--on); }
+.c-sun { background: var(--yellow); } .c-iris { background: var(--blue); } .c-coral { background: var(--pink); } .c-mint { background: var(--green); }
+.c-sun code, .c-iris code, .c-coral code, .c-mint code { background: #fff; color: #111; border-color: #111; }
+
+/* callout */
+.callout { border: var(--b); padding: 18px 22px; font-size: 18px; line-height: 1.55; box-shadow: var(--sh); background: var(--blue-tint); border-left: 10px solid var(--blue); }
+.callout.warn { background: var(--pink-tint); border-left-color: var(--pink); }
+.callout.ok { background: var(--green-tint); border-left-color: var(--green); }
+.callout .ct { display: block; font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+.callout ul { margin: 8px 0 0; }
+
+/* chips and verdict tags */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font: 700 12px var(--mono); text-transform: uppercase; border: 2px solid var(--ink); padding: 2px 8px; background: var(--paper); white-space: nowrap; }
+.chip.y, .chip.r, .chip.b, .chip.g { color: var(--on); border-color: #111; }
+.chip.y { background: var(--yellow); } .chip.r { background: var(--pink); } .chip.b { background: var(--blue); } .chip.g { background: var(--green); }
+
+/* flow: steps joined by arrows, stacks on narrow screens */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 34px; }
+.step { position: relative; border: var(--b); box-shadow: var(--sh-sm); background: var(--paper); padding: 16px; }
+.step:not(:last-child)::after { content: "→"; position: absolute; right: -19px; top: 50%; transform: translate(50%, -50%); font: 800 26px var(--mono); }
+.step .k { font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+.step .t { font-weight: 700; font-size: 18px; margin-top: 6px; line-height: 1.3; }
+.step.hot { background: var(--yellow); color: var(--on); }
+@media (max-width: 700px) { .flow { grid-template-columns: 1fr; } .step:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -34px; transform: translateX(-50%); } }
+
+/* tables: always wrap in .tbl so wide tables scroll inside the card */
+.tbl { overflow-x: auto; border: var(--b); box-shadow: var(--sh); background: var(--paper); overscroll-behavior-x: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 17px; line-height: 1.45; }
+th, td { border: 2px solid var(--ink); padding: 12px 14px; text-align: left; vertical-align: top; }
+tr > :first-child { border-left: 0; } tr > :last-child { border-right: 0; }
+thead tr:first-child > *, table > tr:first-child > *, tbody:first-child tr:first-child > * { border-top: 0; }
+tr:last-child > td { border-bottom: 0; }
+th { background: var(--yellow); color: var(--on); font: 700 13px var(--mono); text-transform: uppercase; white-space: nowrap; }
+td.no { background: var(--pink-tint); font-weight: 700; }
+td.yes { background: var(--green-tint); font-weight: 700; }
+table small { color: var(--quiet); font-size: 14px; }
+
+/* figures: every content image opens in the lightbox */
+figure { margin: 0; background: var(--paper); border: var(--b); box-shadow: var(--sh); display: flex; flex-direction: column; }
+figure img { display: block; width: 100%; height: auto; border-bottom: var(--b); background: #fff; }
+figure figcaption { padding: 14px 18px; font-weight: 700; font-size: 18px; line-height: 1.35; }
+figure figcaption small { display: block; color: var(--quiet); font-weight: 500; font-size: 15px; line-height: 1.45; margin-top: 6px; }
+main img { cursor: zoom-in; }
+
+/* pros and cons, bad and good */
+.pc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pc > div { border: 2px solid var(--ink); padding: 12px 14px; font-size: 16px; }
+.pc .pro { background: var(--green-tint); } .pc .con { background: var(--pink-tint); }
+.pc b { display: block; font: 700 12px var(--mono); text-transform: uppercase; margin-bottom: 4px; }
+@media (max-width: 700px) { .pc { grid-template-columns: 1fr; } }
+
+/* quote and collapsible context */
+.quote { border-left: 8px solid var(--ink); background: var(--yellow-tint); padding: 14px 18px; font-size: 17px; margin: 14px 0; }
+details.ctx { margin-top: 14px; border: 2px solid var(--ink); background: var(--soft); }
+details.ctx summary { cursor: pointer; font: 700 12px var(--mono); text-transform: uppercase; padding: 10px 14px; }
+details.ctx[open] summary { border-bottom: 2px solid var(--ink); }
+details.ctx > :not(summary) { margin: 12px 14px; }
+
+footer { margin-top: 80px; font: 400 13px/1.6 var(--mono); color: var(--quiet); border-top: var(--b); padding-top: 18px; }
+
+/* reading rail: progress meter plus contents built from the sections */
+.rail { position: fixed; z-index: 8; top: 1.5rem; left: 1.5rem; width: var(--rail-w); max-height: calc(100vh - 3rem); max-height: calc(100dvh - 3rem); display: flex; flex-direction: column; gap: 14px; }
+.meter { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 4px 10px; background: var(--paper); border: 2px solid var(--ink); box-shadow: var(--sh-sm); padding: 10px 12px 12px; }
+.now-label { grid-column: 1 / -1; font: 700 11px var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--quiet); }
+.now-title { font: 700 14px/1.25 var(--sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.now-read { font: 800 28px/0.9 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.rbar { grid-column: 1 / -1; height: 10px; border: 2px solid var(--ink); background: var(--paper); margin-top: 6px; overflow: hidden; }
+.rbar span { display: block; height: 100%; width: var(--read); margin-left: -2px; background: var(--blue); border-right: 2px solid var(--ink); transition: width 90ms linear; }
+.contents { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; background: var(--paper); border: 2px solid var(--ink); box-shadow: var(--sh-sm); padding: 10px 10px 12px; }
+.contents summary { font: 800 16px/1 var(--sans); text-transform: uppercase; cursor: pointer; padding: 2px 0 10px; list-style: none; }
+.contents summary::-webkit-details-marker { display: none; }
+.contents summary::after { content: " ▾"; font-size: 12px; }
+.contents:not([open]) summary::after { content: " ▸"; }
+.contents ol { list-style: none; margin: 0; padding: 0; }
+.contents a {
+  --fill: 0%;
+  display: flex; gap: 8px; align-items: baseline; position: relative; color: var(--ink); text-decoration: none;
+  font: 700 14px/1.25 var(--sans); padding: 7px 9px; border: 2px solid var(--ink); margin-top: -2px;
+  background: linear-gradient(to right, var(--yellow-tint) var(--fill), var(--paper) var(--fill));
+  transition: transform 140ms ease-out, box-shadow 140ms ease-out;
+}
+.contents a .k { font: 700 11px var(--mono); flex: none; min-width: 16px; }
+.contents ol ol { margin: 0 0 6px; }
+.contents a[data-level="3"] { margin-left: 14px; font-weight: 600; font-size: 13px; padding-block: 5px; }
+.contents li:not(.open) > ol { display: none; }
+.contents a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+.contents a[aria-current] {
+  z-index: 1; font-weight: 800; color: var(--on);
+  background: linear-gradient(to right, var(--yellow) var(--fill), #fff4c9 var(--fill));
+  transform: translate(-3px, -3px); box-shadow: 3px 3px 0 var(--ink);
+}
+@media (min-width: 1240px) { body { padding-left: calc(var(--rail-w) + 1.5rem); } }
+@media (max-width: 1239px) {
+  section, h3 { scroll-margin-top: 84px; }
+  .rail { position: sticky; top: 0; left: auto; width: auto; max-height: none; gap: 0; background: var(--paper); border-bottom: var(--b); }
+  .meter { border: 0; box-shadow: none; padding: 10px var(--gutter) 0; }
+  .now-label { display: none; }
+  .now-title { font-size: 16px; }
+  .now-read { font-size: 22px; }
+  .rbar { border-width: 2px 0 0; margin: 8px calc(-1 * var(--gutter)) 0; height: 8px; }
+  .contents { border: 0; box-shadow: none; padding: 6px var(--gutter); max-height: 60vh; max-height: 60dvh; }
+  .contents summary { padding: 4px 0; font-size: 14px; }
+  .contents[open] summary { padding-bottom: 8px; }
+}
+@media (max-width: 600px) {
+  :root { --gutter: 16px; }
+  body { font-size: 17px; }
+  header.hero { padding-top: 36px; }
+  section { margin-top: 56px; }
+  h2 .n { width: 38px; height: 38px; font-size: 18px; }
+  .box, .callout, .stat { padding: 16px; }
+  th, td { padding: 9px 10px; font-size: 15px; }
+}
+
+/* lightbox */
+dialog.lb { border: var(--b); box-shadow: var(--sh); padding: 0; background: var(--paper); color: var(--ink); width: min(96vw, 1400px); max-width: 96vw; height: 94vh; height: 94dvh; max-height: none; display: none; flex-direction: column; overflow: hidden; }
+dialog.lb[open] { display: flex; }
+dialog.lb::backdrop { background: #111d; }
+.lb-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: var(--b); background: var(--yellow); color: var(--on); flex: none; }
+.lb-head p { margin: 0; flex: 1; min-width: 0; font-weight: 700; font-size: 16px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-head .ct { font: 700 12px var(--mono); white-space: nowrap; }
+.lb-head button { border: 2px solid #111; background: #fff; color: #111; font: 700 14px var(--mono); height: 36px; min-width: 36px; padding: 0 8px; cursor: pointer; flex: none; }
+.lb-head button:hover, .lb-head button:focus-visible { background: #111; color: #fff; }
+.lb-head button[hidden] { display: none; }
+.lb-body { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; display: grid; place-items: center; background: var(--soft); }
+.lb-body img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; background: #fff; }
+.lb-body.zoom { place-items: start; }
+.lb-body.zoom img { max-width: none; max-height: none; cursor: zoom-out; }
+@media (max-width: 600px) { dialog.lb { width: 100vw; max-width: 100vw; height: 100dvh; border: 0; box-shadow: none; } }
+
+@media (prefers-reduced-motion: reduce) { .contents a, .rbar span { transition: none; } }
+
+/* artifact frame: gutters clear the phone's side bars */
+.wrap { padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); padding-bottom: 140px; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* how-to strip under the hero */
+.howto { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
+.howto > div { border: 2px solid var(--ink); background: var(--soft); padding: 12px 14px; font-size: 16px; line-height: 1.45; }
+.howto b { display: block; font: 700 12px var(--mono); text-transform: uppercase; margin-bottom: 4px; }
+@media (max-width: 700px) { .howto { grid-template-columns: 1fr; } }
+
+/* respondent */
+.who { display: grid; grid-template-columns: minmax(0, 560px); gap: 14px; margin-top: 18px; }
+.who label { display: block; font: 700 12px var(--mono); text-transform: uppercase; margin-bottom: 4px; }
+@media (max-width: 600px) { .who { grid-template-columns: 1fr; } }
+
+/* question groups and cards */
+.qgroup { margin-top: 40px; scroll-margin-top: 28px; }
+h3.qg { font-size: 24px; text-transform: uppercase; margin: 0; }
+.q { border: var(--b); box-shadow: var(--sh); background: var(--paper); margin-top: 22px; scroll-margin-top: 28px; }
+.q .qh { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-bottom: var(--b); background: var(--soft); }
+.q .qid { font: 700 15px var(--mono); background: var(--ink); color: var(--paper); padding: 6px 9px; flex: none; }
+.q .qtx { min-width: 0; flex: 1; }
+.q .qt { font-weight: 800; font-size: 19px; line-height: 1.35; margin: 0; }
+.q .qc { font-size: 16px; color: #333; margin: 6px 0 0; font-weight: 500; }
+.q .qst { font: 700 11px var(--mono); text-transform: uppercase; border: 2px solid var(--ink); padding: 2px 7px; background: var(--paper); white-space: nowrap; flex: none; align-self: center; }
+.q.done .qh { background: var(--green-tint); }
+.q.done .qst { background: var(--green); }
+.q .qb { padding: 14px 18px 18px; }
+
+/* context visual inside a question */
+.qv { border: 2px solid var(--ink); background: var(--soft); padding: 14px 16px; margin: 0 0 14px; }
+.qv > .cap { font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 10px; }
+.qv p { margin: 8px 0 0; font-size: 16px; }
+.qv-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .qv-2 { grid-template-columns: 1fr; } }
+.qv .tbl { box-shadow: none; border-width: 2px; }
+.qv table { font-size: 15px; }
+.qv th, .qv td { padding: 7px 9px; }
+
+/* options */
+.opts { display: grid; gap: 4px; }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 2px solid transparent; cursor: pointer; font-size: 17px; }
+.opt:hover { border-color: var(--ink); background: var(--yellow-tint); }
+.opt:has(input:checked) { border-color: var(--ink); background: var(--green-tint); font-weight: 700; }
+.opt input { width: 20px; height: 20px; margin-top: 3px; accent-color: #111; flex: none; }
+.opt small { display: block; font-weight: 500; color: var(--quiet); font-size: 15px; margin-top: 2px; }
+.rec { font: 700 11px var(--mono); text-transform: uppercase; background: var(--yellow); border: 2px solid var(--ink); padding: 0 6px; margin-left: 6px; white-space: nowrap; vertical-align: 2px; }
+.scale { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.scale .opt { flex-direction: column; align-items: center; gap: 4px; min-width: 58px; border: 2px solid var(--ink); padding: 8px; font: 700 18px var(--mono); }
+.scale .ends { font: 700 12px var(--mono); text-transform: uppercase; color: var(--quiet); }
+.q textarea, .q input[type=text], .who input { width: 100%; font: 500 16px var(--sans); color: var(--ink); border: 2px solid var(--ink); padding: 10px 12px; background: #fff; }
+.q textarea { min-height: 76px; resize: vertical; }
+.q label.small { display: block; font: 700 12px var(--mono); text-transform: uppercase; margin: 12px 0 4px; }
+
+/* answers: who answered, then each question's answers grouped by value */
+.who-list { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 0; }
+.sums { display: grid; gap: 16px; margin-top: 22px; }
+.sum { border: var(--b); box-shadow: var(--sh-sm); background: var(--paper); }
+.sum-h { display: flex; gap: 12px; align-items: baseline; padding: 10px 14px; border-bottom: 2px solid var(--ink); background: var(--soft); }
+.sum-h .qid { font: 700 13px var(--mono); background: var(--ink); color: var(--paper); padding: 3px 7px; text-decoration: none; flex: none; }
+.sum-t { font-weight: 800; flex: 1; min-width: 0; }
+.sum-n { font: 700 12px var(--mono); text-transform: uppercase; white-space: nowrap; }
+.sum-b { padding: 10px 14px 12px; display: grid; gap: 8px; }
+.sum-b .empty { margin: 0; color: var(--quiet); font-style: italic; }
+.tal { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(60px, 1fr) auto; gap: 2px 12px; align-items: center; }
+.tal-v { font-weight: 700; }
+.tal-m { height: 14px; border: 2px solid var(--ink); background: var(--paper); }
+.tal-m { display: flex; }
+.tal-m i { display: block; height: 100%; background: var(--green); }
+.tal-m i.draft { background: repeating-linear-gradient(45deg, var(--green) 0 4px, var(--paper) 4px 8px); }
+.tal.txt { grid-template-columns: minmax(0, 1fr) auto; }
+.tal.txt .tal-m { display: none; }
+.tal.txt .tal-v { font-weight: 500; white-space: pre-wrap; }
+.tal-who i { font-style: italic; }
+.tag { font: 700 11px var(--mono); text-transform: uppercase; border: 2px solid var(--ink); padding: 1px 7px; white-space: nowrap; color: #111; }
+.tag.split { background: var(--pink); } .tag.decided { background: var(--green); } .tag.read { background: var(--blue-tint); }
+.sum.split { border-left: 10px solid var(--pink); }
+.sum.decided { border-left: 10px solid var(--green); }
+.sum-b .dec { margin: 0; padding: 8px 10px; background: var(--green-tint); border: 2px solid var(--ink); }
+.sum-b .dec small { display: block; color: var(--quiet); font-size: 14px; margin-top: 2px; }
+.splits { margin-top: 18px; }
+.splits .chips { margin-top: 8px; }
+.stats4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .stats4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tal-c { font: 700 14px var(--mono); }
+.tal-who { grid-column: 1 / -1; color: var(--quiet); font-size: 14px; }
+.sum-b .nt { margin: 2px 0 0; padding: 8px 10px; border-left: 6px solid var(--blue); background: var(--blue-tint); font-size: 15px; white-space: pre-wrap; }
+@media (max-width: 600px) { .sum-h { flex-wrap: wrap; } .tal { grid-template-columns: minmax(0, 1fr) auto; } .tal-m { display: none; } }
+
+/* sticky bar: progress, save state, actions */
+.bar { position: fixed; z-index: 9; left: 0; right: 0; bottom: 0; background: var(--ink); color: var(--paper); border-top: 3px solid var(--ink); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.bar .in { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px max(var(--gutter), env(safe-area-inset-right, 0px)) 10px max(var(--gutter), env(safe-area-inset-left, 0px)); max-width: 1160px; margin: 0 auto; }
+@media (min-width: 1240px) { .bar { left: calc(var(--rail-w) + 1.5rem); } }
+.bar .prog { font: 700 14px var(--mono); }
+.bar .meterq { width: 110px; height: 12px; border: 2px solid var(--paper); background: var(--ink); }
+.bar .meterq span { display: block; height: 100%; width: 0; background: var(--green); transition: width 160ms; }
+.bar .save { font: 700 12px var(--mono); text-transform: uppercase; padding: 3px 8px; border: 2px solid var(--paper); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: max-content; }
+.bar .save[data-s="db"] { background: var(--green); color: #111; }
+.bar .save[data-s="busy"] { background: var(--yellow); color: #111; }
+.bar .save[data-s="local"] { background: var(--orange); color: #111; }
+.bar .save[data-s="err"] { background: var(--pink); color: #111; }
+.bar .sp { flex: 1; }
+.bar button { font: 700 14px var(--mono); text-transform: uppercase; border: 2px solid var(--paper); background: var(--paper); color: var(--ink); padding: 8px 14px; cursor: pointer; }
+.bar button.go { background: var(--yellow); }
+.bar button:hover { background: var(--blue); }
+.bar button:disabled { opacity: 0.6; cursor: default; }
+@media (max-width: 600px) { .bar .meterq { display: none; } .bar .save { order: 9; flex: 1 1 100%; max-width: none; text-align: center; } .bar .sp { display: none; } .bar button { padding: 7px 10px; font-size: 13px; } }
+.sent { margin-top: 18px; }
+</style>
+<nav class="rail" aria-label="Contents">
+  <div class="meter" aria-hidden="true"><span class="now-label">Reading</span><span class="now-title">Start</span><span class="now-read">0%</span><span class="rbar"><span></span></span></div>
+  <details class="contents" open><summary>Contents</summary><ol></ol></details>
+</nav>
+
+<main class="wrap">
+<header class="hero">
+  <span class="kicker">Questionnaire · TICKET · TOPIC</span>
+  <h1>Headline question with one <mark>key word</mark></h1>
+  <p class="lede">LEDE: what decision rides on these answers, and what Claude proposes.</p>
+  <p class="meta">DATE · About N minutes · From ASKER, for RESPONDENT</p>
+  <div class="howto">
+    <div><b>1 · Read</b>Section 1 gives the context. Each question adds its own example.</div>
+    <div><b>2 · Answer</b>Pick an option or type. Each change saves to this page within a second.</div>
+    <div><b>3 · Send</b>Click <b>Send answers</b> in the bar when you are done.</div>
+  </div>
+</header>
+
+<!-- Context sections: reuse the temp-html components (.box, .callout, .flow, .tbl, figure). One <section id> each. -->
+<section id="context">
+  <h2><span class="n">1</span>Context</h2>
+  <p class="sub">CONTEXT SUB: what the respondent must know to answer well.</p>
+  <div class="callout"><span class="ct">CALLOUT TITLE</span>CALLOUT TEXT</div>
+</section>
+
+<section id="questions">
+  <h2><span class="n">2</span>Questions</h2>
+  <p class="sub">Pick an answer and add notes when you need to. <span class="rec">Recommended</span> marks the answer Claude proposes.</p>
+  <div class="who">
+    <div><label for="who-name">Your name</label><input type="text" id="who-name" autocomplete="name" placeholder="Filled from your Claude account when signed in"></div>
+  </div>
+
+  <!-- One .qgroup per theme. Its h3 needs an id and class="qg" to show in the rail. -->
+  <div class="qgroup">
+    <h3 class="qg" id="qg-a" data-title="THEME">A · THEME</h3>
+
+    <!-- data-kind: single | multi | scale | text | long. data-notes="off" drops the notes box. -->
+    <div class="q" data-q="A1" data-kind="single">
+      <p class="qt">QUESTION TEXT?</p>
+      <p class="qc">QUESTION CONTEXT: one line. Delete when the question is clear alone.</p>
+      <div class="qv">
+        <p class="cap">VISUAL CAPTION</p>
+        <p>VISUAL: a table, a .flow, a figure, or an inline SVG that shows what each option means.</p>
+      </div>
+      <ol class="opts">
+        <li data-rec>OPTION<small>OPTION DETAIL</small></li>
+        <li>OPTION</li>
+      </ol>
+    </div>
+
+    <div class="q" data-q="A2" data-kind="multi">
+      <p class="qt">QUESTION TEXT?</p>
+      <ol class="opts">
+        <li data-rec>OPTION</li>
+        <li>OPTION</li>
+      </ol>
+    </div>
+
+    <div class="q" data-q="A3" data-kind="scale" data-scale="1-5" data-ends="LOW END|HIGH END" data-rec="3">
+      <p class="qt">QUESTION TEXT?</p>
+    </div>
+
+    <div class="q" data-q="A4" data-kind="text" data-placeholder="PLACEHOLDER">
+      <p class="qt">QUESTION TEXT?</p>
+    </div>
+  </div>
+
+  <div class="qgroup">
+    <h3 class="qg" id="qg-z" data-title="Anything else">Z · Anything else</h3>
+    <div class="q" data-q="Z1" data-kind="long">
+      <p class="qt">Is there anything we did not ask that we should know?</p>
+    </div>
+  </div>
+</section>
+
+<section id="answers">
+  <h2><span class="n">3</span>Answers</h2>
+  <p class="sub">Everyone's answers, grouped by question. It updates live as people answer.</p>
+  <div class="callout ok sent" id="sent" hidden><span class="ct">Your answers are sent</span><span id="sent-text"></span></div>
+  <div class="grid stats4" style="margin-top:22px">
+    <div class="stat c-iris"><div class="big" id="st-people">0</div><div class="lbl">People answered</div></div>
+    <div class="stat c-mint"><div class="big" id="st-sent">0</div><div class="lbl">Sent their answers</div></div>
+    <div class="stat c-sun"><div class="big" id="st-covered">0/0</div><div class="lbl">Questions with an answer</div></div>
+    <div class="stat c-coral"><div class="big" id="st-split">0</div><div class="lbl">Questions in conflict</div></div>
+  </div>
+  <div class="who-list" id="who-list"></div>
+  <div class="callout warn splits" id="splits" hidden><span class="ct">People disagree on these questions</span>The asker decides each one. A decision shows on its card.<div class="chips" id="splits-list"></div></div>
+  <div class="sums" id="answers-live"></div>
+</section>
+
+<footer>FOOTER: sources and date. Answers save to this artifact's database.</footer>
+</main>
+
+<div class="bar" role="region" aria-label="Answer status"><div class="in">
+  <span class="prog" id="prog">0/0 answered</span>
+  <span class="meterq" aria-hidden="true"><span id="prog-fill"></span></span>
+  <span class="save" id="save" data-s="busy" aria-live="polite">Connecting…</span>
+  <span class="sp"></span>
+  <button type="button" id="copy">Copy</button>
+  <button type="button" class="go" id="send">Send answers</button>
+</div></div>
+
+<dialog class="lb" id="lb" aria-label="Image viewer">
+  <div class="lb-head">
+    <button type="button" data-lb="prev" aria-label="Previous image">←</button>
+    <span class="ct" id="lb-ct"></span>
+    <p id="lb-cap"></p>
+    <button type="button" data-lb="zoom" aria-label="Toggle actual size">1:1</button>
+    <button type="button" data-lb="next" aria-label="Next image">→</button>
+    <button type="button" data-lb="close" aria-label="Close" autofocus>✕</button>
+  </div>
+  <div class="lb-body" id="lb-body"><img id="lb-img" alt=""></div>
+</dialog>
+
+<script>
+(() => {
+  const dlg = document.getElementById("lb");
+  const body = document.getElementById("lb-body");
+  const big = document.getElementById("lb-img");
+  const cap = document.getElementById("lb-cap");
+  const count = document.getElementById("lb-ct");
+  const imgs = () => [...document.querySelectorAll("main img")];
+  let at = 0;
+  const show = (i) => {
+    const list = imgs();
+    if (!list.length) return;
+    at = (i + list.length) % list.length;
+    const src = list[at];
+    big.src = src.currentSrc || src.src;
+    big.alt = src.alt;
+    cap.textContent = src.closest("figure")?.querySelector("figcaption")?.firstChild?.textContent?.trim() || src.alt;
+    const many = list.length > 1;
+    count.textContent = many ? `${at + 1}/${list.length}` : "";
+    dlg.querySelectorAll('[data-lb="prev"],[data-lb="next"]').forEach(b => b.hidden = !many);
+    body.classList.remove("zoom");
+    body.scrollTo(0, 0);
+    if (!dlg.open) dlg.showModal();
+  };
+  const zoom = () => body.classList.toggle("zoom");
+  document.addEventListener("click", (e) => {
+    const img = e.target.closest("main img");
+    if (img) { e.preventDefault(); show(imgs().indexOf(img)); }
+  });
+  dlg.addEventListener("click", (e) => {
+    const act = e.target.closest("[data-lb]")?.dataset.lb;
+    if (act === "prev") show(at - 1);
+    else if (act === "next") show(at + 1);
+    else if (act === "zoom") zoom();
+    else if (act === "close" || e.target === dlg) dlg.close();
+    else if (e.target === big) zoom();
+    else if (e.target === body) dlg.close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!dlg.open) return;
+    if (e.key === "ArrowLeft") show(at - 1);
+    if (e.key === "ArrowRight") show(at + 1);
+  });
+  let x0 = null;
+  body.addEventListener("touchstart", (e) => { x0 = body.classList.contains("zoom") ? null : e.touches[0].clientX; }, { passive: true });
+  body.addEventListener("touchend", (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) show(at + (dx < 0 ? 1 : -1));
+  });
+})();
+</script>
+<script>
+(() => {
+  const root = document.documentElement;
+  const list = document.querySelector(".contents > ol");
+  const contents = document.querySelector("details.contents");
+  const nowTitle = document.querySelector(".now-title");
+  const nowRead = document.querySelector(".now-read");
+  const short = (h) => h.dataset.title || [...h.childNodes].filter(n => !(n.classList?.contains("n"))).map(n => n.textContent).join("").trim();
+  const link = (h, level, key, id = h.id) => {
+    const a = document.createElement("a");
+    a.href = "#" + id;
+    a.dataset.level = level;
+    a.dataset.title = short(h);
+    a.innerHTML = `<span class="k"></span>`;
+    a.firstChild.textContent = key;
+    a.append(a.dataset.title);
+    return a;
+  };
+  [...document.querySelectorAll("main section[id]")].forEach((s, i) => {
+    const h2 = s.querySelector("h2");
+    if (!h2) return;
+    const li = document.createElement("li");
+    li.append(link(h2, 2, h2.querySelector(".n")?.textContent || i + 1, s.id));
+    const subs = [...s.querySelectorAll("h3[id]")];
+    if (subs.length) {
+      const ol = document.createElement("ol");
+      subs.forEach((h, j) => { const sl = document.createElement("li"); sl.append(link(h, 3, String.fromCharCode(97 + j))); ol.append(sl); });
+      li.append(ol);
+    }
+    list.append(li);
+  });
+  const links = [...list.querySelectorAll("a")];
+  const heads = links.map(l => document.getElementById(decodeURIComponent(l.hash.slice(1))));
+  const items = [...list.children];
+  const narrow = matchMedia("(max-width: 1239px)");
+  if (narrow.matches) contents.open = false;
+  const top = el => el.getBoundingClientRect().top + scrollY;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const end = root.scrollHeight - innerHeight;
+    const read = end > 0 ? Math.min(1, Math.max(0, scrollY / end)) : 1;
+    const line = scrollY + innerHeight * 0.3;
+    let current = -1;
+    heads.forEach((h, i) => {
+      const s = top(h);
+      const isSection = links[i].dataset.level === "2";
+      const next = heads.find((o, j) => j > i && (!isSection || links[j].dataset.level === "2"));
+      const stop = next ? top(next) : root.scrollHeight;
+      const fill = read === 1 ? 1 : Math.min(1, Math.max(0, (line - s) / Math.max(1, stop - s)));
+      links[i].style.setProperty("--fill", (fill * 100).toFixed(1) + "%");
+      if (s <= line) current = i;
+    });
+    links.forEach((l, i) => i === current ? l.setAttribute("aria-current", "location") : l.removeAttribute("aria-current"));
+    for (const it of items) it.classList.toggle("open", current >= 0 && it.contains(links[current]));
+    const active = links[current];
+    if (active && !narrow.matches) {
+      const box = contents.getBoundingClientRect(), r = active.getBoundingClientRect();
+      if (r.top < box.top + 40 || r.bottom > box.bottom - 10) contents.scrollTop += r.top - box.top - box.height / 3;
+    }
+    root.style.setProperty("--read", (read * 100).toFixed(1) + "%");
+    nowRead.textContent = Math.round(read * 100) + "%";
+    nowTitle.textContent = active ? active.dataset.title : "Start";
+  };
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  addEventListener("scroll", queue, { passive: true });
+  addEventListener("resize", queue);
+  narrow.addEventListener("change", () => { contents.open = !narrow.matches; queue(); });
+  for (const l of links) l.addEventListener("click", () => { if (narrow.matches) contents.open = false; });
+  update();
+})();
+</script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const ID = $('meta[name="questionnaire-id"]')?.content || "questionnaire";
+  const LOCAL = "qa:" + ID;
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  /* 1. Turn each declarative .q card into a form */
+  const qs = $$(".q[data-q]");
+  for (const q of qs) {
+    const id = q.dataset.q, kind = q.dataset.kind || "single";
+    const qt = $(".qt", q), qc = $(".qc", q);
+    q.id = q.id || "q-" + id;
+    const head = el("div", "qh"), tx = el("div", "qtx"), body = el("div", "qb");
+    head.append(el("span", "qid", id), tx, el("span", "qst", "Open"));
+    if (qt) tx.append(qt);
+    if (qc) tx.append(qc);
+    while (q.firstChild) body.append(q.firstChild);
+    q.append(head, body);
+    q.dataset.text = qt ? qt.textContent.trim() : id;
+    const list = $("ol.opts", body);
+    if ((kind === "single" || kind === "multi") && list) {
+      const box = el("div", "opts");
+      box.setAttribute("role", kind === "single" ? "radiogroup" : "group");
+      box.setAttribute("aria-label", q.dataset.text);
+      $$(":scope > li", list).forEach((li, i) => {
+        const small = $("small", li);
+        if (small) small.remove();
+        const label = li.textContent.trim();
+        const row = el("label", "opt");
+        const inp = el("input");
+        inp.type = kind === "single" ? "radio" : "checkbox";
+        inp.name = "q-" + id; inp.id = `q-${id}-${i}`; inp.value = li.dataset.value || label;
+        const span = el("span", null, label);
+        if (li.hasAttribute("data-rec")) span.append(el("span", "rec", "Recommended"));
+        if (small) span.append(small);
+        row.append(inp, span);
+        box.append(row);
+      });
+      list.replaceWith(box);
+    } else if (kind === "scale") {
+      const [lo, hi] = (q.dataset.scale || "1-5").split("-").map(Number);
+      const ends = (q.dataset.ends || "|").split("|");
+      const box = el("div", "scale");
+      box.setAttribute("role", "radiogroup");
+      box.setAttribute("aria-label", q.dataset.text);
+      if (ends[0]) box.append(el("span", "ends", ends[0]));
+      for (let n = lo; n <= hi; n++) {
+        const row = el("label", "opt"), inp = el("input");
+        inp.type = "radio"; inp.name = "q-" + id; inp.id = `q-${id}-${n}`; inp.value = String(n);
+        row.append(inp, el("span", null, String(n)));
+        if (String(n) === q.dataset.rec) row.lastChild.append(el("span", "rec", "Rec"));
+        box.append(row);
+      }
+      if (ends[1]) box.append(el("span", "ends", ends[1]));
+      body.append(box);
+    } else if (kind === "text") {
+      const inp = el("input"); inp.type = "text"; inp.id = `q-${id}-v`; inp.dataset.v = "";
+      inp.setAttribute("aria-label", q.dataset.text);
+      if (q.dataset.placeholder) inp.placeholder = q.dataset.placeholder;
+      body.append(inp);
+    } else if (kind === "long") {
+      const ta = el("textarea"); ta.id = `q-${id}-v`; ta.dataset.v = ""; ta.style.minHeight = "130px";
+      ta.setAttribute("aria-label", q.dataset.text);
+      ta.placeholder = q.dataset.placeholder || "Your answer";
+      body.append(ta);
+    }
+    if (kind !== "long" && q.dataset.notes !== "off") {
+      const lab = el("label", "small", "Notes"); lab.htmlFor = `q-${id}-n`;
+      const ta = el("textarea"); ta.id = `q-${id}-n`; ta.dataset.n = ""; ta.placeholder = "Optional: add context, or explain a different answer";
+      body.append(lab, ta);
+    }
+  }
+
+  /* 2. Read and write one question's answer */
+  const read = (q) => {
+    const kind = q.dataset.kind || "single";
+    let value;
+    if (kind === "multi") value = $$("input:checked", q).map(i => i.value);
+    else if (kind === "single" || kind === "scale") value = $("input:checked", q)?.value || "";
+    else value = $("[data-v]", q)?.value || "";
+    return { value, notes: $("[data-n]", q)?.value || "" };
+  };
+  const write = (q, a) => {
+    if (!a) return;
+    const v = a.value;
+    $$("input[type=radio],input[type=checkbox]", q).forEach(i => { i.checked = Array.isArray(v) ? v.includes(i.value) : v === i.value; });
+    const f = $("[data-v]", q); if (f && typeof v === "string") f.value = v;
+    const n = $("[data-n]", q); if (n) n.value = a.notes || "";
+  };
+  const filled2 = (a) => !!a && !!((Array.isArray(a.value) ? a.value.length : String(a.value || "").trim()) || (a.notes || "").trim());
+  const filled = (a) => (Array.isArray(a.value) ? a.value.length : String(a.value).trim()) || a.notes.trim();
+  /* 3. Who is answering: the claude.ai account when the page has the user capability */
+  const me = { uid: "", name: "", email: "", auto: false };
+  const who = () => ({ name: me.auto ? (me.name || me.email) : ($("#who-name")?.value || ""), email: me.email });
+  const showWho = () => { const w = $(".who"); if (w && me.auto) w.hidden = true; };
+
+  /* 4. Storage: responses/<account id> holds one person. Each answer is its own a_<id> field, so a save touches only the questions that changed. */
+  const local = {
+    get(k) { try { return JSON.parse(localStorage.getItem(LOCAL + ":" + k) || "null"); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(LOCAL + ":" + k, JSON.stringify(v)); } catch {} },
+  };
+  const anonKey = () => { let k = local.get("anon"); if (!k) { k = "anon-" + Math.random().toString(36).slice(2, 10); local.set("anon", k); } return k; };
+  const key = () => me.uid || anonKey();
+  const path = () => "responses/" + key();
+  let sent = null, db = null, exists = false;
+  const all = {}, decisions = {}, changed = new Set();
+  const answersOf = (r) => {
+    const out = { ...(r?.answers || {}) };
+    for (const [k, v] of Object.entries(r || {})) if (k.startsWith("a_")) out[k.slice(2)] = v;
+    return out;
+  };
+  const answerOf = (q) => ({ question: q.dataset.text, kind: q.dataset.kind || "single", ...read(q), at: new Date().toISOString() });
+  const record = () => {
+    const w = who(), r = { uid: me.uid, name: w.name, email: w.email, sent, at: new Date().toISOString() };
+    for (const q of qs) r["a_" + q.dataset.q] = answerOf(q);
+    return r;
+  };
+
+  /* 5. Progress, conflicts, and the live Answers section */
+  const bar = { prog: $("#prog"), fill: $("#prog-fill"), save: $("#save") };
+  const recOf = (q) => new Set($$(".rec", q).map(r => r.closest(".opt")?.querySelector("input")?.value).filter(Boolean));
+  const label = (k, r, i) => k === key() ? "You" : (r.name || r.email || "Respondent " + (i + 1));
+  const valuesOf = (a) => [].concat(a?.value ?? []).map(String).filter(v => v.trim());
+  const conflictOf = (q, answered) => {
+    const kind = q.dataset.kind || "single";
+    if (answered.length < 2 || kind === "text" || kind === "long") return false;
+    const sets = answered.map(p => new Set(valuesOf(p.a)));
+    if (kind === "multi") {
+      const union = new Set(sets.flatMap(s => [...s]));
+      return [...union].some(v => sets.some(s => !s.has(v)));
+    }
+    return new Set(sets.map(s => [...s][0])).size > 1;
+  };
+  const summary = $("#answers-live");
+  const refresh = () => {
+    let n = 0;
+    for (const q of qs) {
+      const done = !!filled(read(q));
+      q.classList.toggle("done", done);
+      $(".qst", q).textContent = done ? "Answered" : "Open";
+      if (done) n++;
+    }
+    bar.prog.textContent = `${n}/${qs.length} answered`;
+    bar.fill.style.width = (qs.length ? (n / qs.length) * 100 : 0) + "%";
+    if (!summary) return;
+    all[key()] = record();
+    const people = Object.entries(all)
+      .map(([k, r]) => ({ k, r, ans: answersOf(r) }))
+      .filter(p => Object.values(p.ans).some(filled2))
+      .sort((a, b) => (b.k === key()) - (a.k === key()) || a.k.localeCompare(b.k))
+      .map((p, i) => ({ ...p, name: label(p.k, p.r, i), sent: !!p.r.sent }));
+    const rows = qs.map(q => {
+      const id = q.dataset.q;
+      const answered = people.filter(p => filled2(p.ans[id])).map(p => ({ ...p, a: p.ans[id] }));
+      const decided = decisions[id];
+      const split = conflictOf(q, answered);
+      return { q, id, answered, decided, split, open: split && !decided };
+    });
+    const openRows = rows.filter(r => r.open);
+    $("#st-people").textContent = people.length;
+    $("#st-sent").textContent = people.filter(p => p.sent).length;
+    $("#st-covered").textContent = `${rows.filter(r => r.answered.length).length}/${qs.length}`;
+    $("#st-split").textContent = openRows.length;
+    $("#who-list").replaceChildren(...people.map(p => el("span", "chip " + (p.sent ? "g" : ""), p.name + (p.sent ? " · sent" : " · draft"))));
+    const box = $("#splits");
+    if (box) {
+      box.hidden = !openRows.length;
+      const list = $("#splits-list");
+      list.replaceChildren(...openRows.map(r => { const a = el("a", "chip r", r.id); a.href = "#sum-" + r.id; return a; }));
+    }
+    summary.replaceChildren(...rows.map(({ q, id, answered, decided, split, open }) => {
+      const rec = recOf(q), card = el("div", "sum" + (open ? " split" : decided ? " decided" : ""));
+      card.id = "sum-" + id;
+      const head = el("div", "sum-h"), link = el("a", "qid", id);
+      link.href = "#" + q.id;
+      head.append(link, el("span", "sum-t", q.dataset.text));
+      if (open) head.append(el("span", "tag split", "Split"));
+      if (decided) head.append(el("span", "tag decided", "Decided"));
+      else if (answered.length > 1 && /^(text|long)$/.test(q.dataset.kind || "")) head.append(el("span", "tag read", "Read to compare"));
+      head.append(el("span", "sum-n", people.length ? `${answered.length}/${people.length} answered` : "No answers yet"));
+      card.append(head);
+      const body = el("div", "sum-b");
+      if (decided) {
+        const d = el("p", "dec");
+        d.append(el("b", null, "Decision: "), [].concat(decided.value).join("; "));
+        if (decided.reason) d.append(el("small", null, decided.reason));
+        body.append(d);
+      }
+      const tally = new Map(), notes = [];
+      for (const p of answered) {
+        for (const v of valuesOf(p.a)) { if (!tally.has(v)) tally.set(v, []); tally.get(v).push(p); }
+        if ((p.a.notes || "").trim()) notes.push(p);
+      }
+      if (!answered.length) body.append(el("p", "empty", "No answers yet."));
+      const top = Math.max(1, ...[...tally.values()].map(v => v.length));
+      const kind = q.dataset.kind || "single";
+      [...tally.entries()].sort((a, b) => b[1].length - a[1].length).forEach(([v, ps]) => {
+        const row = el("div", "tal" + (kind === "text" || kind === "long" ? " txt" : ""));
+        const val = el("span", "tal-v", v);
+        if (rec.has(v)) val.append(el("span", "rec", "Recommended"));
+        const sentN = ps.filter(p => p.sent).length, draftN = ps.length - sentN;
+        const meter = el("span", "tal-m"), s1 = el("i"), s2 = el("i", "draft");
+        s1.style.width = (sentN / top) * 100 + "%"; s2.style.width = (draftN / top) * 100 + "%";
+        meter.append(s1, s2);
+        const count = el("span", "tal-c", "×" + ps.length + (draftN ? ` (${draftN} draft)` : ""));
+        const names = el("small", "tal-who");
+        ps.forEach((p, i) => { if (i) names.append(", "); names.append(p.sent ? p.name : el("i", null, p.name + " (draft)")); });
+        row.append(val, meter, count, names);
+        body.append(row);
+      });
+      for (const p of notes) { const nt = el("p", "nt"); nt.append(el("b", null, p.name + ": "), p.a.notes.trim()); body.append(nt); }
+      card.append(body);
+      return card;
+    }));
+  };
+  const status = (s, text) => { bar.save.dataset.s = s; bar.save.textContent = text; };
+  const time = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const save = async (extra = {}) => {
+    const w = who(), patch = { uid: me.uid, name: w.name, email: w.email, at: new Date().toISOString(), ...extra };
+    const ids = [...changed]; changed.clear();
+    for (const id of ids) patch["a_" + id] = answerOf($(`.q[data-q="${id}"]`));
+    local.set("record", record());
+    if (!db) { status("local", "Saved in this browser only"); return; }
+    status("busy", "Saving…");
+    const ref = db.doc(path());
+    try {
+      if (!exists) { await ref.set(record()); exists = true; }
+      else {
+        try { await ref.update(patch); }
+        catch { try { await ref.get(); await ref.update(patch); } catch { await ref.set(record()); } }
+      }
+      status("db", "Saved to artifact · " + time());
+    } catch (e) {
+      ids.forEach(id => changed.add(id));
+      status("err", "Not saved: " + (e?.message || e) + ". Kept in this browser.");
+    }
+  };
+  let timer;
+  const onEdit = (e) => {
+    const q = e.target.closest(".q[data-q]");
+    if (!q && !e.target.closest(".who")) return;
+    if (q) changed.add(q.dataset.q);
+    refresh();
+    clearTimeout(timer);
+    timer = setTimeout(save, 600);
+  };
+  document.addEventListener("input", onEdit);
+  document.addEventListener("change", onEdit);
+
+  const sentBox = $("#sent");
+  const showSent = () => {
+    if (!sentBox) return;
+    sentBox.hidden = !sent;
+    if (sent) $("#sent-text").textContent = `Sent on ${new Date(sent.at).toLocaleString()}. Changes still save.`;
+  };
+  const applyMine = (r) => {
+    if (!r) return;
+    const ans = answersOf(r);
+    for (const q of qs) if (!changed.has(q.dataset.q) && !q.contains(document.activeElement)) write(q, ans[q.dataset.q]);
+    const name = $("#who-name"); if (name && name !== document.activeElement && r.name != null) name.value = r.name;
+    sent = r.sent || null;
+    showSent();
+  };
+  const take = (docs) => {
+    for (const d of docs) { const r = d.data(); if (d.id === key()) { exists = true; applyMine(r); } else all[d.id] = r; }
+    refresh();
+  };
+  const takeDecisions = (docs) => {
+    for (const k of Object.keys(decisions)) delete decisions[k];
+    for (const d of docs) decisions[d.id] = d.data();
+    refresh();
+  };
+
+  const withTimeout = (p) => Promise.race([p, new Promise(r => setTimeout(() => r(null), 12000))]);
+  const use = (name) => {
+    const c = window.claude;
+    if (typeof c?.use !== "function") return Promise.resolve(null);
+    return withTimeout(c.use(name)).catch(() => null);
+  };
+  const identify = async (u) => {
+    if (!u) return;
+    const get = async (f) => { try { return typeof u[f] === "function" ? await u[f]() : u[f]; } catch { return undefined; } };
+    me.uid = String((await get("id")) || "");
+    me.auto = !!me.uid;
+    for (let i = 0; i < 4 && !me.name && !me.email; i++) {
+      const p = (await get("me")) || {};
+      me.name = String(p.name || (await get("name")) || "").trim();
+      me.email = String(p.email || "").trim();
+      if (!me.name && !me.email) await new Promise(r => setTimeout(r, 750));
+    }
+  };
+
+  const boot = async () => {
+    applyMine(local.get("record"));
+    refresh();
+    status("busy", "Connecting…");
+    const [d, u] = await Promise.all([use("db"), use("user")]);
+    await identify(u);
+    showWho();
+    db = d;
+    if (!db) { status("local", "Saved in this browser only"); refresh(); return; }
+    try {
+      const col = db.collection("responses"), dec = db.collection("decisions");
+      take((await col.get()).docs);
+      takeDecisions((await dec.get()).docs);
+      status("db", (who().name ? "Signed in as " + who().name : "Connected") + " · answers save to this artifact");
+      if (typeof col.onSnapshot === "function") col.onSnapshot(sn => take(sn.docs));
+      if (typeof dec.onSnapshot === "function") dec.onSnapshot(sn => takeDecisions(sn.docs));
+    } catch (e) {
+      status("err", "Could not load saved answers: " + (e?.message || e));
+    }
+  };
+
+  /* 6. Send and copy */
+  $("#send")?.addEventListener("click", async (e) => {
+    const answered = qs.filter(q => filled(read(q))).length;
+    sent = { at: new Date().toISOString(), answered, total: qs.length };
+    clearTimeout(timer);
+    await save({ sent });
+    showSent();
+    refresh();
+    e.target.textContent = "Sent";
+    setTimeout(() => (e.target.textContent = "Send answers"), 2000);
+    sentBox?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  const markdown = () => {
+    const w = who(), out = [`# ${document.title}: answers`, "", `- Name: ${w.name}`, ""];
+    let group = "";
+    for (const q of qs) {
+      const g = q.closest(".qgroup")?.querySelector("h3")?.textContent.trim() || "";
+      if (g && g !== group) { out.push("## " + g, ""); group = g; }
+      const a = read(q), v = Array.isArray(a.value) ? a.value.join("; ") : a.value;
+      out.push(`### ${q.dataset.q}. ${q.dataset.text}`, "", "**Answer:** " + (v || "_not answered_"), "");
+      if (a.notes.trim()) out.push("> " + a.notes.trim().replace(/\n/g, "\n> "), "");
+    }
+    return out.join("\n");
+  };
+  $("#copy")?.addEventListener("click", async (e) => {
+    const text = markdown();
+    try { await navigator.clipboard.writeText(text); e.target.textContent = "Copied"; }
+    catch {
+      const ta = el("textarea"); ta.value = text; ta.style.cssText = "position:fixed;inset:10% 5%;z-index:99;height:80%";
+      document.body.append(ta); ta.select(); ta.addEventListener("blur", () => ta.remove());
+      e.target.textContent = "Press Cmd+C";
+    }
+    setTimeout(() => (e.target.textContent = "Copy"), 2000);
+  });
+
+  refresh();
+  boot();
+})();
+</script>

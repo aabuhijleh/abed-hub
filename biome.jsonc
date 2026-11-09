@@ -51,6 +51,12 @@
       // playwright-cli eval takes this file as one expression, so it has no trailing ;.
       "includes": ["skills/visuals/highlight.js"],
       "formatter": { "enabled": false }
+    },
+    {
+      // Agents copy these pages as they are. The repeated max-height is a vh fallback for dvh.
+      "includes": ["skills/*/template.html"],
+      "formatter": { "enabled": false },
+      "linter": { "enabled": false }
     }
   ],
   "json": {

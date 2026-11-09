@@ -27,6 +27,8 @@ abed-hub config    # where every config file is, and what is in it
 | [visuals](#-gh-attach) | Draw the image that proves a claim: a ringed screenshot, a diagram, or a chart. | gh-attach, and the `playwright-cli` skill |
 | [gh-stack](#-gh-stack) | Break a change into PRs that build on each other. | The GitHub CLI, signed in, one extension, and jq |
 | [courier](#-courier) | Move files in and out of Jira issues and Slack threads. | An Atlassian token and a Slack app |
+| [temp-html](#-reports) | Write a report to read in the browser. | The `playwright-cli` skill and a browser |
+| [questionnaire-artifact](#-reports) | Collect answers from a team on a Claude Artifact page, then read them back. | temp-html, and Claude with the Artifact tools |
 
 Set up one. Come back for the others when you need them.
 
@@ -201,6 +203,44 @@ jira attach ABC-123 ./evidence/*
 One thing to know: the Slack bot only sees channels it has been invited to, and cannot read
 human DMs. Run `/invite @<bot>` where you need it.
 
+## 📰 Reports
+
+Two skills for pages that people read in a browser. Both use the same neobrutalist style.
+
+`temp-html` writes a report as one HTML file. The file has a reading rail with a progress
+meter and a contents list, and images that open in a lightbox. Each point gets a visual: a
+table, a flow, a number, or a screenshot. The agent then opens the page with
+`playwright-cli` at desktop and phone width, and fixes overflow, broken images, and a rail
+that does not match the sections.
+
+```
+write up what you found as a temp html
+```
+
+`questionnaire-artifact` puts the decisions the agent cannot make on a Claude Artifact page.
+Each question has a recommended answer and its reason. Each person who opens the shared page
+answers under their Claude account. The agent then reads the answers back, names the
+questions where people disagree, and asks you to decide each one. You start it by name only.
+
+```
+/questionnaire-artifact the open questions on the export redesign
+```
+
+### Setup
+
+1. **Add the skills.** The questionnaire also needs Claude with the Artifact and
+   ArtifactData tools.
+
+   ```bash
+   bunx skills add aabuhijleh/abed-hub -s temp-html -g
+   bunx skills add aabuhijleh/abed-hub -s questionnaire-artifact -g
+   ```
+
+2. **Add a browser, for the check.** The [gh-attach](#-gh-attach) setup installs
+   `playwright-cli`, chromium, and the `playwright-cli` skill.
+
+No credentials of its own.
+
 ## 🔐 Configuration
 
 Every tool keeps its state in one place, `$XDG_CONFIG_HOME/abed-hub/` when that is set and
@@ -230,7 +270,7 @@ and deleting the directory is a clean reset.
 
 ```bash
 bun remove -g @aabuhijleh/abed-hub @aabuhijleh/gh-attach @aabuhijleh/courier @playwright/cli
-bunx skills remove abed-hub gh-attach visuals gh-stack courier playwright-cli pr -g -y
+bunx skills remove abed-hub gh-attach visuals gh-stack courier temp-html questionnaire-artifact playwright-cli pr -g -y
 gh extension remove github/gh-stack
 ```
 

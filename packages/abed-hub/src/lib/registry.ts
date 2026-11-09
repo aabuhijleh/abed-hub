@@ -1,4 +1,9 @@
-export const COMPONENTS = ["gh-attach", "gh-stack", "courier"] as const;
+export const COMPONENTS = [
+  "gh-attach",
+  "gh-stack",
+  "courier",
+  "reports",
+] as const;
 
 export type Component = (typeof COMPONENTS)[number];
 
@@ -107,6 +112,15 @@ export const SPECS: Record<Component, ComponentSpec> = {
         setup: ["jira setup", "slack setup"],
       },
     ],
+  },
+  reports: {
+    summary: "Write a report or a questionnaire to read in the browser",
+    packages: [],
+    skills: [
+      { name: "temp-html", repo: HUB, dir: "skills" },
+      { name: "questionnaire-artifact", repo: HUB, dir: "skills" },
+    ],
+    tools: [],
   },
 };
 

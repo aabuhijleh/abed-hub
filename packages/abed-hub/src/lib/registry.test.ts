@@ -85,6 +85,15 @@ describe("gh-stack", () => {
   });
 });
 
+describe("reports", () => {
+  test("installs the questionnaire with the report skill whose style it reuses", () => {
+    expect(SPECS.reports.skills.map((dep) => dep.name)).toEqual([
+      "temp-html",
+      "questionnaire-artifact",
+    ]);
+  });
+});
+
 describe("every component", () => {
   const selected = expand(COMPONENTS);
 

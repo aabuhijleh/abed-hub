@@ -39,8 +39,9 @@ told it is missing chromium.
 | `gh-attach` | Draw an annotated screenshot, diagram, or chart and put it into a PR or issue. Brings `@playwright/cli`, chromium, and the `visuals`, `playwright-cli`, and `pr` skills. |
 | `gh-stack` | Break a change into PRs that build on each other. |
 | `courier` | Move files in and out of Jira issues and Slack threads. |
+| `reports` | Write a report or a questionnaire to read in the browser. Brings the `temp-html` and `questionnaire-artifact` skills. The check in the browser uses `playwright-cli` from `gh-attach`. |
 
-Name them to skip the prompt. `all` is all three.
+Name them to skip the prompt. `all` is every component.
 
 Some names are gone. `writing-great-prs` and its alias `prs` moved to `gh-attach`. `deslop`
 and `unslop` were removed with no replacement. Naming an old one prints what happened to it,
