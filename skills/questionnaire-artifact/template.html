@@ -201,7 +201,7 @@ dialog.lb::backdrop { background: #111d; }
 /* how-to strip under the hero */
 .howto { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
 .howto > div { border: 2px solid var(--ink); background: var(--soft); padding: 12px 14px; font-size: 16px; line-height: 1.45; }
-.howto b { display: block; font: 700 12px var(--mono); text-transform: uppercase; margin-bottom: 4px; }
+.howto b:first-child { display: block; font: 700 12px var(--mono); text-transform: uppercase; margin-bottom: 4px; }
 @media (max-width: 700px) { .howto { grid-template-columns: 1fr; } }
 
 /* respondent */
@@ -284,23 +284,30 @@ h3.qg { font-size: 24px; text-transform: uppercase; margin: 0; }
 @media (max-width: 600px) { .sum-h { flex-wrap: wrap; } .tal { grid-template-columns: minmax(0, 1fr) auto; } .tal-m { display: none; } }
 
 /* sticky bar: progress, save state, actions */
-.bar { position: fixed; z-index: 9; left: 0; right: 0; bottom: 0; background: var(--ink); color: var(--paper); border-top: 3px solid var(--ink); padding-bottom: env(safe-area-inset-bottom, 0px); }
-.bar .in { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px max(var(--gutter), env(safe-area-inset-right, 0px)) 10px max(var(--gutter), env(safe-area-inset-left, 0px)); max-width: 1160px; margin: 0 auto; }
+.bar { position: fixed; z-index: 9; left: 0; right: 0; bottom: 0; padding: 0 max(var(--gutter), env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(var(--gutter), env(safe-area-inset-left, 0px)); pointer-events: none; }
+.bar .in { pointer-events: auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; max-width: calc(1160px - 2 * var(--gutter)); margin: 0 auto; padding: 10px 12px 10px 16px; background: var(--paper); color: var(--ink); border: var(--b); box-shadow: var(--sh); }
 @media (min-width: 1240px) { .bar { left: calc(var(--rail-w) + 1.5rem); } }
-.bar .prog { font: 700 14px var(--mono); }
-.bar .meterq { width: 110px; height: 12px; border: 2px solid var(--paper); background: var(--ink); }
-.bar .meterq span { display: block; height: 100%; width: 0; background: var(--green); transition: width 160ms; }
-.bar .save { font: 700 12px var(--mono); text-transform: uppercase; padding: 3px 8px; border: 2px solid var(--paper); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: max-content; }
-.bar .save[data-s="db"] { background: var(--green); color: #111; }
-.bar .save[data-s="busy"] { background: var(--yellow); color: #111; }
-.bar .save[data-s="local"] { background: var(--orange); color: #111; }
-.bar .save[data-s="err"] { background: var(--pink); color: #111; }
+.bar .prog { font: 700 14px var(--mono); white-space: nowrap; }
+.bar .meterq { width: 120px; height: 14px; border: 2px solid var(--ink); background: var(--paper); }
+.bar .meterq span { display: block; height: 100%; width: 0; background: var(--green); border-right: 2px solid var(--ink); transition: width 160ms; }
+.bar .save { font: 700 11px var(--mono); text-transform: uppercase; padding: 3px 8px; border: 2px solid var(--ink); background: var(--soft); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .save[data-s="db"] { background: var(--green-tint); }
+.bar .save[data-s="busy"] { background: var(--yellow-tint); }
+.bar .save[data-s="local"] { background: #ffe2cc; }
+.bar .save[data-s="err"] { background: var(--pink-tint); }
+.bar .save::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border: 2px solid var(--ink); vertical-align: -1px; background: var(--paper); }
+.bar .save[data-s="db"]::before { background: var(--green); }
+.bar .save[data-s="busy"]::before { background: var(--yellow); }
+.bar .save[data-s="local"]::before { background: var(--orange); }
+.bar .save[data-s="err"]::before { background: var(--pink); }
 .bar .sp { flex: 1; }
-.bar button { font: 700 14px var(--mono); text-transform: uppercase; border: 2px solid var(--paper); background: var(--paper); color: var(--ink); padding: 8px 14px; cursor: pointer; }
+.bar button { font: 700 13px var(--mono); text-transform: uppercase; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); padding: 8px 14px; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); }
 .bar button.go { background: var(--yellow); }
-.bar button:hover { background: var(--blue); }
+.bar button:hover { background: var(--blue-tint); }
+.bar button.go:hover { background: var(--green); }
+.bar button:active { transform: translate(3px, 3px); box-shadow: none; }
 .bar button:disabled { opacity: 0.6; cursor: default; }
-@media (max-width: 600px) { .bar .meterq { display: none; } .bar .save { order: 9; flex: 1 1 100%; max-width: none; text-align: center; } .bar .sp { display: none; } .bar button { padding: 7px 10px; font-size: 13px; } }
+@media (max-width: 600px) { .bar .in { gap: 8px 10px; padding: 8px 10px; box-shadow: var(--sh-sm); } .bar .meterq { display: none; } .bar .save { order: 9; flex: 1 1 100%; text-align: center; } .bar button { padding: 7px 10px; font-size: 12px; } }
 .sent { margin-top: 18px; }
 </style>
 <nav class="rail" aria-label="Contents">
@@ -775,7 +782,7 @@ h3.qg { font-size: 24px; text-transform: uppercase; margin: 0; }
         try { await ref.update(patch); }
         catch { try { await ref.get(); await ref.update(patch); } catch { await ref.set(record()); } }
       }
-      status("db", "Saved to artifact · " + time());
+      status("db", "Saved · " + time());
     } catch (e) {
       ids.forEach(id => changed.add(id));
       status("err", "Not saved: " + (e?.message || e) + ". Kept in this browser.");
@@ -849,7 +856,7 @@ h3.qg { font-size: 24px; text-transform: uppercase; margin: 0; }
       const col = db.collection("responses"), dec = db.collection("decisions");
       take((await col.get()).docs);
       takeDecisions((await dec.get()).docs);
-      status("db", (who().name ? "Signed in as " + who().name : "Connected") + " · answers save to this artifact");
+      status("db", who().name ? "Saving as " + who().name : "Connected");
       if (typeof col.onSnapshot === "function") col.onSnapshot(sn => take(sn.docs));
       if (typeof dec.onSnapshot === "function") dec.onSnapshot(sn => takeDecisions(sn.docs));
     } catch (e) {
