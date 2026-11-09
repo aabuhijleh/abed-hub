@@ -8,6 +8,7 @@ const script = path.join(import.meta.dir, "approve.sh");
 const stack = [
   {
     number: 7,
+    url: "https://api.github.com/repos/owner/repo/stacks/7",
     pull_requests: [
       { number: 10, state: "closed", merged_at: "2026-01-01" },
       { number: 11, state: "open", merged_at: null },
@@ -42,7 +43,7 @@ const repository = {
 let bin: string;
 let calls: string;
 
-// A fake gh that answers the three calls approve.sh makes and logs each one.
+// A fake gh that answers the calls approve.sh makes and logs each one.
 beforeEach(async () => {
   bin = await mkdtemp(path.join(tmpdir(), "gh-stack-approve-"));
   calls = path.join(bin, "calls.log");
@@ -56,6 +57,7 @@ beforeEach(async () => {
     `#!/usr/bin/env bash
 printf '%s\\n' "$*" >> "${calls}"
 case "$*" in
+  *stacks/*) echo "gh: Not Found (HTTP 404)" >&2; exit 1 ;;
   *stacks*) cat "${bin}/stacks.json" ;;
   *mutation*) echo '{}' ;;
   *) cat "${bin}/query.json" ;;

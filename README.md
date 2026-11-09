@@ -109,8 +109,8 @@ gh stack submit --auto --open
 is this PR's stack up to date?
 ```
 
-The skill ships `status.sh`, which looks a PR up on GitHub and prints its stack from the
-bottom up. For each PR it shows the merge state, how many commits it is behind its base
+The skill ships `status.sh`, which looks a PR or a stack up on GitHub and prints the stack
+from the bottom up. It takes a PR or stack number, a `#551`, a PR or stack URL, or a branch. For each PR it shows the merge state, how many commits it is behind its base
 and behind trunk, and its required and optional checks. It ends by naming each PR that
 needs `gh stack sync` and why, or by saying the stack is up to date. It finds the stack
 even when this checkout has never tracked it, which `gh stack view` cannot do.

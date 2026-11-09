@@ -22,15 +22,19 @@ nothing about GitHub. Before any work on a PR or branch whose base is not trunk,
 every status or update request, run it from inside the repo's checkout:
 
 ```bash
-bash <skill-dir>/status.sh [pr-number | pr-url | branch]   # current branch by default
+bash <skill-dir>/status.sh [target]   # current branch by default
 ```
 
-It prints a table of the stack bottom to top, with the target PR marked 👉: each PR's
+A target is a PR or a whole stack: `12`, `#12`, a `/pull/12` or `/stack/551` URL, or a
+branch. A bare number is whichever one exists, since PRs and stacks share one number
+sequence. A URL's repo wins over the checkout's. Every script here takes the same target.
+
+It prints a table of the stack bottom to top, with a target PR marked 👉: each PR's
 position, whether it is behind trunk and behind its base, its checks, and its merge state.
 Verdict lines follow: up to date with trunk, with each base, checks passing (every failing
 check by PR), and 💥 conflicts. The last line is a 💡 suggested update or ✨ "Nothing to
-update". Exit 2 means the PR is in no
-stack on GitHub; a PR based on another branch is then a hand-built chain, which
+update". Exit 2 means no such PR or stack, or
+the PR is in no stack on GitHub; a PR based on another branch is then a hand-built chain, which
 `gh stack link <bottom> ... <top>` turns into a stack.
 
 Your answer to a status or update request opens with the whole report verbatim inside a
@@ -56,7 +60,7 @@ suggestion:
    with the report from step 3, saying you will report back once the checks settle:
 
    ```bash
-   bash <skill-dir>/watch.sh [pr-number | pr-url | branch]   # same target as status.sh
+   bash <skill-dir>/watch.sh [target]   # same target as status.sh
    ```
 
    It reruns `status.sh` every 30 seconds and prints only the settled report: no ⏳ left,
@@ -153,7 +157,7 @@ Then rerun the report. Ask the user only when the right resolution is unclear. U
 When the user asks to approve the stack, approve its PRs as the user:
 
 ```bash
-bash <skill-dir>/approve.sh [pr-number | pr-url | branch] [--dry-run]
+bash <skill-dir>/approve.sh [target] [--dry-run]
 ```
 
 It approves, in one batched mutation, every open non-draft PR the user neither authored nor

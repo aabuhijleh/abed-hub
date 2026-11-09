@@ -67,14 +67,19 @@ const stack = {
   ],
 };
 
-function report(prs: object, tracked = true, files: object = {}): string[] {
+function report(
+  prs: object,
+  tracked = true,
+  files: object = {},
+  target: number | null = 12,
+): string[] {
   const run = Bun.spawnSync([
     "jq",
     "-r",
     "-n",
     "--argjson",
     "stack",
-    JSON.stringify(stack),
+    JSON.stringify({ ...stack, target }),
     "--argjson",
     "prs",
     JSON.stringify(prs),
@@ -103,6 +108,29 @@ describe("status report", () => {
     expect(lines[1]).toBe("👉 #12 is 3 of 3");
     expect(row(lines, 10)).toMatch(/^ +1\/3 +#10 +a +🔀 merged$/);
     expect(row(lines, 12)).toMatch(/^👉 +3\/3 +#12 +c /);
+  });
+
+  test("a whole stack as the target marks no PR", () => {
+    const lines = report(
+      { ...pr(11, "main"), ...pr(12, "feat/layer-11") },
+      true,
+      {},
+      null,
+    );
+    expect(lines[0]).toBe("📚 Stack #7: 3 PRs onto main, bottom to top");
+    expect(lines[1]).toBe("");
+    expect(lines.some((l) => l.includes("👉"))).toBe(false);
+  });
+
+  test("a layer GitHub marks behind only through trunk is not behind its base", () => {
+    const lines = report({
+      ...pr(11, "main", { behindTrunk: 2, merge: "BEHIND" }),
+      ...pr(12, "feat/layer-11", { merge: "BEHIND" }),
+    });
+    expect(row(lines, 12)).toContain("❌ behind");
+    expect(lines).toContain("❌ Behind main: #11 by 2");
+    expect(lines).toContain("✅ Up to date with each base");
+    expect(lines.at(-2)).toStartWith("💡 Suggested update: gh stack sync,");
   });
 
   test("a current stack says so and suggests nothing", () => {

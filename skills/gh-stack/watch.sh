@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Reruns status.sh until no check is running, then prints the settled report.
-# Usage: watch.sh [pr-number | pr-url | branch] [--interval s] [--timeout s] [--grace s]
+# Usage: watch.sh [pr-number | pr-url | stack-number | stack-url | branch] [--interval s] [--timeout s] [--grace s]
 # Exit: 0 settled; 124 checks still running at the timeout; else status.sh's exit.
 set -euo pipefail
 

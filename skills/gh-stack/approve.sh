@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Approves every open PR in a stack in one GitHub call, skipping your own, drafts, and ones you approved.
-# Usage: approve.sh [pr-number | pr-url | branch] [--dry-run]   (defaults to the current branch)
-# Exit: 0 done; 1 GitHub rejected the approvals; 2 not in a stack.
+# Usage: approve.sh [pr-number | pr-url | stack-number | stack-url | branch] [--dry-run]   (defaults to the current branch)
+# Exit: 0 done; 1 GitHub rejected the approvals; else stack.sh's exit.
 set -euo pipefail
 
 dry_run=false
@@ -9,26 +9,8 @@ args=()
 for arg in "$@"; do
   if [[ $arg == --dry-run ]]; then dry_run=true; else args+=("$arg"); fi
 done
-target=${args[0]:-$(git branch --show-current)}
-
-case $target in
-  *[!0-9]*)
-    if [[ $target =~ /pull/([0-9]+) ]]; then
-      pr=${BASH_REMATCH[1]}
-    elif ! pr=$(gh pr view "$target" --json number --jq .number 2>/dev/null); then
-      echo "No pull request for '$target'." >&2
-      exit 2
-    fi
-    ;;
-  *) pr=$target ;;
-esac
-
-stacks=$(gh api "repos/{owner}/{repo}/stacks?pull_request=$pr")
-if [[ $(jq length <<<"$stacks") == 0 ]]; then
-  echo "PR #$pr is not in a stack on GitHub." >&2
-  exit 2
-fi
-stack=$(jq '.[0]' <<<"$stacks")
+stack=$(bash "$(dirname "$0")/stack.sh" ${args[@]+"${args[@]}"})
+export GH_REPO=$(jq -r .repo <<<"$stack")
 
 query=$(jq -r '
   "query($owner: String!, $name: String!) { viewer { login } repository(owner: $owner, name: $name) { "

@@ -71,7 +71,8 @@ def cells($i; $total):
 
 [$prs | to_entries[] | select(.key | startswith("p")) | .value] as $open
 | [$open[] | select(behind_trunk > 0)] as $behind_trunk
-| [$open[] | select(behind_base > 0 or .mergeStateStatus == "BEHIND")] as $behind_base
+| [$open[] | select(behind_base > 0)] as $behind_base
+| [$open[] | select(.mergeStateStatus == "BEHIND")] as $merge_behind
 | [$open[] | select(conflicting)] as $conflicts
 | [$open[] | select(trunk_conflicts | length > 0)] as $predicted
 | [$open[] | select(named(true; "fail") | length > 0)] as $red
@@ -85,7 +86,7 @@ def cells($i; $total):
    + [$stack.pull_requests | to_entries[] | .key as $i | .value | cells($i; $total)]) as $rows
 | [range(0; 8) as $c | [$rows[][$c] | width] | max] as $widths
 | "📚 Stack #\($stack.number): \($total) PRs onto \($trunk), bottom to top",
-  "👉 #\($stack.target) is \($position + 1) of \($total)",
+  (if $stack.target == null then empty else "👉 #\($stack.target) is \($position + 1) of \($total)" end),
   "",
   ($rows[] | [to_entries[] | .key as $k | .value | pad($widths[$k])] | join("  ") | sub(" +$"; "")),
   "",
@@ -113,7 +114,7 @@ def cells($i; $total):
        "💡 Suggested update: "
        + (if $tracked then "" else "gh stack checkout \($stack.number), then " end)
        + "gh stack sync. It stops on the conflict; then gh stack rebase, fix the files listed above, git add them, gh stack rebase --continue until it exits 0, and gh stack push. Rerun this report after."
-     elif ($behind_trunk + $behind_base | length) > 0 then
+     elif ($behind_trunk + $behind_base + $merge_behind | length) > 0 then
        "💡 Suggested update: "
        + (if $tracked then "" else "gh stack checkout \($stack.number), then " end)
        + "gh stack sync, which rebases each layer onto the one below and pushes. Rerun this report after."
