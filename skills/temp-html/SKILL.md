@@ -14,7 +14,7 @@ A **report** is one self-contained HTML file built from [`template.html`](templa
 
 ## 1. Pick the destination
 
-- **Artifact requested**: write the file in the session scratchpad directory and publish it with the Artifact tool. Write no copy anywhere else.
+- **Artifact requested**: write the file in the session scratchpad directory and publish it with the Artifact tool. Write no copy anywhere else. The report stays light on every system theme: when the Artifact page contract asks for dark-mode tokens, define them only under `:root[data-theme="dark"]`, so a reader whose system is dark still gets the white page.
 - **Path named**: write it there.
 - **In the repo**: use a git-ignored scratch folder (`.scratch/`, `scratch/`, `tmp/`, or similar). Confirm with `git check-ignore -q <dir>`. If no ignored folder exists, ask before you create one or edit `.gitignore`.
 - **Otherwise**: write `<os-temp>/<slug>.html`, where `<os-temp>` is `python3 -c 'import tempfile; print(tempfile.gettempdir())'`.
