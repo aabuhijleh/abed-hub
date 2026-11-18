@@ -18,12 +18,12 @@ describe("a warning", () => {
   test("is listed for the user to run, not run", async () => {
     const result = await applyFixes(
       [
-        warning({ run: "manual", label: "slack setup" }),
+        warning({ run: "manual", label: "courier slack setup" }),
         warning({ run: "command", argv: ["false"], label: "run false" }),
       ],
       { upgrade: true },
     );
-    expect(result.manual).toEqual(["slack setup"]);
+    expect(result.manual).toEqual(["courier slack setup"]);
     expect(result.done).toEqual([]);
     expect(result.failed).toEqual([]);
   });

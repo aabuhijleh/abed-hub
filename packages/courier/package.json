@@ -1,7 +1,7 @@
 {
   "name": "@aabuhijleh/courier",
   "version": "0.1.0",
-  "description": "Two CLIs, jira and slack: read an issue or thread, download the files on it, upload files back, and post or delete Slack messages.",
+  "description": "One CLI, courier, with jira and slack commands: read an issue or thread, download the files on it, upload files back, and post or delete Slack messages.",
   "keywords": [
     "jira",
     "slack",
@@ -20,15 +20,14 @@
   "author": "aabuhijleh",
   "type": "module",
   "bin": {
-    "jira": "./dist/jira.js",
-    "slack": "./dist/slack.js"
+    "courier": "./dist/courier.js"
   },
   "files": [
     "dist",
     "README.md"
   ],
   "scripts": {
-    "build": "bun build ./src/jira.ts ./src/slack.ts --target=bun --outdir=./dist",
+    "build": "bun build ./src/courier.ts --target=bun --outdir=./dist",
     "prepublishOnly": "bun run build",
     "test": "bun test"
   },

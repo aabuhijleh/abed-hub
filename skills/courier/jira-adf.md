@@ -10,9 +10,9 @@ the REST API, because no CLI command covers it yet.
 PUT {base}/rest/api/3/issue/{KEY}      {"fields": {"description": <adf doc>}}
 ```
 
-Credentials live in the file `jira config` names, under its `jira` key: `ATLASSIAN_BASE_URL`,
+Credentials live in the file `courier jira config` names, under its `jira` key: `ATLASSIAN_BASE_URL`,
 `ATLASSIAN_USER_EMAIL`, `ATLASSIAN_API_TOKEN` → HTTP Basic. Read them into variables and keep the
-token off stdout (`jira config` prints the file *contents*).
+token off stdout (`courier jira config` prints the file *contents*).
 
 ## Embedding an image
 
@@ -20,7 +20,7 @@ An image in the body is a `media` node whose `id` Jira validates against the iss
 attachments, so the file is attached to **that** issue first, and the id is the **Media API file
 UUID**, never the numeric attachment id.
 
-1. **Attach and capture the id.** `jira attach <TICKET> <file>… --json` prints each created
+1. **Attach and capture the id.** `courier jira attach <TICKET> <file>… --json` prints each created
    attachment's numeric `id`.
 2. **Resolve the UUID.** It appears in no attachment payload, only in the `303` redirect:
 

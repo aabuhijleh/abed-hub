@@ -2,7 +2,7 @@
 name: abed-hub
 description: >-
   Install and repair the abed-hub tools and skills with the `abed-hub` CLI. Use when
-  a hub command is missing (`gh-attach`, `jira`, `slack`), when a skill is behind the
+  a hub command is missing (`gh-attach`, `courier`), when a skill is behind the
   repo it came from, when you need where a config file lives or what is in it, or for
   "set up abed-hub".
 license: MIT
@@ -54,7 +54,7 @@ whole selection, so reach for `update` when repairing.
 `abed-hub config` prints every config file the installed components read: its path, what it
 holds, and its contents. `--json` is the machine read. A file that is missing, empty, or
 unparseable says so and names the command that writes it, which is the answer to "why does
-`jira` say it has no credentials".
+`courier jira` say it has no credentials".
 
 Tokens come back masked to their last four characters, which is enough to tell two
 credentials apart. Leave them that way. `--reveal` prints a live secret into the
@@ -73,7 +73,7 @@ version number.
 
 ## What it hands back to you
 
-Credentials and package managers. `jira setup`, `slack setup`, `gh auth login`, installing
+Credentials and package managers. `courier jira setup`, `courier slack setup`, `gh auth login`, installing
 bun, and upgrading `gh` all print under "Run these yourself, they ask questions". Every one
 of them prompts, so give them to the user instead of running them.
 

@@ -1,28 +1,28 @@
 ---
 name: courier
 description: >-
-  Reach Jira and Slack where the Atlassian and Slack MCPs stop, via the `jira` and
-  `slack` CLIs. Use to download a ticket's or thread's attachments, upload a file to a
+  Reach Jira and Slack where the Atlassian and Slack MCPs stop, via the `courier` CLI.
+  Use to download a ticket's or thread's attachments, upload a file to a
   Jira issue or Slack message, delete a Slack post, or write a Jira description with
   checkboxes or embedded images.
 license: MIT
-allowed-tools: Bash(jira:*), Bash(slack:*)
+allowed-tools: Bash(courier:*)
 ---
 
 # courier
 
-The Atlassian and Slack MCP tools are the default reach for Jira and Slack. `courier`
-installs two bins, `jira` and `slack`, to close the **gaps** those MCPs leave. File bytes
+The Atlassian and Slack MCP tools are the default reach for Jira and Slack. The `courier`
+bin, with its `jira` and `slack` commands, closes the **gaps** those MCPs leave. File bytes
 and take-backs are the gaps they close today: pulling a ticket's or thread's attachments
 onto disk, pushing files back up as a Jira attachment or onto a Slack message the MCP can
 only post text to, and taking a Slack post back off the channel. Whenever a new gap shows
-up it belongs here too, so treat these bins as a growing toolkit rather than a fixed pair
+up it belongs here too, so treat `courier` as a growing toolkit rather than a fixed pair
 of tricks.
 
 A growing set of commands is never a remembered one, so **discover it every run**:
 
-1. `jira --help` and `slack --help` for the commands that exist right now.
-2. `<bin> <command> --help` for that command's arguments and flags.
+1. `courier jira --help` and `courier slack --help` for the commands that exist right now.
+2. `courier <jira|slack> <command> --help` for that command's arguments and flags.
 
 `--help` is generated from the code on disk, which makes it the single source of truth.
 Anything carried over from an earlier session may already be stale. Read it before
@@ -32,23 +32,23 @@ next.
 
 ## Requirements
 
-Both bins come from the `@aabuhijleh/courier` package and run on [Bun](https://bun.sh).
-When `jira` or `slack` is missing, call the Skill tool with `abed-hub` and repair the
+`courier` comes from the `@aabuhijleh/courier` package and runs on [Bun](https://bun.sh).
+When `courier` is missing, call the Skill tool with `abed-hub` and repair the
 `courier` component.
 
 ## Setup is a hand-off to the user
 
-Each bin needs a credential only a human can create, from a browser page behind their own
-login: an Atlassian API token for `jira`, a Slack app and bot token for `slack`. Both setup
+Each command group needs a credential only a human can create, from a browser page behind
+their own login: an Atlassian API token for `jira`, a Slack app and bot token for `slack`. Both setup
 commands are interactive prompts, and a prompt has no keyboard in your shell. Give the user
 the line and wait:
 
 ```bash
-jira setup     # Atlassian API token
-slack setup    # Slack app, bot scopes, bot token
+courier jira setup     # Atlassian API token
+courier slack setup    # Slack app, bot scopes, bot token
 ```
 
-An unconfigured bin **exits 0 with no data**, even under `--json`. It draws its setup
+An unconfigured command group **exits 0 with no data**, even under `--json`. It draws its setup
 prompt, reads end-of-input, and quits successfully. Read `No Jira config found`, `No Slack
 config found`, or a `◆ ATLASSIAN_BASE_URL` or `◆ SLACK_BOT_TOKEN` line in the output as a
 missing credential, not as an empty issue or an empty thread. Hand it over and stop. A
@@ -57,7 +57,7 @@ re-run lands in the same place.
 Let the setup commands write the credential. A token typed into `config.json` by hand, or
 passed on a command line, lands in shell history and in your transcript.
 
-`jira config` and `slack config` print the path and what is saved, which is how you confirm
+`courier jira config` and `courier slack config` print the path and what is saved, which is how you confirm
 the hand-off landed. The file is `~/.config/abed-hub/courier/config.json`, mode 600.
 
 ## Jira descriptions carry more than markdown
@@ -69,7 +69,7 @@ and what its two opaque `400`s mean: [`jira-adf.md`](jira-adf.md).
 
 ## Slack acts as a bot
 
-The `slack` bin authenticates as a bot user, which decides both what it can reach and how a
+`courier slack` authenticates as a bot user, which decides both what it can reach and how a
 post lands. No flag gets past these:
 
 - **Invited channels only.** `/invite @<bot>` in each channel, private ones included. Once
@@ -83,7 +83,7 @@ post lands. No flag gets past these:
   `chat:write.customize` scope to dress it up as anyone else. When a human audience would
   read the message as coming from a person, get the author's sign-off on posting as the bot
   first.
-- **It takes back its own posts, and only those.** `slack delete` removes a message the bot
+- **It takes back its own posts, and only those.** `courier slack delete` removes a message the bot
   posted. A human's survives every token the app holds. Attached files outlive the message
   unless the delete is told to take them too. An audience may have read it either way, so
   rehearse an unfinished message in a sandbox channel the bot is already in.
@@ -96,7 +96,7 @@ post lands. No flag gets past these:
 
 ## When a gap isn't covered yet
 
-`bun add -g` installs a built bundle, so the `dist/jira.js` on disk is not the source and
+`bun add -g` installs a built bundle, so the `dist/courier.js` on disk is not the source and
 the next install overwrites an edit to it. The source is `packages/courier` in
 [abed-hub](https://github.com/aabuhijleh/abed-hub), and a change there reaches this machine
 only once the package is published again. Both put a gap in the user's hands:
@@ -108,7 +108,7 @@ only once the package is published again. Both put a gap in the user's hands:
 
    ```bash
    gh issue create --repo aabuhijleh/abed-hub \
-     --title "jira: <the gap in one line>" \
+     --title "courier: <the gap in one line>" \
      --body "What I ran, what came back, what I expected instead."
    ```
 

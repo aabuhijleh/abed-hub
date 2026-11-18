@@ -149,12 +149,12 @@ makes every `gh stack` command exit 9.
 
 ## 📬 [courier](https://www.npmjs.com/package/@aabuhijleh/courier)
 
-`jira` and `slack` reach the parts of Jira and Slack the Atlassian and Slack MCPs cannot:
+`courier jira` and `courier slack` reach the parts of Jira and Slack the Atlassian and Slack MCPs cannot:
 attachment bytes in both directions, deleting a Slack post, writing a Jira description with
 checkboxes or embedded images.
 
 ```bash
-slack thread https://acme.slack.com/archives/C0123456789/p1700000000000000
+courier slack thread https://acme.slack.com/archives/C0123456789/p1700000000000000
 ```
 
 ```
@@ -168,8 +168,8 @@ slack thread https://acme.slack.com/archives/C0123456789/p1700000000000000
 Files come down, then go up somewhere else.
 
 ```bash
-slack pull <slack-permalink> --out ./evidence
-jira attach ABC-123 ./evidence/*
+courier slack pull <slack-permalink> --out ./evidence
+courier jira attach ABC-123 ./evidence/*
 ```
 
 ```
@@ -179,19 +179,19 @@ jira attach ABC-123 ./evidence/*
 
 ### Setup
 
-1. **Install the tools.** One package, both bins.
+1. **Install the tools.** One package, one `courier` bin.
 
    ```bash
    bun add -g @aabuhijleh/courier
    ```
 
 2. **Set up credentials.** Each command prints the steps for creating the token in your
-   browser, then saves what you paste in. `slack setup` lists the bot scopes to add first,
+   browser, then saves what you paste in. `courier slack setup` lists the bot scopes to add first,
    and checks the token against Slack before saving it.
 
    ```bash
-   jira setup     # an Atlassian API token
-   slack setup    # a Slack app and its bot token
+   courier jira setup     # an Atlassian API token
+   courier slack setup    # a Slack app and its bot token
    ```
 
 3. **Add the skill.**
@@ -258,8 +258,8 @@ each tool prints its own. `--reveal` on any of them prints a token in full.
 
 ```bash
 abed-hub config
-jira config
-slack config
+courier jira config
+courier slack config
 ```
 
 Let the setup commands write these, since a token passed on a command line lands in your

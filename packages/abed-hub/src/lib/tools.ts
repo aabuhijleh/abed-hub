@@ -216,7 +216,7 @@ async function checkCredentials(which: "jira" | "slack"): Promise<Finding> {
       : {
           fix: {
             run: "manual" as const,
-            label: `${which} setup`,
+            label: `courier ${which} setup`,
             hint:
               which === "jira"
                 ? "an Atlassian API token"

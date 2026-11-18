@@ -10,7 +10,7 @@ import { selected } from "../lib/select";
 /** What goes in the box under the path. */
 function body(report: ConfigReport, reveal: boolean): string {
   const { dep, state, raw, value } = report;
-  // "`jira setup` and `slack setup` write it", for a file two commands own.
+  // "`courier jira setup` and `courier slack setup` write it", for a file two commands own.
   const writes = dep.setup.map((command) => `\`${command}\``).join(" and ");
   const write = dep.setup.length > 1 ? "write" : "writes";
 
