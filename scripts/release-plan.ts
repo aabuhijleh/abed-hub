@@ -11,6 +11,7 @@
  */
 import { appendFileSync } from "node:fs";
 import { releaseTag } from "./lib/notes";
+import { trustProven, trustSetup } from "./lib/trust";
 import {
   planReleases,
   publishablePackages,
@@ -61,6 +62,15 @@ for (const entry of plan) {
 }
 
 const releasing = plan.filter((entry) => entry.verdict === "release");
+
+for (const entry of releasing) {
+  if (!(await trustProven(entry.name))) {
+    warn(
+      `${entry.name} has never staged from CI`,
+      `Every version on npm was published by hand, so this run is the first test of its trusted publisher. Without one the stage job fails with E401. ${trustSetup(entry.name)}`,
+    );
+  }
+}
 const matrix = releasing.map(({ name, dir, version }) => ({
   name,
   dir,
