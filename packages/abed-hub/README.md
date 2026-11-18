@@ -77,7 +77,7 @@ every other tool's state. The directory is 0700 and the file is 0600.
 
 `abed-hub config` prints that file and every other one the installed components read, each
 with its path. A file that is missing, empty, or unparseable says so and names the command
-that writes it, which is usually the answer to why `jira` claims it has no credentials.
+that writes it, which is usually the answer to why `courier jira` claims it has no credentials.
 
 ```bash
 abed-hub config

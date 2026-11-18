@@ -22,7 +22,10 @@ describe("courier credentials", () => {
   test("missing ones are a warning that hands over setup", async () => {
     const finding = await checkTool("jira-credentials");
     expect(finding.status).toBe("warning");
-    expect(finding.fix).toMatchObject({ run: "manual", label: "jira setup" });
+    expect(finding.fix).toMatchObject({
+      run: "manual",
+      label: "courier jira setup",
+    });
   });
 
   test("one section set leaves the other a warning", async () => {

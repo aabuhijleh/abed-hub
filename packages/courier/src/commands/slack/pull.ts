@@ -110,6 +110,6 @@ export default defineCommand({
       p.log.warn(`Skipped ${file.name ?? file.id}: ${file.reason}`);
     }
 
-    p.log.info(`Attach them with: jira attach <KEY> ${result.dir}/*`);
+    p.log.info(`Attach them with: courier jira attach <KEY> ${result.dir}/*`);
   },
 });

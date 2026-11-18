@@ -127,3 +127,18 @@ describe("componentsHelp", () => {
     }
   });
 });
+
+describe("SPECS packages", () => {
+  const workspace = new URL("../../../", import.meta.url);
+  const hubPackages = Object.values(SPECS)
+    .flatMap((spec) => spec.packages)
+    .filter((dep) => dep.pkg.startsWith("@aabuhijleh/"));
+
+  test.each(hubPackages)("$pkg ships the $bin bin", async ({ pkg, bin }) => {
+    const dir = pkg.replace("@aabuhijleh/", "");
+    const manifest = await Bun.file(
+      new URL(`${dir}/package.json`, workspace),
+    ).json();
+    expect(Object.keys(manifest.bin)).toContain(bin);
+  });
+});

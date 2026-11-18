@@ -35,7 +35,7 @@ export default defineCommand({
           JSON.stringify({ path: configPath, config: null }, null, 2),
         );
       } else {
-        p.log.warn(`${reason}. Run \`slack setup\` to create one.`);
+        p.log.warn(`${reason}. Run \`courier slack setup\` to create one.`);
       }
       return;
     }

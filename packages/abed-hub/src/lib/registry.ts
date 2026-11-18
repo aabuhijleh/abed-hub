@@ -101,7 +101,7 @@ export const SPECS: Record<Component, ComponentSpec> = {
   },
   courier: {
     summary: "Move files in and out of Jira issues and Slack threads",
-    packages: [{ pkg: "@aabuhijleh/courier", bin: "jira" }],
+    packages: [{ pkg: "@aabuhijleh/courier", bin: "courier" }],
     skills: [{ name: "courier", repo: HUB, dir: "skills" }],
     tools: ["jira-credentials", "slack-credentials"],
     configs: [
@@ -109,7 +109,7 @@ export const SPECS: Record<Component, ComponentSpec> = {
         tool: "courier",
         file: "config.json",
         summary: "an Atlassian token and a Slack bot token, a section each",
-        setup: ["jira setup", "slack setup"],
+        setup: ["courier jira setup", "courier slack setup"],
       },
     ],
   },
