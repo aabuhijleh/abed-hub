@@ -71,8 +71,11 @@ jobs:
       # Staging needs no 2FA and no token, which is what lets CI do it.
       # Trusted publishing attaches a provenance attestation on its own, so
       # there is no --provenance flag to pass.
-      - run: npm stage publish
+      - name: Stage it
         working-directory: ${{ matrix.package.dir }}
+        env:
+          PKG: ${{ matrix.package.name }}
+        run: bun run "$GITHUB_WORKSPACE/scripts/stage.ts" "$PKG"
 
       # gh creates the tag itself, at the SHA that built the tarball, so there is
       # no git identity to configure and no tag to push.

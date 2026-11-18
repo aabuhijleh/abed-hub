@@ -82,7 +82,12 @@ cd packages/<dir> && npm publish
 
 Then register the trusted publisher on npmjs.com under the package's Settings, pointing at
 `aabuhijleh/abed-hub` and `release.yml`, with `npm stage publish` as the only allowed action.
-Until both are done, `bun run release:plan` names the package and refuses to stage it.
+
+`bun run release:plan` refuses to stage a package that is not on npm. It cannot read the
+trusted publisher, because that needs an owner login. It warns instead when no version on
+npm has a provenance attestation, because then the package has never staged from CI. When
+the publisher is missing, the stage job fails with `E401` and names the settings page and
+the rerun command.
 
 ## Commits and branches
 
