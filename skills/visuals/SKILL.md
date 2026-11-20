@@ -147,6 +147,10 @@ the fit. `gh-attach shot` waits for it, and fails when anything runs off the pan
 of its stat card, naming the element and by how much. Fix the frame (shorter labels, fewer
 cards or bars, another shape) and render again.
 
+Leave the width of the body and the panel to `frame.css`. `shot` keeps its 948px page, so
+a narrower panel leaves the spare width on the right, and `render.js` fails it as off
+centre. For a narrower image, pass `--width` to `shot`.
+
 ## 4. Look and improve
 
 Read every PNG with the Read tool, then re-read the brief. The image passes when all of
@@ -156,7 +160,8 @@ these hold:
   on it matches Data. Each part of the claim has its mark, and nothing else pulls the eye.
 - **Makes sense:** the shape suits the claim (numbers as bars or a stat, not a table of
   them). Every label is readable and whole, nothing overlaps or runs off the panel, rows
-  and sides line up, and a stranger to the codebase knows every term. Each stat card holds
+  and sides line up, the panel has equal space on its left and right, and a stranger to
+  the codebase knows every term. Each stat card holds
   one value under a one-line label. Every UI state it names shows the product's icon, or
   an emoji when the product has none.
 - **The headline reads clearly:** one read, no function names, the number or cause in it.
