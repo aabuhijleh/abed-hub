@@ -1,4 +1,4 @@
-// Draws the frame's Mermaid diagrams, Vega-Lite charts and pin dims in frame.css colours, then fails the render when anything runs off its box. gh-attach shot waits on window.rendered.
+// Draws the frame's Mermaid diagrams, Vega-Lite charts and pin dims in frame.css colours, then fails the render when anything runs off its box or the panel is off centre. gh-attach shot waits on window.rendered.
 window.rendered = (async () => {
   const css = getComputedStyle(document.documentElement);
   const color = (name) => css.getPropertyValue(name).trim();
@@ -161,6 +161,17 @@ window.rendered = (async () => {
     });
   }
 
+  // shot keeps the viewport width, so a panel narrower than the page leaves the spare width on the right.
+  function offCentre() {
+    return [...document.querySelectorAll("body > .panel")].flatMap((panel) => {
+      const r = panel.getBoundingClientRect();
+      const left = Math.round(r.left);
+      const right = Math.round(window.innerWidth - r.right);
+      if (Math.abs(left - right) <= 4) return [];
+      return `the panel is not centred: ${left}px of space on the left, ${right}px on the right. Remove the width you set on the panel or body, and pass --width to gh-attach shot for a narrower image`;
+    });
+  }
+
   // One shared dim per pin, so a second ring doesn't darken the first.
   function dimPins() {
     for (const pin of document.querySelectorAll(".pin")) {
@@ -189,6 +200,8 @@ window.rendered = (async () => {
     throw new Error(
       `${misfits.join("; ")}. Shorten the labels, show fewer cards or bars, or switch shape.`,
     );
+  const skewed = offCentre();
+  if (skewed.length) throw new Error(`${skewed.join("; ")}.`);
   // gh-attach shot writes this into the PNG's Title, so a checker can tell a frame from a raw shot.
   window.claim = (document.querySelector("h1")?.textContent ?? "")
     .trim()
